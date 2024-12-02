@@ -34,3 +34,13 @@ Utilitzar LLM:
     - Per modificar la recomanació de ruta segons una sèrie de textos, en què pugui relacionar autors amb períodes, estils, etc.
 
     - Poder justificar per què s'ha recomanat cadascuna de les 3 rutes proposades
+
+Per avaluar,
+    1. podem fer servir les repostes de CLIPS com les bones, i fer la diferència amb les predites 
+    2. haver de predit el feedback, tenint ja guardat el feedback real
+
+- Mesures d'utilitat
+- Factor d'oblit
+- Manteniment general de la base de casos
+- Avaluació de funcionament
+- Adaptació
