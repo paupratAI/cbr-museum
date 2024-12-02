@@ -1,0 +1,36 @@
+-Retrieve (Recuperar):
+Buscar casos anteriors a la base de dades que siguin similars al problema actual, és a dir, a les preferències i perfil del nou usuari.
+    1. Recuperar casos anteriors amb preferències similars i perfil d'usuari similar
+    SEMPRE TENIR EN COMPTE PREFERENCIES DE L'USUARI 
+
+-Reuse (Reutilitzar):
+La informació del cas recuperat es reutilitza, ajustant-la per personalitzar-la al problema actual.
+    1. Modificar la ruta suggerida en el cas recuperat per ajustar-la al nou context
+    2. Generar 3 variants de rutes 
+    3. Usuari escull una de les 3 rutes
+
+
+-Revise (Revisar):
+Verificar i ajustar la solució proposada, incloure feedback de l'usuari sobre la ruta suggerida.
+    1. L'usuari realitza la ruta escollida i dona feedback (puntuació d'1 a 5)
+
+-Retain (Retenir):
+Emmagatzemar el nou cas
+    1. Incloure:
+        Atributs de l'usuari (preferències i característiques).
+        Ruta final recomanada.
+        Feedback de l'usuari.
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+Dues situacions molts diferents:
+    no m'agrada una de les 3 rutes recomanades 
+    no m'agrada la ruta després d'haverla fet --> feedback final
+
+Utilitzar LLM:
+    - Obtenir els atributs a les consultes (e.g. 'som un grup de 15 persones' --> extreure num_people=15) 
+
+    - Per a què l'usuari expliqui el feedback donat (e.g. 'la ruta era massa llarga')
+
+    - Per modificar la recomanació de ruta segons una sèrie de textos, en què pugui relacionar autors amb períodes, estils, etc.
+
+    - Poder justificar per què s'ha recomanat cadascuna de les 3 rutes proposades
