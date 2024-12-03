@@ -1,3 +1,10 @@
+
+Dataset --> SQL, després podrem fer cerca en arbre 
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
 -Retrieve (Recuperar):
 Buscar casos anteriors a la base de dades que siguin similars al problema actual, és a dir, a les preferències i perfil del nou usuari.
     1. Recuperar casos anteriors amb preferències similars i perfil d'usuari similar
