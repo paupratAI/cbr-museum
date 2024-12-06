@@ -1,0 +1,5392 @@
+[
+    {
+        "artwork_id": 869,
+        "artwork_name": "The Watermill with the Great Red Roof",
+        "created_by": "Meindert Hobbema",
+        "author_id": 0,
+        "artwork_in_period": 1662,
+        "dimension": 8910,
+        "relevance": "High",
+        "style": [
+            "Realism",
+            "17th Century"
+        ],
+        "complexity": 51
+    },
+    {
+        "artwork_id": 2189,
+        "artwork_name": "Ready-to-Wear",
+        "created_by": "Stuart Davis",
+        "author_id": 1,
+        "artwork_in_period": 1955,
+        "dimension": 15052,
+        "relevance": "High",
+        "style": [
+            "Modernism",
+            "Cubism"
+        ],
+        "complexity": 59
+    },
+    {
+        "artwork_id": 2816,
+        "artwork_name": "Interior at Nice",
+        "created_by": "Henri Matisse",
+        "author_id": 2,
+        "artwork_in_period": 1919,
+        "dimension": 11790,
+        "relevance": "High",
+        "style": [],
+        "complexity": 128
+    },
+    {
+        "artwork_id": 4081,
+        "artwork_name": "Gian Lodovico Madruzzo",
+        "created_by": "Giovanni Battista",
+        "author_id": 3,
+        "artwork_in_period": 1551,
+        "dimension": 23084,
+        "relevance": "High",
+        "style": [
+            "sixteenth century",
+            "16th Century"
+        ],
+        "complexity": 60
+    },
+    {
+        "artwork_id": 4428,
+        "artwork_name": "Mère Grégoire",
+        "created_by": "Gustave Courbet",
+        "author_id": 4,
+        "artwork_in_period": 1855,
+        "dimension": 12513,
+        "relevance": "High",
+        "style": [
+            "19th century",
+            "Realism"
+        ],
+        "complexity": 94
+    },
+    {
+        "artwork_id": 4575,
+        "artwork_name": "Judith",
+        "created_by": "Jan Sanders",
+        "author_id": 5,
+        "artwork_in_period": 1540,
+        "dimension": 7623,
+        "relevance": "High",
+        "style": [
+            "16th Century"
+        ],
+        "complexity": 44
+    },
+    {
+        "artwork_id": 4758,
+        "artwork_name": "Stoke-by-Nayland",
+        "created_by": "John Constable",
+        "author_id": 6,
+        "artwork_in_period": 1836,
+        "dimension": 21294,
+        "relevance": "High",
+        "style": [
+            "19th century"
+        ],
+        "complexity": 22
+    },
+    {
+        "artwork_id": 4773,
+        "artwork_name": "Isabella Wolff",
+        "created_by": "Sir Thomas",
+        "author_id": 7,
+        "artwork_in_period": 1803,
+        "dimension": 13056,
+        "relevance": "High",
+        "style": [
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 69
+    },
+    {
+        "artwork_id": 4788,
+        "artwork_name": "Lady Sarah Bunbury Sacrificing to the Graces",
+        "created_by": "Sir Joshua",
+        "author_id": 8,
+        "artwork_in_period": 1763,
+        "dimension": 36542,
+        "relevance": "High",
+        "style": [
+            "18th Century"
+        ],
+        "complexity": 47
+    },
+    {
+        "artwork_id": 4796,
+        "artwork_name": "Fishing Boats with Hucksters Bargaining for Fish",
+        "created_by": "Joseph Mallord",
+        "author_id": 9,
+        "artwork_in_period": 1837,
+        "dimension": 38976,
+        "relevance": "High",
+        "style": [
+            "19th century",
+            "nineteenth century"
+        ],
+        "complexity": 38
+    },
+    {
+        "artwork_id": 4884,
+        "artwork_name": "Figure with Meat",
+        "created_by": "Francis Bacon",
+        "author_id": 10,
+        "artwork_in_period": 1954,
+        "dimension": 15609,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 80
+    },
+    {
+        "artwork_id": 5357,
+        "artwork_name": "The Red Armchair",
+        "created_by": "Pablo Picasso",
+        "author_id": 11,
+        "artwork_in_period": 1931,
+        "dimension": 12838,
+        "relevance": "High",
+        "style": [
+            "Cubism"
+        ],
+        "complexity": 58
+    },
+    {
+        "artwork_id": 5848,
+        "artwork_name": "Landscape with Saint John on Patmos",
+        "created_by": "Nicolas Poussin",
+        "author_id": 12,
+        "artwork_in_period": 1640,
+        "dimension": 13600,
+        "relevance": "High",
+        "style": [
+            "Renaissance",
+            "classicism",
+            "17th Century"
+        ],
+        "complexity": 107
+    },
+    {
+        "artwork_id": 6565,
+        "artwork_name": "American Gothic",
+        "created_by": "Grant Wood",
+        "author_id": 13,
+        "artwork_in_period": 1930,
+        "dimension": 5070,
+        "relevance": "High",
+        "style": [
+            "Realism",
+            "Modernism"
+        ],
+        "complexity": 233
+    },
+    {
+        "artwork_id": 7021,
+        "artwork_name": "Portrait of Marevna",
+        "created_by": "Diego Rivera",
+        "author_id": 14,
+        "artwork_in_period": 1915,
+        "dimension": 16240,
+        "relevance": "High",
+        "style": [
+            "Modernism",
+            "Cubism"
+        ],
+        "complexity": 75
+    },
+    {
+        "artwork_id": 7124,
+        "artwork_name": "Seated Nude",
+        "created_by": "Henri Matisse",
+        "author_id": 15,
+        "artwork_in_period": 1922,
+        "dimension": 6084,
+        "relevance": "High",
+        "style": [],
+        "complexity": 34
+    },
+    {
+        "artwork_id": 8624,
+        "artwork_name": "Portrait of Pablo Picasso",
+        "created_by": "Juan Gris",
+        "author_id": 16,
+        "artwork_in_period": 1912,
+        "dimension": 6882,
+        "relevance": "High",
+        "style": [
+            "Cubism"
+        ],
+        "complexity": 143
+    },
+    {
+        "artwork_id": 8633,
+        "artwork_name": "Hero Construction",
+        "created_by": "Richard Hunt",
+        "author_id": 17,
+        "artwork_in_period": 1958,
+        "dimension": 11826,
+        "relevance": "High",
+        "style": [],
+        "complexity": 37
+    },
+    {
+        "artwork_id": 8958,
+        "artwork_name": "Arrangement in Flesh Color and Brown: Portrait of Arthur Jerome Eddy",
+        "created_by": "James McNeill",
+        "author_id": 18,
+        "artwork_in_period": 1894,
+        "dimension": 19530,
+        "relevance": "High",
+        "style": [
+            "Modernism",
+            "Post-Impressionism"
+        ],
+        "complexity": 70
+    },
+    {
+        "artwork_id": 8991,
+        "artwork_name": "Improvisation No. 30 (Cannons)",
+        "created_by": "Vasily Kandinsky",
+        "author_id": 19,
+        "artwork_in_period": 1913,
+        "dimension": 12321,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 134
+    },
+    {
+        "artwork_id": 9010,
+        "artwork_name": "L'Estaque",
+        "created_by": "Émilie Charmy",
+        "author_id": 20,
+        "artwork_in_period": 1910,
+        "dimension": 4161,
+        "relevance": "High",
+        "style": [
+            "Fauvism"
+        ],
+        "complexity": 43
+    },
+    {
+        "artwork_id": 9503,
+        "artwork_name": "Champs de Mars: The Red Tower",
+        "created_by": "Robert Delaunay",
+        "author_id": 21,
+        "artwork_in_period": 1911,
+        "dimension": 20480,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 84
+    },
+    {
+        "artwork_id": 9512,
+        "artwork_name": "Oribe-Type Ewer",
+        "created_by": "Japan",
+        "author_id": 22,
+        "artwork_in_period": 1614,
+        "dimension": 546,
+        "relevance": "High",
+        "style": [
+            "Japanese (culture or style)"
+        ],
+        "complexity": 25
+    },
+    {
+        "artwork_id": 11272,
+        "artwork_name": "Maize and Cockscombs",
+        "created_by": "Artist unknown",
+        "author_id": 23,
+        "artwork_in_period": 1802,
+        "dimension": 60690,
+        "relevance": "High",
+        "style": [
+            "Japanese (culture or style)",
+            "edo (japanese period)"
+        ],
+        "complexity": 26
+    },
+    {
+        "artwork_id": 11320,
+        "artwork_name": "Adam",
+        "created_by": "Auguste Rodin",
+        "author_id": 24,
+        "artwork_in_period": 1881,
+        "dimension": 14454,
+        "relevance": "High",
+        "style": [
+            "Post-Impressionism",
+            "19th century",
+            "20th Century",
+            "nineteenth century"
+        ],
+        "complexity": 46
+    },
+    {
+        "artwork_id": 11393,
+        "artwork_name": "Henry Ossawa Tanner",
+        "created_by": "Hermann Dudley",
+        "author_id": 25,
+        "artwork_in_period": 1896,
+        "dimension": 3650,
+        "relevance": "High",
+        "style": [
+            "Impressionism"
+        ],
+        "complexity": 97
+    },
+    {
+        "artwork_id": 11434,
+        "artwork_name": "Salome with the Head of Saint John the Baptist",
+        "created_by": "Guido Reni",
+        "author_id": 26,
+        "artwork_in_period": 1639,
+        "dimension": 43152,
+        "relevance": "High",
+        "style": [
+            "Renaissance",
+            "17th Century"
+        ],
+        "complexity": 41
+    },
+    {
+        "artwork_id": 11723,
+        "artwork_name": "Woman at Her Toilette",
+        "created_by": "Berthe Morisot",
+        "author_id": 27,
+        "artwork_in_period": 1875,
+        "dimension": 4800,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 149
+    },
+    {
+        "artwork_id": 13720,
+        "artwork_name": "Alabama Cotton Tenant Farmer's Wife",
+        "created_by": "Walker Evans",
+        "author_id": 28,
+        "artwork_in_period": 1936,
+        "dimension": 357,
+        "relevance": "High",
+        "style": [],
+        "complexity": 52
+    },
+    {
+        "artwork_id": 13853,
+        "artwork_name": "Karttikeya, Commander of the Divine Army, Seated on a Peacock",
+        "created_by": "India Andhra",
+        "author_id": 29,
+        "artwork_in_period": 1449,
+        "dimension": 18150,
+        "relevance": "High",
+        "style": [
+            "South Asian",
+            "ganga"
+        ],
+        "complexity": 27
+    },
+    {
+        "artwork_id": 14572,
+        "artwork_name": "The Millinery Shop",
+        "created_by": "Edgar Degas",
+        "author_id": 30,
+        "artwork_in_period": 1879,
+        "dimension": 11000,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "19th century"
+        ],
+        "complexity": 129
+    },
+    {
+        "artwork_id": 14574,
+        "artwork_name": "Henri Degas and His Niece Lucie Degas (The Artist's Uncle and Cousin)",
+        "created_by": "Edgar Degas",
+        "author_id": 31,
+        "artwork_in_period": 1875,
+        "dimension": 11781,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "19th century"
+        ],
+        "complexity": 125
+    },
+    {
+        "artwork_id": 14591,
+        "artwork_name": "Woman Reading",
+        "created_by": "Édouard Manet",
+        "author_id": 32,
+        "artwork_in_period": 1880,
+        "dimension": 3050,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 136
+    },
+    {
+        "artwork_id": 14598,
+        "artwork_name": "The Beach at Sainte-Adresse",
+        "created_by": "Claude Monet",
+        "author_id": 33,
+        "artwork_in_period": 1867,
+        "dimension": 7650,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 148
+    },
+    {
+        "artwork_id": 14655,
+        "artwork_name": "Two Sisters (On the Terrace)",
+        "created_by": "Pierre-Auguste Renoir",
+        "author_id": 34,
+        "artwork_in_period": 1881,
+        "dimension": 8000,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 169
+    },
+    {
+        "artwork_id": 14968,
+        "artwork_name": "Mural Fragment Depicting a Maguey Bloodletting Ritual",
+        "created_by": "Teotihuacan Teotihuacan,",
+        "author_id": 35,
+        "artwork_in_period": 1902,
+        "dimension": 5985,
+        "relevance": "High",
+        "style": [
+            "teotihuacán",
+            "mesoamerican",
+            "Pre-Columbian",
+            "americas",
+            "Arts of the Americas"
+        ],
+        "complexity": 56
+    },
+    {
+        "artwork_id": 15401,
+        "artwork_name": "At Mouquin's",
+        "created_by": "William Glackens",
+        "author_id": 36,
+        "artwork_in_period": 1905,
+        "dimension": 11224,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "Modernism"
+        ],
+        "complexity": 170
+    },
+    {
+        "artwork_id": 15468,
+        "artwork_name": "Saint George and the Dragon",
+        "created_by": "Bernat Martorell",
+        "author_id": 37,
+        "artwork_in_period": 1434,
+        "dimension": 15190,
+        "relevance": "High",
+        "style": [
+            "Renaissance",
+            "Gothic (medieval)",
+            "15th century"
+        ],
+        "complexity": 58
+    },
+    {
+        "artwork_id": 15563,
+        "artwork_name": "The Night is Stirring (La nuit remue)",
+        "created_by": "Zao Wou-Ki",
+        "author_id": 38,
+        "artwork_in_period": 1956,
+        "dimension": 25350,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 42
+    },
+    {
+        "artwork_id": 16146,
+        "artwork_name": "Equestrienne (At the Cirque Fernando)",
+        "created_by": "Henri de",
+        "author_id": 39,
+        "artwork_in_period": 1887,
+        "dimension": 16100,
+        "relevance": "High",
+        "style": [
+            "Post-Impressionism",
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 160
+    },
+    {
+        "artwork_id": 16169,
+        "artwork_name": "The Beheading of Saint John the Baptist",
+        "created_by": "Giovanni di",
+        "author_id": 40,
+        "artwork_in_period": 1455,
+        "dimension": 2652,
+        "relevance": "High",
+        "style": [
+            "Renaissance",
+            "15th century"
+        ],
+        "complexity": 68
+    },
+    {
+        "artwork_id": 16231,
+        "artwork_name": "Processional Cross with Saint Mary Magdalene and a Blessed Hermit",
+        "created_by": "Lorenzo Monaco",
+        "author_id": 41,
+        "artwork_in_period": 1392,
+        "dimension": 1596,
+        "relevance": "High",
+        "style": [
+            "14th century",
+            "medieval"
+        ],
+        "complexity": 60
+    },
+    {
+        "artwork_id": 16298,
+        "artwork_name": "Portrait of Jean Gros (recto); Coat of Arms of Jean Gros (verso)",
+        "created_by": "Rogier van",
+        "author_id": 42,
+        "artwork_in_period": 1460,
+        "dimension": 1064,
+        "relevance": "High",
+        "style": [
+            "Renaissance",
+            "15th century"
+        ],
+        "complexity": 63
+    },
+    {
+        "artwork_id": 16327,
+        "artwork_name": "The Annunciation",
+        "created_by": "Jean Hey",
+        "author_id": 43,
+        "artwork_in_period": 1490,
+        "dimension": 3600,
+        "relevance": "High",
+        "style": [
+            "Renaissance",
+            "15th century"
+        ],
+        "complexity": 85
+    },
+    {
+        "artwork_id": 16362,
+        "artwork_name": "Friar Pedro Shoots El Maragato as His Horse Runs Off",
+        "created_by": "Francisco José",
+        "author_id": 44,
+        "artwork_in_period": 1806,
+        "dimension": 1102,
+        "relevance": "High",
+        "style": [
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 84
+    },
+    {
+        "artwork_id": 16487,
+        "artwork_name": "The Bay of Marseille, Seen from L'Estaque",
+        "created_by": "Paul Cezanne",
+        "author_id": 45,
+        "artwork_in_period": 1885,
+        "dimension": 8000,
+        "relevance": "High",
+        "style": [
+            "Post-Impressionism",
+            "19th century"
+        ],
+        "complexity": 125
+    },
+    {
+        "artwork_id": 16488,
+        "artwork_name": "Armida Encounters the Sleeping Rinaldo",
+        "created_by": "Giovanni Battista",
+        "author_id": 46,
+        "artwork_in_period": 1742,
+        "dimension": 40392,
+        "relevance": "High",
+        "style": [
+            "Baroque",
+            "18th Century"
+        ],
+        "complexity": 56
+    },
+    {
+        "artwork_id": 16499,
+        "artwork_name": "Jesus Mocked by the Soldiers",
+        "created_by": "Édouard Manet",
+        "author_id": 47,
+        "artwork_in_period": 1865,
+        "dimension": 28120,
+        "relevance": "High",
+        "style": [
+            "Realism",
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 77
+    },
+    {
+        "artwork_id": 16551,
+        "artwork_name": "Beata Beatrix",
+        "created_by": "Dante Gabriel",
+        "author_id": 48,
+        "artwork_in_period": 1871,
+        "dimension": 6003,
+        "relevance": "High",
+        "style": [
+            "Pre-Raphaelite",
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 140
+    },
+    {
+        "artwork_id": 16568,
+        "artwork_name": "Water Lilies",
+        "created_by": "Claude Monet",
+        "author_id": 49,
+        "artwork_in_period": 1906,
+        "dimension": 8366,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "20th Century"
+        ],
+        "complexity": 127
+    },
+    {
+        "artwork_id": 16571,
+        "artwork_name": "Arrival of the Normandy Train, Gare Saint-Lazare",
+        "created_by": "Claude Monet",
+        "author_id": 50,
+        "artwork_in_period": 1877,
+        "dimension": 4800,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 200
+    },
+    {
+        "artwork_id": 16776,
+        "artwork_name": "After the Hurricane, Bahamas",
+        "created_by": "Winslow Homer",
+        "author_id": 51,
+        "artwork_in_period": 1899,
+        "dimension": 1998,
+        "relevance": "High",
+        "style": [],
+        "complexity": 214
+    },
+    {
+        "artwork_id": 16964,
+        "artwork_name": "The Plough and the Song",
+        "created_by": "Arshile Gorky",
+        "author_id": 52,
+        "artwork_in_period": 1946,
+        "dimension": 20770,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 75
+    },
+    {
+        "artwork_id": 18709,
+        "artwork_name": "The Frugal Meal, from The Saltimbanques",
+        "created_by": "Pablo Picasso",
+        "author_id": 53,
+        "artwork_in_period": 1904,
+        "dimension": 1824,
+        "relevance": "High",
+        "style": [
+            "Cubism"
+        ],
+        "complexity": 30
+    },
+    {
+        "artwork_id": 18757,
+        "artwork_name": "Ceremonial Knife (Tumi)",
+        "created_by": "Chimú North",
+        "author_id": 54,
+        "artwork_in_period": 1100,
+        "dimension": 408,
+        "relevance": "High",
+        "style": [
+            "chimú",
+            "americas",
+            "andes",
+            "north coast",
+            "Arts of the Americas",
+            "andean"
+        ],
+        "complexity": 44
+    },
+    {
+        "artwork_id": 19339,
+        "artwork_name": "Arlésiennes (Mistral)",
+        "created_by": "Paul Gauguin",
+        "author_id": 55,
+        "artwork_in_period": 1888,
+        "dimension": 6716,
+        "relevance": "High",
+        "style": [
+            "Post-Impressionism",
+            "19th century",
+            "nineteenth century"
+        ],
+        "complexity": 159
+    },
+    {
+        "artwork_id": 20432,
+        "artwork_name": "The Old Savoyard",
+        "created_by": "Jean-Antoine Watteau",
+        "author_id": 56,
+        "artwork_in_period": 1715,
+        "dimension": 770,
+        "relevance": "High",
+        "style": [],
+        "complexity": 70
+    },
+    {
+        "artwork_id": 20579,
+        "artwork_name": "Hercules and the Lernaean Hydra",
+        "created_by": "Gustave Moreau",
+        "author_id": 57,
+        "artwork_in_period": 1875,
+        "dimension": 27566,
+        "relevance": "High",
+        "style": [
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 100
+    },
+    {
+        "artwork_id": 20684,
+        "artwork_name": "Paris Street; Rainy Day",
+        "created_by": "Gustave Caillebotte",
+        "author_id": 58,
+        "artwork_in_period": 1877,
+        "dimension": 58512,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "19th century"
+        ],
+        "complexity": 96
+    },
+    {
+        "artwork_id": 21023,
+        "artwork_name": "Buddha Shakyamuni Seated in Meditation (Dhyanamudra)",
+        "created_by": "India Tamil",
+        "author_id": 59,
+        "artwork_in_period": 1279,
+        "dimension": 19200,
+        "relevance": "High",
+        "style": [
+            "South Asian",
+            "chola"
+        ],
+        "complexity": 24
+    },
+    {
+        "artwork_id": 23333,
+        "artwork_name": "Pastoral Scene",
+        "created_by": "Giovanni Battista",
+        "author_id": 60,
+        "artwork_in_period": 1740,
+        "dimension": 27313,
+        "relevance": "High",
+        "style": [
+            "Realism",
+            "18th Century"
+        ],
+        "complexity": 52
+    },
+    {
+        "artwork_id": 23506,
+        "artwork_name": "Young Bull",
+        "created_by": "Albrecht Dürer",
+        "author_id": 61,
+        "artwork_in_period": 1496,
+        "dimension": 238,
+        "relevance": "High",
+        "style": [],
+        "complexity": 27
+    },
+    {
+        "artwork_id": 23684,
+        "artwork_name": "The Artist's Mother",
+        "created_by": "Arshile Gorky",
+        "author_id": 62,
+        "artwork_in_period": 1926,
+        "dimension": 3024,
+        "relevance": "High",
+        "style": [],
+        "complexity": 94
+    },
+    {
+        "artwork_id": 23700,
+        "artwork_name": "The Praying Jew",
+        "created_by": "Marc Chagall",
+        "author_id": 63,
+        "artwork_in_period": 1923,
+        "dimension": 10324,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 109
+    },
+    {
+        "artwork_id": 23972,
+        "artwork_name": "Virgin and Child with the Young Saint John the Baptist",
+        "created_by": "Correggio (Antonio",
+        "author_id": 64,
+        "artwork_in_period": 1515,
+        "dimension": 3200,
+        "relevance": "High",
+        "style": [
+            "16th Century"
+        ],
+        "complexity": 34
+    },
+    {
+        "artwork_id": 24306,
+        "artwork_name": "Blue and Green Music",
+        "created_by": "Georgia O'Keeffe",
+        "author_id": 65,
+        "artwork_in_period": 1919,
+        "dimension": 2784,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 65
+    },
+    {
+        "artwork_id": 24548,
+        "artwork_name": "Shiva as Lord of the Dance (Nataraja)",
+        "created_by": "India Tamil",
+        "author_id": 66,
+        "artwork_in_period": 1442,
+        "dimension": 4209,
+        "relevance": "High",
+        "style": [
+            "South Asian",
+            "chola"
+        ],
+        "complexity": 33
+    },
+    {
+        "artwork_id": 24836,
+        "artwork_name": "Brushstroke with Spatter",
+        "created_by": "Roy Lichtenstein",
+        "author_id": 67,
+        "artwork_in_period": 1966,
+        "dimension": 34916,
+        "relevance": "High",
+        "style": [
+            "Pop Art"
+        ],
+        "complexity": 38
+    },
+    {
+        "artwork_id": 25332,
+        "artwork_name": "Triptych with Scenes from the Life of Christ",
+        "created_by": "German, Cologne",
+        "author_id": 68,
+        "artwork_in_period": 1350,
+        "dimension": 425,
+        "relevance": "High",
+        "style": [],
+        "complexity": 30
+    },
+    {
+        "artwork_id": 25853,
+        "artwork_name": "Wine Cistern",
+        "created_by": "Francesco Durantino",
+        "author_id": 69,
+        "artwork_in_period": 1553,
+        "dimension": 1378,
+        "relevance": "High",
+        "style": [],
+        "complexity": 38
+    },
+    {
+        "artwork_id": 25865,
+        "artwork_name": "The Herring Net",
+        "created_by": "Winslow Homer",
+        "author_id": 70,
+        "artwork_in_period": 1885,
+        "dimension": 9272,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "Realism",
+            "Modernism"
+        ],
+        "complexity": 77
+    },
+    {
+        "artwork_id": 27307,
+        "artwork_name": "Madame de Pastoret and Her Son",
+        "created_by": "Jacques-Louis David",
+        "author_id": 71,
+        "artwork_in_period": 1791,
+        "dimension": 12384,
+        "relevance": "High",
+        "style": [
+            "18th Century",
+            "Neoclassicism"
+        ],
+        "complexity": 71
+    },
+    {
+        "artwork_id": 27310,
+        "artwork_name": "The Holy Family with Saints Elizabeth and John the Baptist",
+        "created_by": "Peter Paul",
+        "author_id": 72,
+        "artwork_in_period": 1615,
+        "dimension": 10374,
+        "relevance": "High",
+        "style": [
+            "17th Century"
+        ],
+        "complexity": 34
+    },
+    {
+        "artwork_id": 27984,
+        "artwork_name": "Woman before an Aquarium",
+        "created_by": "Henri Matisse",
+        "author_id": 73,
+        "artwork_in_period": 1921,
+        "dimension": 8100,
+        "relevance": "High",
+        "style": [],
+        "complexity": 81
+    },
+    {
+        "artwork_id": 27987,
+        "artwork_name": "Jacques and Berthe Lipchitz",
+        "created_by": "Amedeo Modigliani",
+        "author_id": 74,
+        "artwork_in_period": 1916,
+        "dimension": 4374,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 97
+    },
+    {
+        "artwork_id": 27992,
+        "artwork_name": "A Sunday on La Grande Jatte — 1884",
+        "created_by": "Georges Seurat",
+        "author_id": 75,
+        "artwork_in_period": 1884,
+        "dimension": 63756,
+        "relevance": "High",
+        "style": [
+            "Pointillism",
+            "nineteenth century",
+            "19th century",
+            "Post-Impressionism",
+            "Impressionism"
+        ],
+        "complexity": 108
+    },
+    {
+        "artwork_id": 28067,
+        "artwork_name": "The Old Guitarist",
+        "created_by": "Pablo Picasso",
+        "author_id": 76,
+        "artwork_in_period": 1903,
+        "dimension": 10004,
+        "relevance": "High",
+        "style": [
+            "Blue period"
+        ],
+        "complexity": 70
+    },
+    {
+        "artwork_id": 28560,
+        "artwork_name": "The Bedroom",
+        "created_by": "Vincent van",
+        "author_id": 77,
+        "artwork_in_period": 1889,
+        "dimension": 6716,
+        "relevance": "High",
+        "style": [
+            "Post-Impressionism",
+            "19th century",
+            "nineteenth century"
+        ],
+        "complexity": 116
+    },
+    {
+        "artwork_id": 28849,
+        "artwork_name": "A City Park",
+        "created_by": "William Merritt",
+        "author_id": 78,
+        "artwork_in_period": 1887,
+        "dimension": 1666,
+        "relevance": "High",
+        "style": [
+            "Impressionism"
+        ],
+        "complexity": 69
+    },
+    {
+        "artwork_id": 30709,
+        "artwork_name": "Bar-room Scene",
+        "created_by": "William Sidney",
+        "author_id": 79,
+        "artwork_in_period": 1835,
+        "dimension": 3933,
+        "relevance": "High",
+        "style": [],
+        "complexity": 56
+    },
+    {
+        "artwork_id": 30839,
+        "artwork_name": "The Philosopher's Conquest",
+        "created_by": "Giorgio de",
+        "author_id": 80,
+        "artwork_in_period": 1913,
+        "dimension": 12375,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 94
+    },
+    {
+        "artwork_id": 31285,
+        "artwork_name": "Portrait of Mary Adeline Williams",
+        "created_by": "Thomas Eakins",
+        "author_id": 81,
+        "artwork_in_period": 1899,
+        "dimension": 3050,
+        "relevance": "High",
+        "style": [
+            "Realism"
+        ],
+        "complexity": 41
+    },
+    {
+        "artwork_id": 34116,
+        "artwork_name": "Cabinet",
+        "created_by": "Augsburg, Germany",
+        "author_id": 82,
+        "artwork_in_period": 1640,
+        "dimension": 27745,
+        "relevance": "High",
+        "style": [],
+        "complexity": 28
+    },
+    {
+        "artwork_id": 34181,
+        "artwork_name": "La durée poignardée (Time Transfixed)",
+        "created_by": "René Magritte",
+        "author_id": 83,
+        "artwork_in_period": 1938,
+        "dimension": 14406,
+        "relevance": "High",
+        "style": [
+            "Surrealism",
+            "Modernism"
+        ],
+        "complexity": 67
+    },
+    {
+        "artwork_id": 34286,
+        "artwork_name": "Mirror Frame with Tree of Life Motif",
+        "created_by": "India",
+        "author_id": 84,
+        "artwork_in_period": 1526,
+        "dimension": 160,
+        "relevance": "High",
+        "style": [
+            "South Asian",
+            "mughal",
+            "Islamic",
+            "Indian (South Asian)"
+        ],
+        "complexity": 39
+    },
+    {
+        "artwork_id": 34299,
+        "artwork_name": "Landscapes",
+        "created_by": "Huang Binhong",
+        "author_id": 85,
+        "artwork_in_period": 1945,
+        "dimension": 726,
+        "relevance": "High",
+        "style": [
+            "Chinese (culture or style)",
+            "Modernism"
+        ],
+        "complexity": 39
+    },
+    {
+        "artwork_id": 35198,
+        "artwork_name": "Miss E. Knows",
+        "created_by": "Jim Nutt",
+        "author_id": 86,
+        "artwork_in_period": 1967,
+        "dimension": 25152,
+        "relevance": "High",
+        "style": [
+            "contemporary",
+            "20th Century"
+        ],
+        "complexity": 26
+    },
+    {
+        "artwork_id": 35376,
+        "artwork_name": "Equestrienne",
+        "created_by": "China",
+        "author_id": 87,
+        "artwork_in_period": 1849,
+        "dimension": 2688,
+        "relevance": "High",
+        "style": [
+            "Chinese (culture or style)",
+            "tang"
+        ],
+        "complexity": 30
+    },
+    {
+        "artwork_id": 36132,
+        "artwork_name": "Cope",
+        "created_by": "England",
+        "author_id": 88,
+        "artwork_in_period": 1490,
+        "dimension": 46560,
+        "relevance": "High",
+        "style": [
+            "medieval"
+        ],
+        "complexity": 66
+    },
+    {
+        "artwork_id": 36161,
+        "artwork_name": "Tall Clock",
+        "created_by": "Designed by",
+        "author_id": 89,
+        "artwork_in_period": 1912,
+        "dimension": 14058,
+        "relevance": "High",
+        "style": [
+            "Arts and Crafts Movement",
+            "20th Century",
+            "Modernism",
+            "American Arts and Crafts Movement"
+        ],
+        "complexity": 37
+    },
+    {
+        "artwork_id": 37368,
+        "artwork_name": "Spanish Dancer",
+        "created_by": "Natalia Goncharova",
+        "author_id": 90,
+        "artwork_in_period": 1920,
+        "dimension": 17600,
+        "relevance": "High",
+        "style": [
+            "Rayonism"
+        ],
+        "complexity": 19
+    },
+    {
+        "artwork_id": 37761,
+        "artwork_name": "Spoon Woman",
+        "created_by": "Alberto Giacometti",
+        "author_id": 91,
+        "artwork_in_period": 1926,
+        "dimension": 7592,
+        "relevance": "High",
+        "style": [],
+        "complexity": 19
+    },
+    {
+        "artwork_id": 38930,
+        "artwork_name": "Two Plant Specimens",
+        "created_by": "William Henry",
+        "author_id": 92,
+        "artwork_in_period": 1839,
+        "dimension": 396,
+        "relevance": "High",
+        "style": [
+            "19th century"
+        ],
+        "complexity": 30
+    },
+    {
+        "artwork_id": 40619,
+        "artwork_name": "Zapata",
+        "created_by": "José Clemente",
+        "author_id": 93,
+        "artwork_in_period": 1930,
+        "dimension": 24156,
+        "relevance": "High",
+        "style": [
+            "Modernism",
+            "Cubism"
+        ],
+        "complexity": 82
+    },
+    {
+        "artwork_id": 42566,
+        "artwork_name": "Pair of Cups",
+        "created_by": "China",
+        "author_id": 94,
+        "artwork_in_period": 1644,
+        "dimension": 24464,
+        "relevance": "High",
+        "style": [
+            "Chinese (culture or style)",
+            "qing",
+            "yongzheng"
+        ],
+        "complexity": 34
+    },
+    {
+        "artwork_id": 43060,
+        "artwork_name": "Incense Burner in the Form of a Duck",
+        "created_by": "China",
+        "author_id": 95,
+        "artwork_in_period": 1279,
+        "dimension": 10277,
+        "relevance": "High",
+        "style": [
+            "Chinese (culture or style)",
+            "qingbai"
+        ],
+        "complexity": 26
+    },
+    {
+        "artwork_id": 43145,
+        "artwork_name": "View of Delphi with a Procession",
+        "created_by": "Claude Lorrain",
+        "author_id": 96,
+        "artwork_in_period": 1673,
+        "dimension": 12827,
+        "relevance": "High",
+        "style": [
+            "Realism",
+            "17th Century",
+            "Naturalism"
+        ],
+        "complexity": 45
+    },
+    {
+        "artwork_id": 43714,
+        "artwork_name": "E-10: English Dining Room of the Georgian Period, 1770-90",
+        "created_by": "Designed by",
+        "author_id": 97,
+        "artwork_in_period": 1937,
+        "dimension": 4450,
+        "relevance": "High",
+        "style": [
+            "georgian",
+            "european"
+        ],
+        "complexity": 32
+    },
+    {
+        "artwork_id": 44018,
+        "artwork_name": "Croquet Scene",
+        "created_by": "Winslow Homer",
+        "author_id": 98,
+        "artwork_in_period": 1866,
+        "dimension": 2640,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "Realism",
+            "Modernism"
+        ],
+        "complexity": 76
+    },
+    {
+        "artwork_id": 44741,
+        "artwork_name": "The Annunciation",
+        "created_by": "Alessandro Vittoria",
+        "author_id": 99,
+        "artwork_in_period": 1583,
+        "dimension": 6161,
+        "relevance": "High",
+        "style": [
+            "Renaissance"
+        ],
+        "complexity": 43
+    },
+    {
+        "artwork_id": 44892,
+        "artwork_name": "Fish (Still Life)",
+        "created_by": "Édouard Manet",
+        "author_id": 100,
+        "artwork_in_period": 1864,
+        "dimension": 6716,
+        "relevance": "High",
+        "style": [
+            "19th century",
+            "nineteenth century",
+            "Impressionism"
+        ],
+        "complexity": 123
+    },
+    {
+        "artwork_id": 46230,
+        "artwork_name": "Reliquary Casket of Saints Adrian and Natalia",
+        "created_by": "Spanish, León",
+        "author_id": 101,
+        "artwork_in_period": 1100,
+        "dimension": 375,
+        "relevance": "High",
+        "style": [],
+        "complexity": 42
+    },
+    {
+        "artwork_id": 46327,
+        "artwork_name": "Black Cross, New Mexico",
+        "created_by": "Georgia O'Keeffe",
+        "author_id": 102,
+        "artwork_in_period": 1929,
+        "dimension": 7524,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 77
+    },
+    {
+        "artwork_id": 47149,
+        "artwork_name": "Mao",
+        "created_by": "Andy Warhol",
+        "author_id": 103,
+        "artwork_in_period": 1972,
+        "dimension": 155008,
+        "relevance": "High",
+        "style": [
+            "Pop Art"
+        ],
+        "complexity": 52
+    },
+    {
+        "artwork_id": 49195,
+        "artwork_name": "Maharana Bhim Singh in Procession",
+        "created_by": "India Rajasthan,",
+        "author_id": 104,
+        "artwork_in_period": 1820,
+        "dimension": 2337,
+        "relevance": "High",
+        "style": [
+            "South Asian",
+            "Indian (South Asian)"
+        ],
+        "complexity": 26
+    },
+    {
+        "artwork_id": 49686,
+        "artwork_name": "Portrait of Virgil Thomson",
+        "created_by": "Florine Stettheimer",
+        "author_id": 105,
+        "artwork_in_period": 1930,
+        "dimension": 4947,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 54
+    },
+    {
+        "artwork_id": 49691,
+        "artwork_name": "Bed Rug",
+        "created_by": "Hannah Johnson",
+        "author_id": 106,
+        "artwork_in_period": 1796,
+        "dimension": 61254,
+        "relevance": "High",
+        "style": [],
+        "complexity": 45
+    },
+    {
+        "artwork_id": 49702,
+        "artwork_name": "Richard Bill",
+        "created_by": "John Smibert",
+        "author_id": 107,
+        "artwork_in_period": 1733,
+        "dimension": 12954,
+        "relevance": "High",
+        "style": [],
+        "complexity": 18
+    },
+    {
+        "artwork_id": 49714,
+        "artwork_name": "The Artist Looks at Nature",
+        "created_by": "Charles Sheeler",
+        "author_id": 108,
+        "artwork_in_period": 1943,
+        "dimension": 2385,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 107
+    },
+    {
+        "artwork_id": 50148,
+        "artwork_name": "Hyères, France",
+        "created_by": "Henri Cartier-Bresson",
+        "author_id": 109,
+        "artwork_in_period": 1932,
+        "dimension": 551,
+        "relevance": "High",
+        "style": [],
+        "complexity": 64
+    },
+    {
+        "artwork_id": 50157,
+        "artwork_name": "Mondrian's Glasses and Pipe",
+        "created_by": "André Kertész",
+        "author_id": 110,
+        "artwork_in_period": 1926,
+        "dimension": 270,
+        "relevance": "High",
+        "style": [],
+        "complexity": 50
+    },
+    {
+        "artwork_id": 50276,
+        "artwork_name": "Statue of the Madonna in the Mountains",
+        "created_by": "Caspar David",
+        "author_id": 111,
+        "artwork_in_period": 1804,
+        "dimension": 11618,
+        "relevance": "High",
+        "style": [
+            "romantic"
+        ],
+        "complexity": 45
+    },
+    {
+        "artwork_id": 50330,
+        "artwork_name": "Fall-Front Desk",
+        "created_by": "Vienna, Austria",
+        "author_id": 112,
+        "artwork_in_period": 1810,
+        "dimension": 12831,
+        "relevance": "High",
+        "style": [
+            "biedermeier"
+        ],
+        "complexity": 31
+    },
+    {
+        "artwork_id": 50909,
+        "artwork_name": "Head of an Apostle",
+        "created_by": "French, Paris",
+        "author_id": 113,
+        "artwork_in_period": 1210,
+        "dimension": 21889,
+        "relevance": "High",
+        "style": [],
+        "complexity": 58
+    },
+    {
+        "artwork_id": 51185,
+        "artwork_name": "Storage Jar with Horizontal Bands of Interlocking Scrolls",
+        "created_by": "Ancestral Pueblo",
+        "author_id": 114,
+        "artwork_in_period": 1130,
+        "dimension": 1935,
+        "relevance": "High",
+        "style": [
+            "ancestral pueblo (anasazi)",
+            "anasazi",
+            "Pre-Columbian",
+            "americas",
+            "southwest",
+            "pueblo",
+            "native american",
+            "native north american",
+            "Arts of the Americas"
+        ],
+        "complexity": 57
+    },
+    {
+        "artwork_id": 52560,
+        "artwork_name": "Corpus of Christ, from the Altarpiece of the Crucifixion",
+        "created_by": "Jacques de",
+        "author_id": 115,
+        "artwork_in_period": 1391,
+        "dimension": 486,
+        "relevance": "High",
+        "style": [
+            "14th century",
+            "Renaissance"
+        ],
+        "complexity": 72
+    },
+    {
+        "artwork_id": 52679,
+        "artwork_name": "The Pheasants from the Verdures of the Vatican Series",
+        "created_by": "Designed by",
+        "author_id": 116,
+        "artwork_in_period": 1799,
+        "dimension": 10648,
+        "relevance": "High",
+        "style": [],
+        "complexity": 52
+    },
+    {
+        "artwork_id": 52736,
+        "artwork_name": "The Letter, or The Spanish Conversation",
+        "created_by": "Jean-Honoré Fragonard",
+        "author_id": 117,
+        "artwork_in_period": 1778,
+        "dimension": 1131,
+        "relevance": "High",
+        "style": [],
+        "complexity": 83
+    },
+    {
+        "artwork_id": 53001,
+        "artwork_name": "Composition",
+        "created_by": "Maria Helena",
+        "author_id": 118,
+        "artwork_in_period": 1936,
+        "dimension": 8100,
+        "relevance": "High",
+        "style": [],
+        "complexity": 21
+    },
+    {
+        "artwork_id": 55249,
+        "artwork_name": "Ritual Cache",
+        "created_by": "Salado branch",
+        "author_id": 119,
+        "artwork_in_period": 1300,
+        "dimension": 14186,
+        "relevance": "High",
+        "style": [
+            "salado",
+            "mimbres",
+            "mogollon",
+            "americas",
+            "southwest",
+            "native american",
+            "native north american",
+            "Arts of the Americas"
+        ],
+        "complexity": 61
+    },
+    {
+        "artwork_id": 55384,
+        "artwork_name": "Fête du Trône",
+        "created_by": "Jean-Eugène-Auguste Atget",
+        "author_id": 120,
+        "artwork_in_period": 1925,
+        "dimension": 396,
+        "relevance": "High",
+        "style": [],
+        "complexity": 63
+    },
+    {
+        "artwork_id": 55706,
+        "artwork_name": "Cornelius Allerton",
+        "created_by": "Ammi Phillips",
+        "author_id": 121,
+        "artwork_in_period": 1821,
+        "dimension": 5727,
+        "relevance": "High",
+        "style": [
+            "Folk Art"
+        ],
+        "complexity": 40
+    },
+    {
+        "artwork_id": 56682,
+        "artwork_name": "The Rock",
+        "created_by": "Peter Blume",
+        "author_id": 122,
+        "artwork_in_period": 1944,
+        "dimension": 27448,
+        "relevance": "High",
+        "style": [
+            "Surrealism",
+            "Modernism"
+        ],
+        "complexity": 45
+    },
+    {
+        "artwork_id": 56731,
+        "artwork_name": "Legends of the Yūzū Nembutsu Sect",
+        "created_by": "Artist unknown",
+        "author_id": 123,
+        "artwork_in_period": 1185,
+        "dimension": 35280,
+        "relevance": "High",
+        "style": [
+            "Japanese (culture or style)"
+        ],
+        "complexity": 18
+    },
+    {
+        "artwork_id": 56905,
+        "artwork_name": "Nocturne: Blue and Gold—Southampton Water",
+        "created_by": "James McNeill",
+        "author_id": 124,
+        "artwork_in_period": 1872,
+        "dimension": 3876,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "Modernism"
+        ],
+        "complexity": 155
+    },
+    {
+        "artwork_id": 57051,
+        "artwork_name": "The Fountains",
+        "created_by": "Hubert Robert",
+        "author_id": 125,
+        "artwork_in_period": 1787,
+        "dimension": 56355,
+        "relevance": "High",
+        "style": [
+            "Neoclassicism",
+            "18th Century"
+        ],
+        "complexity": 51
+    },
+    {
+        "artwork_id": 57819,
+        "artwork_name": "Wall Clock",
+        "created_by": "Case attributed",
+        "author_id": 126,
+        "artwork_in_period": 1735,
+        "dimension": 9408,
+        "relevance": "High",
+        "style": [],
+        "complexity": 31
+    },
+    {
+        "artwork_id": 58540,
+        "artwork_name": "Tiered Offering Mandala of the Goddess of Wealth (Vasudhara)",
+        "created_by": "Nepal",
+        "author_id": 127,
+        "artwork_in_period": 1797,
+        "dimension": 264,
+        "relevance": "High",
+        "style": [
+            "Himalayan"
+        ],
+        "complexity": 32
+    },
+    {
+        "artwork_id": 59426,
+        "artwork_name": "White Crucifixion",
+        "created_by": "Marc Chagall",
+        "author_id": 128,
+        "artwork_in_period": 1938,
+        "dimension": 21560,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 132
+    },
+    {
+        "artwork_id": 59787,
+        "artwork_name": "Mrs. Daniel Hubbard (Mary Greene)",
+        "created_by": "John Singleton",
+        "author_id": 129,
+        "artwork_in_period": 1764,
+        "dimension": 12700,
+        "relevance": "High",
+        "style": [
+            "american colonial"
+        ],
+        "complexity": 51
+    },
+    {
+        "artwork_id": 59847,
+        "artwork_name": "Cupid Chastised",
+        "created_by": "Bartolomeo Manfredi",
+        "author_id": 130,
+        "artwork_in_period": 1613,
+        "dimension": 22750,
+        "relevance": "High",
+        "style": [
+            "Renaissance",
+            "17th Century"
+        ],
+        "complexity": 61
+    },
+    {
+        "artwork_id": 60031,
+        "artwork_name": "Panorama from the Sasso",
+        "created_by": "Claude Lorrain",
+        "author_id": 131,
+        "artwork_in_period": 1649,
+        "dimension": 640,
+        "relevance": "High",
+        "style": [],
+        "complexity": 50
+    },
+    {
+        "artwork_id": 60755,
+        "artwork_name": "Landscape with the Ruins of the Castle of Egmond",
+        "created_by": "Jacob van",
+        "author_id": 132,
+        "artwork_in_period": 1650,
+        "dimension": 12740,
+        "relevance": "High",
+        "style": [
+            "17th Century",
+            "dutch"
+        ],
+        "complexity": 40
+    },
+    {
+        "artwork_id": 60812,
+        "artwork_name": "Merahi metua no Tehamana (Tehamana Has Many Parents or The Ancestors of Tehamana)",
+        "created_by": "Paul Gauguin",
+        "author_id": 133,
+        "artwork_in_period": 1893,
+        "dimension": 3975,
+        "relevance": "High",
+        "style": [
+            "Post-Impressionism",
+            "19th century",
+            "nineteenth century"
+        ],
+        "complexity": 112
+    },
+    {
+        "artwork_id": 61128,
+        "artwork_name": "At the Moulin Rouge",
+        "created_by": "Henri de",
+        "author_id": 134,
+        "artwork_in_period": 1892,
+        "dimension": 17343,
+        "relevance": "High",
+        "style": [
+            "Post-Impressionism",
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 161
+    },
+    {
+        "artwork_id": 61428,
+        "artwork_name": "Cow's Skull with Calico Roses",
+        "created_by": "Georgia O'Keeffe",
+        "author_id": 135,
+        "artwork_in_period": 1931,
+        "dimension": 5551,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 68
+    },
+    {
+        "artwork_id": 61603,
+        "artwork_name": "Ballet at the Paris Opéra",
+        "created_by": "Edgar Degas",
+        "author_id": 136,
+        "artwork_in_period": 1877,
+        "dimension": 16318,
+        "relevance": "High",
+        "style": [
+            "Impressionism"
+        ],
+        "complexity": 56
+    },
+    {
+        "artwork_id": 61608,
+        "artwork_name": "Sunset",
+        "created_by": "Paul Klee",
+        "author_id": 137,
+        "artwork_in_period": 1930,
+        "dimension": 3220,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 58
+    },
+    {
+        "artwork_id": 62042,
+        "artwork_name": "Still Life with Dead Game, Fruits, and Vegetables in a Market",
+        "created_by": "Frans Snyders",
+        "author_id": 138,
+        "artwork_in_period": 1614,
+        "dimension": 65296,
+        "relevance": "High",
+        "style": [
+            "Baroque",
+            "17th Century"
+        ],
+        "complexity": 25
+    },
+    {
+        "artwork_id": 62371,
+        "artwork_name": "Madame Cezanne in a Yellow Chair",
+        "created_by": "Paul Cezanne",
+        "author_id": 139,
+        "artwork_in_period": 1888,
+        "dimension": 5120,
+        "relevance": "High",
+        "style": [
+            "Post-Impressionism",
+            "19th century"
+        ],
+        "complexity": 128
+    },
+    {
+        "artwork_id": 63178,
+        "artwork_name": "Ceres",
+        "created_by": "John Bradley",
+        "author_id": 140,
+        "artwork_in_period": 1928,
+        "dimension": 1072,
+        "relevance": "High",
+        "style": [
+            "Modernism",
+            "Art Deco"
+        ],
+        "complexity": 57
+    },
+    {
+        "artwork_id": 63234,
+        "artwork_name": "Two Ladies at the Automat (New York City)",
+        "created_by": "Diane Arbus",
+        "author_id": 141,
+        "artwork_in_period": 1966,
+        "dimension": 1369,
+        "relevance": "High",
+        "style": [],
+        "complexity": 49
+    },
+    {
+        "artwork_id": 63554,
+        "artwork_name": "Big River, from the Rancherie, Mendocino, California",
+        "created_by": "Carleton E.",
+        "author_id": 142,
+        "artwork_in_period": 1863,
+        "dimension": 7728,
+        "relevance": "High",
+        "style": [
+            "19th century"
+        ],
+        "complexity": 48
+    },
+    {
+        "artwork_id": 64276,
+        "artwork_name": "...And the Home of the Brave",
+        "created_by": "Charles Demuth",
+        "author_id": 143,
+        "artwork_in_period": 1931,
+        "dimension": 4366,
+        "relevance": "High",
+        "style": [
+            "Modernism",
+            "Cubism"
+        ],
+        "complexity": 63
+    },
+    {
+        "artwork_id": 64339,
+        "artwork_name": "Coffin and Mummy of Pa-ankh-en-Amun",
+        "created_by": "Egyptian; Thebes",
+        "author_id": 144,
+        "artwork_in_period": 1796,
+        "dimension": 7310,
+        "relevance": "High",
+        "style": [
+            "twenty-second dynasty",
+            "third intermediate period",
+            "ancient",
+            "egyptian"
+        ],
+        "complexity": 66
+    },
+    {
+        "artwork_id": 64724,
+        "artwork_name": "The Home of the Heron",
+        "created_by": "George Inness",
+        "author_id": 145,
+        "artwork_in_period": 1893,
+        "dimension": 8740,
+        "relevance": "High",
+        "style": [
+            "Post-Impressionism"
+        ],
+        "complexity": 83
+    },
+    {
+        "artwork_id": 64729,
+        "artwork_name": "Early Morning, Tarpon Springs",
+        "created_by": "George Inness",
+        "author_id": 146,
+        "artwork_in_period": 1892,
+        "dimension": 8774,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "Post-Impressionism"
+        ],
+        "complexity": 40
+    },
+    {
+        "artwork_id": 64818,
+        "artwork_name": "Stacks of Wheat (End of Summer)",
+        "created_by": "Claude Monet",
+        "author_id": 147,
+        "artwork_in_period": 1890,
+        "dimension": 6000,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 90
+    },
+    {
+        "artwork_id": 64884,
+        "artwork_name": "Mohnköpfe (Poppyheads) (Dress or Furnishing Fabric)",
+        "created_by": "Designed by",
+        "author_id": 148,
+        "artwork_in_period": 1900,
+        "dimension": 18064,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 46
+    },
+    {
+        "artwork_id": 65290,
+        "artwork_name": "Vessel of the Dancing Lords",
+        "created_by": "Ah Maxam",
+        "author_id": 149,
+        "artwork_in_period": 1917,
+        "dimension": 360,
+        "relevance": "High",
+        "style": [
+            "maya",
+            "classic",
+            "mesoamerican",
+            "Pre-Columbian",
+            "americas",
+            "late classic",
+            "Arts of the Americas"
+        ],
+        "complexity": 59
+    },
+    {
+        "artwork_id": 65868,
+        "artwork_name": "Silver Sun",
+        "created_by": "Arthur Dove",
+        "author_id": 150,
+        "artwork_in_period": 1929,
+        "dimension": 4070,
+        "relevance": "High",
+        "style": [
+            "Modernism",
+            "Cubism"
+        ],
+        "complexity": 41
+    },
+    {
+        "artwork_id": 65916,
+        "artwork_name": "Movements",
+        "created_by": "Marsden Hartley",
+        "author_id": 151,
+        "artwork_in_period": 1913,
+        "dimension": 14161,
+        "relevance": "High",
+        "style": [
+            "Modernism",
+            "Cubism"
+        ],
+        "complexity": 47
+    },
+    {
+        "artwork_id": 66039,
+        "artwork_name": "Head of a Woman (Fernande)",
+        "created_by": "Pablo Picasso",
+        "author_id": 152,
+        "artwork_in_period": 1909,
+        "dimension": 800,
+        "relevance": "High",
+        "style": [],
+        "complexity": 50
+    },
+    {
+        "artwork_id": 66434,
+        "artwork_name": "Georgia O'Keeffe—Hands and Thimble",
+        "created_by": "Alfred Stieglitz",
+        "author_id": 153,
+        "artwork_in_period": 1919,
+        "dimension": 456,
+        "relevance": "High",
+        "style": [],
+        "complexity": 61
+    },
+    {
+        "artwork_id": 66683,
+        "artwork_name": "Rodin, Le Penseur",
+        "created_by": "Edward Steichen",
+        "author_id": 154,
+        "artwork_in_period": 1902,
+        "dimension": 832,
+        "relevance": "High",
+        "style": [
+            "Pictorialism"
+        ],
+        "complexity": 57
+    },
+    {
+        "artwork_id": 68769,
+        "artwork_name": "Londonderry Vase",
+        "created_by": "Sèvres Porcelain",
+        "author_id": 155,
+        "artwork_in_period": 1813,
+        "dimension": 21192,
+        "relevance": "High",
+        "style": [
+            "empire"
+        ],
+        "complexity": 29
+    },
+    {
+        "artwork_id": 68823,
+        "artwork_name": "Woodman (Waldarbeiter)",
+        "created_by": "Georg Baselitz",
+        "author_id": 156,
+        "artwork_in_period": 1969,
+        "dimension": 51816,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 48
+    },
+    {
+        "artwork_id": 69109,
+        "artwork_name": "Tankard (Hanap) with Tulips, Hyacinths, Roses, and Carnations",
+        "created_by": "Turkey Iznik",
+        "author_id": 157,
+        "artwork_in_period": 1299,
+        "dimension": 18544,
+        "relevance": "High",
+        "style": [
+            "iznik",
+            "ottoman",
+            "Islamic (culture or style)"
+        ],
+        "complexity": 37
+    },
+    {
+        "artwork_id": 69780,
+        "artwork_name": "The Fountain, Villa Torlonia, Frascati, Italy",
+        "created_by": "John Singer",
+        "author_id": 158,
+        "artwork_in_period": 1907,
+        "dimension": 3976,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "Modernism"
+        ],
+        "complexity": 91
+    },
+    {
+        "artwork_id": 70003,
+        "artwork_name": "Funerary Urn (Hunping)",
+        "created_by": "China",
+        "author_id": 159,
+        "artwork_in_period": 1435,
+        "dimension": 8884,
+        "relevance": "High",
+        "style": [
+            "Chinese (culture or style)",
+            "western jin"
+        ],
+        "complexity": 28
+    },
+    {
+        "artwork_id": 70202,
+        "artwork_name": "Self-Portrait",
+        "created_by": "Lovis Corinth",
+        "author_id": 160,
+        "artwork_in_period": 1924,
+        "dimension": 1440,
+        "relevance": "High",
+        "style": [],
+        "complexity": 51
+    },
+    {
+        "artwork_id": 70207,
+        "artwork_name": "Kneeling Figure",
+        "created_by": "China, probably",
+        "author_id": 161,
+        "artwork_in_period": 1864,
+        "dimension": 6583,
+        "relevance": "High",
+        "style": [
+            "Chinese (culture or style)"
+        ],
+        "complexity": 29
+    },
+    {
+        "artwork_id": 70443,
+        "artwork_name": "Cravat End",
+        "created_by": "Flanders, Brussels",
+        "author_id": 162,
+        "artwork_in_period": 1700,
+        "dimension": 1312,
+        "relevance": "High",
+        "style": [
+            "louis xiv",
+            "18th Century"
+        ],
+        "complexity": 40
+    },
+    {
+        "artwork_id": 70739,
+        "artwork_name": "Washbowl",
+        "created_by": "Edward Weston",
+        "author_id": 163,
+        "artwork_in_period": 1925,
+        "dimension": 432,
+        "relevance": "High",
+        "style": [],
+        "complexity": 47
+    },
+    {
+        "artwork_id": 71396,
+        "artwork_name": "Hang Up",
+        "created_by": "Eva Hesse",
+        "author_id": 164,
+        "artwork_in_period": 1966,
+        "dimension": 38766,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 36
+    },
+    {
+        "artwork_id": 71829,
+        "artwork_name": "Rock Crest/Rock Glen, Mason City, Iowa, Perspective",
+        "created_by": "Marion Mahony",
+        "author_id": 165,
+        "artwork_in_period": 1912,
+        "dimension": 11859,
+        "relevance": "High",
+        "style": [
+            "Prairie School"
+        ],
+        "complexity": 48
+    },
+    {
+        "artwork_id": 72726,
+        "artwork_name": "Portrait of Otto Mueller",
+        "created_by": "Ernst Ludwig",
+        "author_id": 166,
+        "artwork_in_period": 1915,
+        "dimension": 1458,
+        "relevance": "High",
+        "style": [],
+        "complexity": 37
+    },
+    {
+        "artwork_id": 72801,
+        "artwork_name": "Icebound",
+        "created_by": "John Henry",
+        "author_id": 168,
+        "artwork_in_period": 1889,
+        "dimension": 4864,
+        "relevance": "High",
+        "style": [
+            "Impressionism"
+        ],
+        "complexity": 102
+    },
+    {
+        "artwork_id": 73216,
+        "artwork_name": "Plum Vase (Maebyeong) with Clouds, Cranes, and Children Motifs",
+        "created_by": "Korea",
+        "author_id": 169,
+        "artwork_in_period": 1392,
+        "dimension": 13561,
+        "relevance": "High",
+        "style": [
+            "Korean (culture or style)",
+            "koryŏ"
+        ],
+        "complexity": 22
+    },
+    {
+        "artwork_id": 73413,
+        "artwork_name": "Bust of a Youth (Saint John the Baptist?)",
+        "created_by": "Francesco Mochi",
+        "author_id": 170,
+        "artwork_in_period": 1630,
+        "dimension": 1320,
+        "relevance": "High",
+        "style": [
+            "Baroque",
+            "17th Century"
+        ],
+        "complexity": 36
+    },
+    {
+        "artwork_id": 73417,
+        "artwork_name": "The Beginning",
+        "created_by": "Barnett Newman",
+        "author_id": 171,
+        "artwork_in_period": 1946,
+        "dimension": 7575,
+        "relevance": "High",
+        "style": [
+            "Abstract Expressionism",
+            "20th Century"
+        ],
+        "complexity": 58
+    },
+    {
+        "artwork_id": 75644,
+        "artwork_name": "Coronation Stone of Motecuhzoma II (Stone of the Five Suns)",
+        "created_by": "Aztec (Mexica)",
+        "author_id": 172,
+        "artwork_in_period": 1503,
+        "dimension": 3630,
+        "relevance": "High",
+        "style": [
+            "aztec",
+            "mesoamerican",
+            "Pre-Columbian",
+            "americas",
+            "Arts of the Americas"
+        ],
+        "complexity": 60
+    },
+    {
+        "artwork_id": 76054,
+        "artwork_name": "Watchtower with Geese (Hochsitz mit Gänsen)",
+        "created_by": "Sigmar Polke",
+        "author_id": 173,
+        "artwork_in_period": 1987,
+        "dimension": 84100,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 22
+    },
+    {
+        "artwork_id": 76240,
+        "artwork_name": "Carnival in Arcueil",
+        "created_by": "Lyonel Feininger",
+        "author_id": 174,
+        "artwork_in_period": 1911,
+        "dimension": 9880,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 53
+    },
+    {
+        "artwork_id": 76244,
+        "artwork_name": "Excavation",
+        "created_by": "Willem de",
+        "author_id": 175,
+        "artwork_in_period": 1950,
+        "dimension": 52070,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 71
+    },
+    {
+        "artwork_id": 76279,
+        "artwork_name": "Yang Pu Moving His Family",
+        "created_by": "Artist Unknown",
+        "author_id": 176,
+        "artwork_in_period": 1279,
+        "dimension": 12012,
+        "relevance": "High",
+        "style": [
+            "Chinese (culture or style)",
+            "yüan"
+        ],
+        "complexity": 30
+    },
+    {
+        "artwork_id": 76295,
+        "artwork_name": "Self-Portrait in a Fur Cap",
+        "created_by": "Joseph Wright",
+        "author_id": 177,
+        "artwork_in_period": 1765,
+        "dimension": 1218,
+        "relevance": "High",
+        "style": [],
+        "complexity": 43
+    },
+    {
+        "artwork_id": 76395,
+        "artwork_name": "Flower Clouds",
+        "created_by": "Odilon Redon",
+        "author_id": 178,
+        "artwork_in_period": 1903,
+        "dimension": 2376,
+        "relevance": "High",
+        "style": [
+            "Post-Impressionism"
+        ],
+        "complexity": 48
+    },
+    {
+        "artwork_id": 76571,
+        "artwork_name": "View of Cotopaxi",
+        "created_by": "Frederic Edwin",
+        "author_id": 179,
+        "artwork_in_period": 1857,
+        "dimension": 5704,
+        "relevance": "High",
+        "style": [
+            "19th century"
+        ],
+        "complexity": 71
+    },
+    {
+        "artwork_id": 76779,
+        "artwork_name": "Crouching Woman",
+        "created_by": "Eugène Delacroix",
+        "author_id": 180,
+        "artwork_in_period": 1827,
+        "dimension": 744,
+        "relevance": "High",
+        "style": [
+            "romantic"
+        ],
+        "complexity": 56
+    },
+    {
+        "artwork_id": 76816,
+        "artwork_name": "The Young Emperor Akbar Arrests the Insolent Shah Abu’l-Maali, Page from a Manuscript of the Akbarnama",
+        "created_by": "India Designed",
+        "author_id": 181,
+        "artwork_in_period": 1526,
+        "dimension": 608,
+        "relevance": "High",
+        "style": [
+            "Islamic (culture or style)",
+            "mughal"
+        ],
+        "complexity": 41
+    },
+    {
+        "artwork_id": 76869,
+        "artwork_name": "Royal Horse Inspection",
+        "created_by": "Iran, probably",
+        "author_id": 182,
+        "artwork_in_period": 1501,
+        "dimension": 22470,
+        "relevance": "High",
+        "style": [
+            "safavid",
+            "Islamic (culture or style)",
+            "bizarre style",
+            "iran",
+            "isfahan",
+            "persian"
+        ],
+        "complexity": 48
+    },
+    {
+        "artwork_id": 79307,
+        "artwork_name": "Bathers by a River",
+        "created_by": "Henri Matisse",
+        "author_id": 183,
+        "artwork_in_period": 1909,
+        "dimension": 101920,
+        "relevance": "High",
+        "style": [],
+        "complexity": 75
+    },
+    {
+        "artwork_id": 79379,
+        "artwork_name": "Tanktotem I",
+        "created_by": "David Smith",
+        "author_id": 184,
+        "artwork_in_period": 1952,
+        "dimension": 22572,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 17
+    },
+    {
+        "artwork_id": 79507,
+        "artwork_name": "Pillars of the Country",
+        "created_by": "Yao Shou",
+        "author_id": 185,
+        "artwork_in_period": 1368,
+        "dimension": 22011,
+        "relevance": "High",
+        "style": [
+            "Chinese (culture or style)",
+            "ming"
+        ],
+        "complexity": 47
+    },
+    {
+        "artwork_id": 79600,
+        "artwork_name": "The Railway Crossing (Sketch)",
+        "created_by": "Fernand Léger",
+        "author_id": 186,
+        "artwork_in_period": 1919,
+        "dimension": 3510,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 78
+    },
+    {
+        "artwork_id": 80062,
+        "artwork_name": "Edtaonisl (Ecclesiastic)",
+        "created_by": "Francis Picabia",
+        "author_id": 187,
+        "artwork_in_period": 1913,
+        "dimension": 90000,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 62
+    },
+    {
+        "artwork_id": 80084,
+        "artwork_name": "The Crucifixion",
+        "created_by": "Francisco de",
+        "author_id": 188,
+        "artwork_in_period": 1627,
+        "dimension": 47850,
+        "relevance": "High",
+        "style": [
+            "Renaissance",
+            "17th Century"
+        ],
+        "complexity": 48
+    },
+    {
+        "artwork_id": 80479,
+        "artwork_name": "Winter, from The Seasons",
+        "created_by": "After a",
+        "author_id": 189,
+        "artwork_in_period": 1700,
+        "dimension": 207360,
+        "relevance": "High",
+        "style": [],
+        "complexity": 24
+    },
+    {
+        "artwork_id": 80607,
+        "artwork_name": "Self-Portrait",
+        "created_by": "Vincent van",
+        "author_id": 190,
+        "artwork_in_period": 1887,
+        "dimension": 1312,
+        "relevance": "High",
+        "style": [
+            "Post-Impressionism",
+            "19th century",
+            "nineteenth century"
+        ],
+        "complexity": 152
+    },
+    {
+        "artwork_id": 81512,
+        "artwork_name": "Interrupted Reading",
+        "created_by": "Jean-Baptiste-Camille Corot",
+        "author_id": 191,
+        "artwork_in_period": 1870,
+        "dimension": 5980,
+        "relevance": "High",
+        "style": [
+            "19th century"
+        ],
+        "complexity": 110
+    },
+    {
+        "artwork_id": 81558,
+        "artwork_name": "Acrobats at the Cirque Fernando (Francisca and Angelina Wartenberg)",
+        "created_by": "Pierre-Auguste Renoir",
+        "author_id": 192,
+        "artwork_in_period": 1879,
+        "dimension": 12969,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "19th century",
+            "nineteenth century"
+        ],
+        "complexity": 134
+    },
+    {
+        "artwork_id": 81564,
+        "artwork_name": "Husking Bee, Island of Nantucket",
+        "created_by": "Eastman Johnson",
+        "author_id": 193,
+        "artwork_in_period": 1876,
+        "dimension": 9522,
+        "relevance": "High",
+        "style": [
+            "Realism"
+        ],
+        "complexity": 83
+    },
+    {
+        "artwork_id": 83642,
+        "artwork_name": "Greyed Rainbow",
+        "created_by": "Jackson Pollock",
+        "author_id": 194,
+        "artwork_in_period": 1953,
+        "dimension": 44408,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 54
+    },
+    {
+        "artwork_id": 83889,
+        "artwork_name": "Two Women's Torsos",
+        "created_by": "Willem de",
+        "author_id": 195,
+        "artwork_in_period": 1952,
+        "dimension": 2867,
+        "relevance": "High",
+        "style": [
+            "Abstract Expressionism"
+        ],
+        "complexity": 73
+    },
+    {
+        "artwork_id": 83905,
+        "artwork_name": "That Which I Should Have Done I Did Not Do (The Door)",
+        "created_by": "Ivan Albright",
+        "author_id": 196,
+        "artwork_in_period": 1931,
+        "dimension": 22386,
+        "relevance": "High",
+        "style": [
+            "Surrealism",
+            "Modernism"
+        ],
+        "complexity": 101
+    },
+    {
+        "artwork_id": 84241,
+        "artwork_name": "Self-Portrait",
+        "created_by": "Max Beckmann",
+        "author_id": 197,
+        "artwork_in_period": 1937,
+        "dimension": 17088,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 56
+    },
+    {
+        "artwork_id": 84709,
+        "artwork_name": "Still Life with Game Fowl",
+        "created_by": "Juan Sánchez",
+        "author_id": 198,
+        "artwork_in_period": 1600,
+        "dimension": 5896,
+        "relevance": "High",
+        "style": [
+            "Renaissance",
+            "17th Century"
+        ],
+        "complexity": 57
+    },
+    {
+        "artwork_id": 85533,
+        "artwork_name": "Feathered Tunic",
+        "created_by": "Chimú Peru,",
+        "author_id": 199,
+        "artwork_in_period": 1470,
+        "dimension": 7310,
+        "relevance": "High",
+        "style": [
+            "chimú",
+            "nazca",
+            "early intermediate period",
+            "Pre-Columbian",
+            "americas",
+            "andean",
+            "andes"
+        ],
+        "complexity": 77
+    },
+    {
+        "artwork_id": 86340,
+        "artwork_name": "Head of a Male Deity (Deva)",
+        "created_by": "Cambodia Angkor",
+        "author_id": 200,
+        "artwork_in_period": 1685,
+        "dimension": 3915,
+        "relevance": "High",
+        "style": [
+            "Southeast Asian",
+            "angkor thom"
+        ],
+        "complexity": 33
+    },
+    {
+        "artwork_id": 86385,
+        "artwork_name": "City Landscape",
+        "created_by": "Joan Mitchell",
+        "author_id": 201,
+        "artwork_in_period": 1955,
+        "dimension": 41209,
+        "relevance": "High",
+        "style": [
+            "Abstract Expressionism",
+            "contemporary"
+        ],
+        "complexity": 68
+    },
+    {
+        "artwork_id": 86421,
+        "artwork_name": "Panel (Furnishing Fabric)",
+        "created_by": "Designed by",
+        "author_id": 202,
+        "artwork_in_period": 1786,
+        "dimension": 23112,
+        "relevance": "High",
+        "style": [
+            "jouy-en-Josas"
+        ],
+        "complexity": 59
+    },
+    {
+        "artwork_id": 87045,
+        "artwork_name": "Still Life with Geranium",
+        "created_by": "Henri Matisse",
+        "author_id": 203,
+        "artwork_in_period": 1906,
+        "dimension": 8100,
+        "relevance": "High",
+        "style": [],
+        "complexity": 164
+    },
+    {
+        "artwork_id": 87163,
+        "artwork_name": "Fourth of July, Jay, New York",
+        "created_by": "Robert Frank",
+        "author_id": 204,
+        "artwork_in_period": 1954,
+        "dimension": 726,
+        "relevance": "High",
+        "style": [],
+        "complexity": 55
+    },
+    {
+        "artwork_id": 87479,
+        "artwork_name": "The Assumption of the Virgin",
+        "created_by": "El Greco",
+        "author_id": 205,
+        "artwork_in_period": 1577,
+        "dimension": 85033,
+        "relevance": "High",
+        "style": [
+            "Mannerism",
+            "sixteenth century",
+            "16th Century",
+            "Renaissance"
+        ],
+        "complexity": 57
+    },
+    {
+        "artwork_id": 87643,
+        "artwork_name": "The Two Disciples at the Tomb",
+        "created_by": "Henry Ossawa",
+        "author_id": 206,
+        "artwork_in_period": 1906,
+        "dimension": 13545,
+        "relevance": "High",
+        "style": [
+            "Post-Impressionism"
+        ],
+        "complexity": 83
+    },
+    {
+        "artwork_id": 88724,
+        "artwork_name": "Head of a Luohan",
+        "created_by": "China",
+        "author_id": 207,
+        "artwork_in_period": 1763,
+        "dimension": 504,
+        "relevance": "High",
+        "style": [
+            "Chinese (culture or style)",
+            "northern song",
+            "liao"
+        ],
+        "complexity": 30
+    },
+    {
+        "artwork_id": 88793,
+        "artwork_name": "Retable and Frontal of the Life of Christ and the Virgin",
+        "created_by": "Spanish",
+        "author_id": 208,
+        "artwork_in_period": 1396,
+        "dimension": 171933,
+        "relevance": "High",
+        "style": [
+            "14th century"
+        ],
+        "complexity": 54
+    },
+    {
+        "artwork_id": 88977,
+        "artwork_name": "Evening Snow on a Floss Shaper (Nurioke no bosetsu), from the series Eight Views of the Parlor (Zashiki hakkei)",
+        "created_by": "Suzuki Harunobu",
+        "author_id": 209,
+        "artwork_in_period": 1766,
+        "dimension": 588,
+        "relevance": "High",
+        "style": [
+            "Japanese (culture or style)",
+            "18th Century"
+        ],
+        "complexity": 28
+    },
+    {
+        "artwork_id": 89856,
+        "artwork_name": "The actor Bando Mitsugoro II as Ishii Genzo",
+        "created_by": "Toshusai Sharaku",
+        "author_id": 212,
+        "artwork_in_period": 1794,
+        "dimension": 888,
+        "relevance": "High",
+        "style": [
+            "Japanese (culture or style)",
+            "18th Century"
+        ],
+        "complexity": 31
+    },
+    {
+        "artwork_id": 90048,
+        "artwork_name": "Distant View of Niagara Falls",
+        "created_by": "Thomas Cole",
+        "author_id": 213,
+        "artwork_in_period": 1830,
+        "dimension": 2820,
+        "relevance": "High",
+        "style": [],
+        "complexity": 43
+    },
+    {
+        "artwork_id": 90300,
+        "artwork_name": "Perilous Night",
+        "created_by": "Jasper Johns",
+        "author_id": 214,
+        "artwork_in_period": 1982,
+        "dimension": 9265,
+        "relevance": "High",
+        "style": [],
+        "complexity": 66
+    },
+    {
+        "artwork_id": 90443,
+        "artwork_name": "Lever #1",
+        "created_by": "Martin Puryear",
+        "author_id": 215,
+        "artwork_in_period": 1988,
+        "dimension": 11857,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 32
+    },
+    {
+        "artwork_id": 90536,
+        "artwork_name": "Seated Female Nude",
+        "created_by": "Rembrandt van",
+        "author_id": 216,
+        "artwork_in_period": 1660,
+        "dimension": 357,
+        "relevance": "High",
+        "style": [],
+        "complexity": 88
+    },
+    {
+        "artwork_id": 90583,
+        "artwork_name": "Couple in Bed",
+        "created_by": "Philip Guston",
+        "author_id": 217,
+        "artwork_in_period": 1977,
+        "dimension": 49440,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 22
+    },
+    {
+        "artwork_id": 91194,
+        "artwork_name": "Golden Bird",
+        "created_by": "Constantin Brancusi",
+        "author_id": 218,
+        "artwork_in_period": 1919,
+        "dimension": 6293,
+        "relevance": "High",
+        "style": [],
+        "complexity": 90
+    },
+    {
+        "artwork_id": 91620,
+        "artwork_name": "Portrait Vessel of a Ruler",
+        "created_by": "Moche North",
+        "author_id": 219,
+        "artwork_in_period": 1731,
+        "dimension": 840,
+        "relevance": "High",
+        "style": [
+            "moche",
+            "mochica v",
+            "mochica",
+            "early intermediate period",
+            "Pre-Columbian",
+            "americas",
+            "andes",
+            "Arts of the Americas",
+            "andean",
+            "south american"
+        ],
+        "complexity": 58
+    },
+    {
+        "artwork_id": 93345,
+        "artwork_name": "Chalk-Mirror Displacement",
+        "created_by": "Robert Smithson",
+        "author_id": 220,
+        "artwork_in_period": 1969,
+        "dimension": 11824,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 51
+    },
+    {
+        "artwork_id": 93811,
+        "artwork_name": "Into the World There Came a Soul Called Ida",
+        "created_by": "Ivan Albright",
+        "author_id": 221,
+        "artwork_in_period": 1929,
+        "dimension": 16898,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 115
+    },
+    {
+        "artwork_id": 93900,
+        "artwork_name": "Portrait of a Man in Costume",
+        "created_by": "Jean-Honoré Fragonard",
+        "author_id": 222,
+        "artwork_in_period": 1767,
+        "dimension": 5120,
+        "relevance": "High",
+        "style": [
+            "Flemish",
+            "18th Century"
+        ],
+        "complexity": 73
+    },
+    {
+        "artwork_id": 95998,
+        "artwork_name": "Old Man with a Gold Chain",
+        "created_by": "Rembrandt van",
+        "author_id": 223,
+        "artwork_in_period": 1631,
+        "dimension": 6225,
+        "relevance": "High",
+        "style": [
+            "Renaissance",
+            "17th Century"
+        ],
+        "complexity": 72
+    },
+    {
+        "artwork_id": 97402,
+        "artwork_name": "Minnie",
+        "created_by": "Ed Paschke",
+        "author_id": 224,
+        "artwork_in_period": 1974,
+        "dimension": 12288,
+        "relevance": "High",
+        "style": [
+            "chicago imagist",
+            "20th Century"
+        ],
+        "complexity": 37
+    },
+    {
+        "artwork_id": 97910,
+        "artwork_name": "The Advance-Guard, or The Military Sacrifice (The Ambush)",
+        "created_by": "Frederic Remington",
+        "author_id": 225,
+        "artwork_in_period": 1890,
+        "dimension": 10701,
+        "relevance": "High",
+        "style": [],
+        "complexity": 46
+    },
+    {
+        "artwork_id": 97916,
+        "artwork_name": "The Bronco Buster",
+        "created_by": "Frederic Remington",
+        "author_id": 226,
+        "artwork_in_period": 1895,
+        "dimension": 3240,
+        "relevance": "High",
+        "style": [
+            "19th century"
+        ],
+        "complexity": 20
+    },
+    {
+        "artwork_id": 99539,
+        "artwork_name": "Helmet Mask (Mukenga)",
+        "created_by": "Kuba Kasai",
+        "author_id": 227,
+        "artwork_in_period": 1799,
+        "dimension": 1368,
+        "relevance": "High",
+        "style": [
+            "kuba (democratic republic of congo style",
+            "Arts of Africa",
+            "Central Africa",
+            "african Art"
+        ],
+        "complexity": 34
+    },
+    {
+        "artwork_id": 99602,
+        "artwork_name": "Fragment (Hanging)",
+        "created_by": "Byzantine Egypt",
+        "author_id": 228,
+        "artwork_in_period": 1846,
+        "dimension": 11968,
+        "relevance": "High",
+        "style": [
+            "roman period (egyptian)",
+            "coptic (period)"
+        ],
+        "complexity": 53
+    },
+    {
+        "artwork_id": 100089,
+        "artwork_name": "Chicago",
+        "created_by": "Harry Callahan",
+        "author_id": 231,
+        "artwork_in_period": 1950,
+        "dimension": 456,
+        "relevance": "High",
+        "style": [],
+        "complexity": 43
+    },
+    {
+        "artwork_id": 100250,
+        "artwork_name": "Interrogation II",
+        "created_by": "Leon Golub",
+        "author_id": 232,
+        "artwork_in_period": 1981,
+        "dimension": 130235,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 21
+    },
+    {
+        "artwork_id": 100829,
+        "artwork_name": "Magnolias on Light Blue Velvet Cloth",
+        "created_by": "Martin Johnson",
+        "author_id": 234,
+        "artwork_in_period": 1885,
+        "dimension": 2318,
+        "relevance": "High",
+        "style": [],
+        "complexity": 29
+    },
+    {
+        "artwork_id": 100858,
+        "artwork_name": "Sky above Clouds IV",
+        "created_by": "Georgia O'Keeffe",
+        "author_id": 235,
+        "artwork_in_period": 1965,
+        "dimension": 177633,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 65
+    },
+    {
+        "artwork_id": 102131,
+        "artwork_name": "Self-Portrait with a Visor",
+        "created_by": "Jean-Siméon Chardin",
+        "author_id": 236,
+        "artwork_in_period": 1776,
+        "dimension": 1665,
+        "relevance": "High",
+        "style": [],
+        "complexity": 39
+    },
+    {
+        "artwork_id": 102234,
+        "artwork_name": "American Collectors (Fred and Marcia Weisman)",
+        "created_by": "David Hockney",
+        "author_id": 237,
+        "artwork_in_period": 1968,
+        "dimension": 64752,
+        "relevance": "High",
+        "style": [
+            "Pop Art"
+        ],
+        "complexity": 22
+    },
+    {
+        "artwork_id": 102295,
+        "artwork_name": "Pitcher",
+        "created_by": "Design attributed",
+        "author_id": 238,
+        "artwork_in_period": 1878,
+        "dimension": 240,
+        "relevance": "High",
+        "style": [
+            "19th century"
+        ],
+        "complexity": 16
+    },
+    {
+        "artwork_id": 102591,
+        "artwork_name": "Bust of Paris",
+        "created_by": "Antonio Canova",
+        "author_id": 239,
+        "artwork_in_period": 1809,
+        "dimension": 2070,
+        "relevance": "High",
+        "style": [
+            "Neoclassicism",
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 40
+    },
+    {
+        "artwork_id": 102611,
+        "artwork_name": "Veranda Post (Òpó Ògògá)",
+        "created_by": "Olowe of",
+        "author_id": 240,
+        "artwork_in_period": 1910,
+        "dimension": 4712,
+        "relevance": "High",
+        "style": [
+            "yoruba",
+            "Arts of Africa",
+            "Coastal West Africa",
+            "african Art"
+        ],
+        "complexity": 39
+    },
+    {
+        "artwork_id": 102963,
+        "artwork_name": "The Titanic",
+        "created_by": "Stanley Tigerman",
+        "author_id": 241,
+        "artwork_in_period": 1978,
+        "dimension": 980,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 53
+    },
+    {
+        "artwork_id": 103347,
+        "artwork_name": "Bureau Table",
+        "created_by": "Attributed to",
+        "author_id": 242,
+        "artwork_in_period": 1770,
+        "dimension": 7998,
+        "relevance": "High",
+        "style": [
+            "Baroque"
+        ],
+        "complexity": 36
+    },
+    {
+        "artwork_id": 103887,
+        "artwork_name": "A Young Lady with a Parrot",
+        "created_by": "Rosalba Carriera",
+        "author_id": 243,
+        "artwork_in_period": 1730,
+        "dimension": 3000,
+        "relevance": "High",
+        "style": [
+            "Rococo"
+        ],
+        "complexity": 46
+    },
+    {
+        "artwork_id": 103943,
+        "artwork_name": "Manxman Piano",
+        "created_by": "Designed by",
+        "author_id": 244,
+        "artwork_in_period": 1897,
+        "dimension": 18304,
+        "relevance": "High",
+        "style": [
+            "Arts and Crafts Movement"
+        ],
+        "complexity": 30
+    },
+    {
+        "artwork_id": 104031,
+        "artwork_name": "The Shelton with Sunspots, N.Y.",
+        "created_by": "Georgia O'Keeffe",
+        "author_id": 245,
+        "artwork_in_period": 1926,
+        "dimension": 9272,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 78
+    },
+    {
+        "artwork_id": 104043,
+        "artwork_name": "Club de Centre Rural: Perspective Sketch",
+        "created_by": "Le Corbusier",
+        "author_id": 246,
+        "artwork_in_period": 1943,
+        "dimension": 336,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 36
+    },
+    {
+        "artwork_id": 104094,
+        "artwork_name": "General Andrew Jackson",
+        "created_by": "William Rush",
+        "author_id": 247,
+        "artwork_in_period": 1819,
+        "dimension": 2350,
+        "relevance": "High",
+        "style": [
+            "19th century"
+        ],
+        "complexity": 32
+    },
+    {
+        "artwork_id": 105073,
+        "artwork_name": "The Creation of Adam",
+        "created_by": "Giovanni Benedetto",
+        "author_id": 248,
+        "artwork_in_period": 1645,
+        "dimension": 600,
+        "relevance": "High",
+        "style": [],
+        "complexity": 46
+    },
+    {
+        "artwork_id": 105105,
+        "artwork_name": "Cabinet",
+        "created_by": "Herter Brothers",
+        "author_id": 249,
+        "artwork_in_period": 1878,
+        "dimension": 24120,
+        "relevance": "High",
+        "style": [
+            "19th century"
+        ],
+        "complexity": 39
+    },
+    {
+        "artwork_id": 105203,
+        "artwork_name": "Triptych Window from the Coonley Playhouse, Riverside, Illinois",
+        "created_by": "Frank Lloyd",
+        "author_id": 250,
+        "artwork_in_period": 1912,
+        "dimension": 14564,
+        "relevance": "High",
+        "style": [
+            "Prairie School"
+        ],
+        "complexity": 46
+    },
+    {
+        "artwork_id": 105466,
+        "artwork_name": "The Battle between the Gods and the Giants",
+        "created_by": "Joachim Antonisz.",
+        "author_id": 251,
+        "artwork_in_period": 1608,
+        "dimension": 300,
+        "relevance": "High",
+        "style": [
+            "17th Century",
+            "Mannerism"
+        ],
+        "complexity": 31
+    },
+    {
+        "artwork_id": 105800,
+        "artwork_name": "Train Station",
+        "created_by": "Walter Ellison",
+        "author_id": 252,
+        "artwork_in_period": 1935,
+        "dimension": 720,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 44
+    },
+    {
+        "artwork_id": 106538,
+        "artwork_name": "Two-Handled Covered Cup",
+        "created_by": "Cornelius Kierstede",
+        "author_id": 253,
+        "artwork_in_period": 1698,
+        "dimension": 240,
+        "relevance": "High",
+        "style": [],
+        "complexity": 33
+    },
+    {
+        "artwork_id": 107300,
+        "artwork_name": "Tall-Case Clock",
+        "created_by": "Case designed",
+        "author_id": 255,
+        "artwork_in_period": 1906,
+        "dimension": 8234,
+        "relevance": "High",
+        "style": [
+            "secession movement"
+        ],
+        "complexity": 33
+    },
+    {
+        "artwork_id": 109275,
+        "artwork_name": "Mother and Child",
+        "created_by": "Pablo Picasso",
+        "author_id": 256,
+        "artwork_in_period": 1921,
+        "dimension": 24424,
+        "relevance": "High",
+        "style": [
+            "classicism"
+        ],
+        "complexity": 84
+    },
+    {
+        "artwork_id": 109330,
+        "artwork_name": "Little Harbor in Normandy",
+        "created_by": "Georges Braque",
+        "author_id": 257,
+        "artwork_in_period": 1909,
+        "dimension": 6480,
+        "relevance": "High",
+        "style": [],
+        "complexity": 111
+    },
+    {
+        "artwork_id": 109439,
+        "artwork_name": "America Windows",
+        "created_by": "Marc Chagall",
+        "author_id": 258,
+        "artwork_in_period": 1977,
+        "dimension": 5282,
+        "relevance": "High",
+        "style": [],
+        "complexity": 14
+    },
+    {
+        "artwork_id": 109686,
+        "artwork_name": "Waters Above the Firmament",
+        "created_by": "Lenore Tawney",
+        "author_id": 259,
+        "artwork_in_period": 1976,
+        "dimension": 146493,
+        "relevance": "High",
+        "style": [],
+        "complexity": 41
+    },
+    {
+        "artwork_id": 109780,
+        "artwork_name": "Love of Winter",
+        "created_by": "George Wesley",
+        "author_id": 260,
+        "artwork_in_period": 1914,
+        "dimension": 8181,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "Modernism"
+        ],
+        "complexity": 61
+    },
+    {
+        "artwork_id": 109819,
+        "artwork_name": "Lozenge Composition with Yellow, Black, Blue, Red, and Gray",
+        "created_by": "Piet Mondrian",
+        "author_id": 261,
+        "artwork_in_period": 1921,
+        "dimension": 3600,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 73
+    },
+    {
+        "artwork_id": 109926,
+        "artwork_name": "Landscape: Window Overlooking the Woods",
+        "created_by": "Édouard Vuillard",
+        "author_id": 262,
+        "artwork_in_period": 1899,
+        "dimension": 94122,
+        "relevance": "High",
+        "style": [
+            "Post-Impressionism",
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 42
+    },
+    {
+        "artwork_id": 110507,
+        "artwork_name": "In the Sea",
+        "created_by": "Arnold Böcklin",
+        "author_id": 263,
+        "artwork_in_period": 1883,
+        "dimension": 9890,
+        "relevance": "High",
+        "style": [
+            "19th century"
+        ],
+        "complexity": 62
+    },
+    {
+        "artwork_id": 110663,
+        "artwork_name": "The Combat of the Giaour and Hassan",
+        "created_by": "Eugène Delacroix",
+        "author_id": 265,
+        "artwork_in_period": 1826,
+        "dimension": 4307,
+        "relevance": "High",
+        "style": [
+            "19th century",
+            "nineteenth century",
+            "romantic"
+        ],
+        "complexity": 30
+    },
+    {
+        "artwork_id": 110881,
+        "artwork_name": "The Road to Calvary",
+        "created_by": "Master of",
+        "author_id": 266,
+        "artwork_in_period": 1475,
+        "dimension": 228,
+        "relevance": "High",
+        "style": [],
+        "complexity": 38
+    },
+    {
+        "artwork_id": 111060,
+        "artwork_name": "Daniel-Henry Kahnweiler",
+        "created_by": "Pablo Picasso",
+        "author_id": 267,
+        "artwork_in_period": 1910,
+        "dimension": 7200,
+        "relevance": "High",
+        "style": [
+            "Cubism",
+            "Analytical Cubism"
+        ],
+        "complexity": 128
+    },
+    {
+        "artwork_id": 111164,
+        "artwork_name": "Green and Blue: The Dancer",
+        "created_by": "James McNeill",
+        "author_id": 268,
+        "artwork_in_period": 1893,
+        "dimension": 486,
+        "relevance": "High",
+        "style": [],
+        "complexity": 68
+    },
+    {
+        "artwork_id": 111317,
+        "artwork_name": "Amédée-David, the Comte de Pastoret",
+        "created_by": "Jean-Auguste-Dominique Ingres",
+        "author_id": 269,
+        "artwork_in_period": 1823,
+        "dimension": 8549,
+        "relevance": "High",
+        "style": [
+            "19th century",
+            "nineteenth century"
+        ],
+        "complexity": 28
+    },
+    {
+        "artwork_id": 111377,
+        "artwork_name": "For Sunday's Dinner",
+        "created_by": "William Michael",
+        "author_id": 270,
+        "artwork_in_period": 1888,
+        "dimension": 4982,
+        "relevance": "High",
+        "style": [
+            "Realism"
+        ],
+        "complexity": 53
+    },
+    {
+        "artwork_id": 111380,
+        "artwork_name": "Seated Bodhisattva",
+        "created_by": "Japan",
+        "author_id": 271,
+        "artwork_in_period": 1779,
+        "dimension": 2623,
+        "relevance": "High",
+        "style": [
+            "Japanese (culture or style)",
+            "nara"
+        ],
+        "complexity": 38
+    },
+    {
+        "artwork_id": 111400,
+        "artwork_name": "Samovar",
+        "created_by": "Designed by",
+        "author_id": 272,
+        "artwork_in_period": 1897,
+        "dimension": 1036,
+        "relevance": "High",
+        "style": [
+            "Art Nouveau"
+        ],
+        "complexity": 32
+    },
+    {
+        "artwork_id": 111401,
+        "artwork_name": "Female Caryatid Drum (Pinge)",
+        "created_by": "Senufo Côte",
+        "author_id": 273,
+        "artwork_in_period": 1930,
+        "dimension": 5978,
+        "relevance": "High",
+        "style": [
+            "senufo",
+            "Northern Africa and the Sahel",
+            "Arts of Africa",
+            "african Art"
+        ],
+        "complexity": 42
+    },
+    {
+        "artwork_id": 111436,
+        "artwork_name": "The Basket of Apples",
+        "created_by": "Paul Cezanne",
+        "author_id": 274,
+        "artwork_in_period": 1893,
+        "dimension": 5200,
+        "relevance": "High",
+        "style": [
+            "Post-Impressionism",
+            "19th century"
+        ],
+        "complexity": 107
+    },
+    {
+        "artwork_id": 111442,
+        "artwork_name": "The Child's Bath",
+        "created_by": "Mary Cassatt",
+        "author_id": 275,
+        "artwork_in_period": 1893,
+        "dimension": 6600,
+        "relevance": "High",
+        "style": [
+            "Impressionism",
+            "Modernism"
+        ],
+        "complexity": 162
+    },
+    {
+        "artwork_id": 111559,
+        "artwork_name": "Boy on a Ram",
+        "created_by": "Francisco José",
+        "author_id": 276,
+        "artwork_in_period": 1786,
+        "dimension": 14224,
+        "relevance": "High",
+        "style": [
+            "18th Century"
+        ],
+        "complexity": 44
+    },
+    {
+        "artwork_id": 111610,
+        "artwork_name": "The Garden of Palazzo Contarini dal Zaffo",
+        "created_by": "Francesco Guardi",
+        "author_id": 277,
+        "artwork_in_period": 1770,
+        "dimension": 3744,
+        "relevance": "High",
+        "style": [
+            "18th Century"
+        ],
+        "complexity": 46
+    },
+    {
+        "artwork_id": 111617,
+        "artwork_name": "Cabin in the Cotton",
+        "created_by": "Horace Pippin",
+        "author_id": 278,
+        "artwork_in_period": 1931,
+        "dimension": 4335,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 54
+    },
+    {
+        "artwork_id": 111628,
+        "artwork_name": "Nighthawks",
+        "created_by": "Edward Hopper",
+        "author_id": 279,
+        "artwork_in_period": 1942,
+        "dimension": 12768,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 95
+    },
+    {
+        "artwork_id": 111642,
+        "artwork_name": "The Awakening of the Forest",
+        "created_by": "Paul Delvaux",
+        "author_id": 280,
+        "artwork_in_period": 1939,
+        "dimension": 38250,
+        "relevance": "High",
+        "style": [],
+        "complexity": 54
+    },
+    {
+        "artwork_id": 111654,
+        "artwork_name": "The Policeman",
+        "created_by": "Joan Miró",
+        "author_id": 281,
+        "artwork_in_period": 1925,
+        "dimension": 48112,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 41
+    },
+    {
+        "artwork_id": 111810,
+        "artwork_name": "Harvest Talk",
+        "created_by": "Charles White",
+        "author_id": 282,
+        "artwork_in_period": 1953,
+        "dimension": 6534,
+        "relevance": "High",
+        "style": [],
+        "complexity": 63
+    },
+    {
+        "artwork_id": 112092,
+        "artwork_name": "Portions of a Jousting Helmet",
+        "created_by": "Italian; Milan",
+        "author_id": 283,
+        "artwork_in_period": 1570,
+        "dimension": 18669,
+        "relevance": "High",
+        "style": [],
+        "complexity": 20
+    },
+    {
+        "artwork_id": 117188,
+        "artwork_name": "The Earth Is a Man",
+        "created_by": "Roberto Matta",
+        "author_id": 284,
+        "artwork_in_period": 1942,
+        "dimension": 44226,
+        "relevance": "High",
+        "style": [
+            "Modernism",
+            "Surrealism"
+        ],
+        "complexity": 116
+    },
+    {
+        "artwork_id": 117266,
+        "artwork_name": "Nightlife",
+        "created_by": "Archibald John",
+        "author_id": 285,
+        "artwork_in_period": 1943,
+        "dimension": 11011,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 44
+    },
+    {
+        "artwork_id": 117271,
+        "artwork_name": "Art Institute of Chicago II, Chicago",
+        "created_by": "Thomas Struth",
+        "author_id": 286,
+        "artwork_in_period": 1990,
+        "dimension": 41514,
+        "relevance": "High",
+        "style": [],
+        "complexity": 30
+    },
+    {
+        "artwork_id": 118661,
+        "artwork_name": "Juan Soriano De Lacandón",
+        "created_by": "Leonora Carrington",
+        "author_id": 287,
+        "artwork_in_period": 1964,
+        "dimension": 3200,
+        "relevance": "High",
+        "style": [
+            "Surrealism",
+            "contemporary"
+        ],
+        "complexity": 38
+    },
+    {
+        "artwork_id": 118746,
+        "artwork_name": "Interrelation of Volumes from the Ellipsoid",
+        "created_by": "Georges Vantongerloo",
+        "author_id": 288,
+        "artwork_in_period": 1926,
+        "dimension": 1880,
+        "relevance": "High",
+        "style": [
+            "de Stijl"
+        ],
+        "complexity": 43
+    },
+    {
+        "artwork_id": 119521,
+        "artwork_name": "Landscape at L'Estaque",
+        "created_by": "Georges Braque",
+        "author_id": 290,
+        "artwork_in_period": 1906,
+        "dimension": 4320,
+        "relevance": "High",
+        "style": [],
+        "complexity": 52
+    },
+    {
+        "artwork_id": 120154,
+        "artwork_name": "Still Life—Strawberries, Nuts, &c.",
+        "created_by": "Raphaelle Peale",
+        "author_id": 291,
+        "artwork_in_period": 1822,
+        "dimension": 2337,
+        "relevance": "High",
+        "style": [
+            "Realism"
+        ],
+        "complexity": 65
+    },
+    {
+        "artwork_id": 122054,
+        "artwork_name": "Alka Seltzer",
+        "created_by": "Roy Lichtenstein",
+        "author_id": 292,
+        "artwork_in_period": 1966,
+        "dimension": 4256,
+        "relevance": "High",
+        "style": [
+            "Pop Art"
+        ],
+        "complexity": 57
+    },
+    {
+        "artwork_id": 125660,
+        "artwork_name": "The Wedding",
+        "created_by": "Jacob Lawrence",
+        "author_id": 293,
+        "artwork_in_period": 1948,
+        "dimension": 3050,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 56
+    },
+    {
+        "artwork_id": 126981,
+        "artwork_name": "Gaming Set",
+        "created_by": "Du Paquier",
+        "author_id": 294,
+        "artwork_in_period": 1735,
+        "dimension": 128,
+        "relevance": "High",
+        "style": [
+            "late baroque"
+        ],
+        "complexity": 30
+    },
+    {
+        "artwork_id": 127644,
+        "artwork_name": "Autumn Maples with Poem Slips",
+        "created_by": "Tosa Mitsuoki",
+        "author_id": 295,
+        "artwork_in_period": 1675,
+        "dimension": 41184,
+        "relevance": "High",
+        "style": [
+            "Japanese (culture or style)"
+        ],
+        "complexity": 31
+    },
+    {
+        "artwork_id": 127859,
+        "artwork_name": "Stela of Amenemhat and Hemet",
+        "created_by": "Egyptian; probably",
+        "author_id": 296,
+        "artwork_in_period": 1956,
+        "dimension": 1271,
+        "relevance": "High",
+        "style": [
+            "twelfth dynasty",
+            "middle kingdom",
+            "ancient",
+            "egyptian"
+        ],
+        "complexity": 78
+    },
+    {
+        "artwork_id": 129884,
+        "artwork_name": "Starry Night and the Astronauts",
+        "created_by": "Alma Thomas",
+        "author_id": 297,
+        "artwork_in_period": 1972,
+        "dimension": 20368,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 43
+    },
+    {
+        "artwork_id": 131385,
+        "artwork_name": "Black and White",
+        "created_by": "Lee Krasner",
+        "author_id": 298,
+        "artwork_in_period": 1953,
+        "dimension": 4332,
+        "relevance": "High",
+        "style": [
+            "Abstract Expressionism"
+        ],
+        "complexity": 39
+    },
+    {
+        "artwork_id": 131541,
+        "artwork_name": "System of Architectural Ornament, Plate 16, Impromptu!",
+        "created_by": "Louis H.",
+        "author_id": 299,
+        "artwork_in_period": 1922,
+        "dimension": 4161,
+        "relevance": "High",
+        "style": [
+            "20th Century",
+            "Symbolism"
+        ],
+        "complexity": 46
+    },
+    {
+        "artwork_id": 135430,
+        "artwork_name": "Weeping Woman I",
+        "created_by": "Pablo Picasso",
+        "author_id": 300,
+        "artwork_in_period": 1937,
+        "dimension": 3381,
+        "relevance": "High",
+        "style": [
+            "Cubism"
+        ],
+        "complexity": 35
+    },
+    {
+        "artwork_id": 137125,
+        "artwork_name": "Many Mansions",
+        "created_by": "Kerry James",
+        "author_id": 301,
+        "artwork_in_period": 1994,
+        "dimension": 98838,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 24
+    },
+    {
+        "artwork_id": 140645,
+        "artwork_name": "Night Sky #2",
+        "created_by": "Vija Celmins",
+        "author_id": 302,
+        "artwork_in_period": 1991,
+        "dimension": 2430,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 32
+    },
+    {
+        "artwork_id": 142526,
+        "artwork_name": "Milarepa on Mount Kailash",
+        "created_by": "Tibet",
+        "author_id": 303,
+        "artwork_in_period": 1500,
+        "dimension": 1350,
+        "relevance": "High",
+        "style": [
+            "Himalayan",
+            "tibetan"
+        ],
+        "complexity": 38
+    },
+    {
+        "artwork_id": 144272,
+        "artwork_name": "Mr. and Mrs. Herbert A. Jacobs House, Middleton, Wisconsin, Perspective",
+        "created_by": "Frank Lloyd",
+        "author_id": 304,
+        "artwork_in_period": 1944,
+        "dimension": 4234,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 29
+    },
+    {
+        "artwork_id": 144361,
+        "artwork_name": "Earthly Paradise",
+        "created_by": "Pierre Bonnard",
+        "author_id": 305,
+        "artwork_in_period": 1916,
+        "dimension": 20800,
+        "relevance": "High",
+        "style": [
+            "Post-Impressionism"
+        ],
+        "complexity": 72
+    },
+    {
+        "artwork_id": 144969,
+        "artwork_name": "The Interior of the Palm House on the Pfaueninsel Near Potsdam",
+        "created_by": "Carl Blechen",
+        "author_id": 306,
+        "artwork_in_period": 1834,
+        "dimension": 17010,
+        "relevance": "High",
+        "style": [
+            "19th century",
+            "orientalizing"
+        ],
+        "complexity": 26
+    },
+    {
+        "artwork_id": 145681,
+        "artwork_name": "Frederick Douglass",
+        "created_by": "Samuel J.",
+        "author_id": 307,
+        "artwork_in_period": 1847,
+        "dimension": 8749,
+        "relevance": "High",
+        "style": [
+            "19th century"
+        ],
+        "complexity": 44
+    },
+    {
+        "artwork_id": 146701,
+        "artwork_name": "Mountain Brook",
+        "created_by": "Albert Bierstadt",
+        "author_id": 308,
+        "artwork_in_period": 1863,
+        "dimension": 10101,
+        "relevance": "High",
+        "style": [],
+        "complexity": 27
+    },
+    {
+        "artwork_id": 146905,
+        "artwork_name": "Explosion at Sea",
+        "created_by": "Vija Celmins",
+        "author_id": 309,
+        "artwork_in_period": 1966,
+        "dimension": 2006,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 20
+    },
+    {
+        "artwork_id": 146953,
+        "artwork_name": "Two Cows and a Young Bull beside a Fence in a Meadow",
+        "created_by": "Paulus Potter",
+        "author_id": 310,
+        "artwork_in_period": 1647,
+        "dimension": 1813,
+        "relevance": "High",
+        "style": [
+            "Realism",
+            "17th Century",
+            "Naturalism"
+        ],
+        "complexity": 50
+    },
+    {
+        "artwork_id": 146988,
+        "artwork_name": "Rodeo",
+        "created_by": "Brice Marden",
+        "author_id": 311,
+        "artwork_in_period": 1971,
+        "dimension": 59049,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 31
+    },
+    {
+        "artwork_id": 146989,
+        "artwork_name": "Clown Torture",
+        "created_by": "Bruce Nauman",
+        "author_id": 312,
+        "artwork_in_period": 1987,
+        "dimension": 15641,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 114
+    },
+    {
+        "artwork_id": 146991,
+        "artwork_name": "PH-774",
+        "created_by": "Clyfford Still",
+        "author_id": 313,
+        "artwork_in_period": 1958,
+        "dimension": 117740,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 46
+    },
+    {
+        "artwork_id": 147003,
+        "artwork_name": "Woman Descending the Staircase (Frau die Treppe herabgehend)",
+        "created_by": "Gerhard Richter",
+        "author_id": 314,
+        "artwork_in_period": 1965,
+        "dimension": 25344,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 48
+    },
+    {
+        "artwork_id": 147508,
+        "artwork_name": "Oil or Vinegar Cruet",
+        "created_by": "Meissen Porcelain",
+        "author_id": 315,
+        "artwork_in_period": 1737,
+        "dimension": 336,
+        "relevance": "High",
+        "style": [],
+        "complexity": 25
+    },
+    {
+        "artwork_id": 147513,
+        "artwork_name": "Human Nature/Life Death",
+        "created_by": "Bruce Nauman",
+        "author_id": 316,
+        "artwork_in_period": 1983,
+        "dimension": 33124,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 34
+    },
+    {
+        "artwork_id": 148412,
+        "artwork_name": "Corner Cabinet",
+        "created_by": "Designed by",
+        "author_id": 317,
+        "artwork_in_period": 1916,
+        "dimension": 8219,
+        "relevance": "High",
+        "style": [
+            "Art Deco"
+        ],
+        "complexity": 24
+    },
+    {
+        "artwork_id": 149681,
+        "artwork_name": "Fragment (Dress Fabric)",
+        "created_by": "China",
+        "author_id": 318,
+        "artwork_in_period": 1898,
+        "dimension": 5490,
+        "relevance": "High",
+        "style": [
+            "tang",
+            "Chinese (culture or style)",
+            "East Asian",
+            "asian"
+        ],
+        "complexity": 43
+    },
+    {
+        "artwork_id": 149776,
+        "artwork_name": "The Freedman",
+        "created_by": "John Quincy",
+        "author_id": 319,
+        "artwork_in_period": 1862,
+        "dimension": 1960,
+        "relevance": "High",
+        "style": [
+            "Realism"
+        ],
+        "complexity": 23
+    },
+    {
+        "artwork_id": 150054,
+        "artwork_name": "Elizabeth Grant Bankson Beatty (Mrs. James Beatty) and Her Daughter Susan",
+        "created_by": "Joshua Johnson",
+        "author_id": 320,
+        "artwork_in_period": 1805,
+        "dimension": 5904,
+        "relevance": "High",
+        "style": [],
+        "complexity": 19
+    },
+    {
+        "artwork_id": 150739,
+        "artwork_name": "Furisode",
+        "created_by": "Japan",
+        "author_id": 321,
+        "artwork_in_period": 1789,
+        "dimension": 15729,
+        "relevance": "High",
+        "style": [
+            "late edo",
+            "Japanism"
+        ],
+        "complexity": 36
+    },
+    {
+        "artwork_id": 151358,
+        "artwork_name": "Male Figure (Nkisi Nkondi)",
+        "created_by": "Kongo: Vili",
+        "author_id": 322,
+        "artwork_in_period": 1588,
+        "dimension": 7926,
+        "relevance": "High",
+        "style": [
+            "vili",
+            "Arts of Africa",
+            "african Art",
+            "Central Africa"
+        ],
+        "complexity": 47
+    },
+    {
+        "artwork_id": 151363,
+        "artwork_name": "Weaving",
+        "created_by": "Diego Rivera",
+        "author_id": 323,
+        "artwork_in_period": 1936,
+        "dimension": 6996,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 24
+    },
+    {
+        "artwork_id": 151371,
+        "artwork_name": "Skyscraper Cabinet",
+        "created_by": "Paul Theodore",
+        "author_id": 324,
+        "artwork_in_period": 1927,
+        "dimension": 17679,
+        "relevance": "High",
+        "style": [
+            "Modernism",
+            "Art Deco",
+            "Cubism"
+        ],
+        "complexity": 33
+    },
+    {
+        "artwork_id": 151424,
+        "artwork_name": "Inventions of the Monsters",
+        "created_by": "Salvador Dalí",
+        "author_id": 325,
+        "artwork_in_period": 1937,
+        "dimension": 3978,
+        "relevance": "High",
+        "style": [
+            "Surrealism"
+        ],
+        "complexity": 95
+    },
+    {
+        "artwork_id": 153244,
+        "artwork_name": "Cow Suckling a Calf",
+        "created_by": "India Madhya",
+        "author_id": 326,
+        "artwork_in_period": 1471,
+        "dimension": 4015,
+        "relevance": "High",
+        "style": [
+            "South Asian",
+            "Indian (South Asian)"
+        ],
+        "complexity": 29
+    },
+    {
+        "artwork_id": 153701,
+        "artwork_name": "Reclining Woman",
+        "created_by": "Fernand Léger",
+        "author_id": 327,
+        "artwork_in_period": 1922,
+        "dimension": 5888,
+        "relevance": "High",
+        "style": [],
+        "complexity": 50
+    },
+    {
+        "artwork_id": 154232,
+        "artwork_name": "Monk (Mönch)",
+        "created_by": "Katharina Fritsch",
+        "author_id": 328,
+        "artwork_in_period": 1997,
+        "dimension": 11194,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 24
+    },
+    {
+        "artwork_id": 154235,
+        "artwork_name": "The Girl by the Window",
+        "created_by": "Edvard Munch",
+        "author_id": 329,
+        "artwork_in_period": 1893,
+        "dimension": 6240,
+        "relevance": "High",
+        "style": [
+            "Post-Impressionism",
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 74
+    },
+    {
+        "artwork_id": 154237,
+        "artwork_name": "Machinist",
+        "created_by": "Emma Stebbins",
+        "author_id": 330,
+        "artwork_in_period": 1859,
+        "dimension": 2146,
+        "relevance": "High",
+        "style": [
+            "Realism"
+        ],
+        "complexity": 18
+    },
+    {
+        "artwork_id": 154238,
+        "artwork_name": "Machinist's Apprentice",
+        "created_by": "Emma Stebbins",
+        "author_id": 331,
+        "artwork_in_period": 1859,
+        "dimension": 2146,
+        "relevance": "High",
+        "style": [
+            "Realism"
+        ],
+        "complexity": 18
+    },
+    {
+        "artwork_id": 155969,
+        "artwork_name": "Talismanic Textile",
+        "created_by": "Probably Senegal",
+        "author_id": 332,
+        "artwork_in_period": 1745,
+        "dimension": 19923,
+        "relevance": "High",
+        "style": [
+            "Arts of Africa"
+        ],
+        "complexity": 40
+    },
+    {
+        "artwork_id": 156442,
+        "artwork_name": "Coffer",
+        "created_by": "Attributed to",
+        "author_id": 333,
+        "artwork_in_period": 1700,
+        "dimension": 3212,
+        "relevance": "High",
+        "style": [],
+        "complexity": 36
+    },
+    {
+        "artwork_id": 156474,
+        "artwork_name": "Relaxing in the Shade",
+        "created_by": "Yamakawa Shuho",
+        "author_id": 334,
+        "artwork_in_period": 1933,
+        "dimension": 32524,
+        "relevance": "High",
+        "style": [
+            "Japanese (culture or style)",
+            "showa",
+            "Japanism",
+            "East Asian",
+            "asian"
+        ],
+        "complexity": 36
+    },
+    {
+        "artwork_id": 156538,
+        "artwork_name": "Chicago Stock Exchange Trading Room: Reconstruction at the Art Institute of Chicago",
+        "created_by": "Adler &",
+        "author_id": 335,
+        "artwork_in_period": 1893,
+        "dimension": 12279,
+        "relevance": "High",
+        "style": [],
+        "complexity": 34
+    },
+    {
+        "artwork_id": 157056,
+        "artwork_name": "Mrs. Herbert Duckworth",
+        "created_by": "Julia Margaret",
+        "author_id": 336,
+        "artwork_in_period": 1867,
+        "dimension": 884,
+        "relevance": "High",
+        "style": [
+            "19th century"
+        ],
+        "complexity": 38
+    },
+    {
+        "artwork_id": 157156,
+        "artwork_name": "Red Yellow Blue White and Black II",
+        "created_by": "Ellsworth Kelly",
+        "author_id": 337,
+        "artwork_in_period": 1953,
+        "dimension": 34650,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 20
+    },
+    {
+        "artwork_id": 157160,
+        "artwork_name": "The Flooded Grave",
+        "created_by": "Jeff Wall",
+        "author_id": 338,
+        "artwork_in_period": 1998,
+        "dimension": 64296,
+        "relevance": "High",
+        "style": [
+            "21st Century"
+        ],
+        "complexity": 34
+    },
+    {
+        "artwork_id": 159136,
+        "artwork_name": "Portrait Bust of a Woman",
+        "created_by": "Roman",
+        "author_id": 339,
+        "artwork_in_period": 1916,
+        "dimension": 3008,
+        "relevance": "High",
+        "style": [
+            "antonine",
+            "imperial (roman)",
+            "ancient"
+        ],
+        "complexity": 38
+    },
+    {
+        "artwork_id": 160144,
+        "artwork_name": "The Sick Child I",
+        "created_by": "Edvard Munch",
+        "author_id": 341,
+        "artwork_in_period": 1896,
+        "dimension": 2394,
+        "relevance": "High",
+        "style": [],
+        "complexity": 30
+    },
+    {
+        "artwork_id": 160201,
+        "artwork_name": "Candida and Her Mother, Celia, II",
+        "created_by": "Dawoud Bey",
+        "author_id": 342,
+        "artwork_in_period": 1994,
+        "dimension": 3233,
+        "relevance": "High",
+        "style": [],
+        "complexity": 27
+    },
+    {
+        "artwork_id": 160222,
+        "artwork_name": "Albino",
+        "created_by": "Marlene Dumas",
+        "author_id": 343,
+        "artwork_in_period": 1986,
+        "dimension": 14300,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 20
+    },
+    {
+        "artwork_id": 160226,
+        "artwork_name": "Gasthof zur Muldentalsperre",
+        "created_by": "Peter Doig",
+        "author_id": 344,
+        "artwork_in_period": 2000,
+        "dimension": 15878,
+        "relevance": "High",
+        "style": [
+            "21st Century"
+        ],
+        "complexity": 33
+    },
+    {
+        "artwork_id": 180298,
+        "artwork_name": "Ceremonial Hanging (palepai)",
+        "created_by": "Paminggir people",
+        "author_id": 345,
+        "artwork_in_period": 1837,
+        "dimension": 19140,
+        "relevance": "High",
+        "style": [
+            "indonesian"
+        ],
+        "complexity": 32
+    },
+    {
+        "artwork_id": 181091,
+        "artwork_name": "Caribs' Leap/Western Deep",
+        "created_by": "Steve McQueen",
+        "author_id": 346,
+        "artwork_in_period": 2002,
+        "dimension": 8186,
+        "relevance": "High",
+        "style": [
+            "21st Century"
+        ],
+        "complexity": 29
+    },
+    {
+        "artwork_id": 181145,
+        "artwork_name": "Horse and Rider",
+        "created_by": "Hans Ludwig",
+        "author_id": 347,
+        "artwork_in_period": 1630,
+        "dimension": 7846,
+        "relevance": "High",
+        "style": [],
+        "complexity": 40
+    },
+    {
+        "artwork_id": 181774,
+        "artwork_name": "Oonagh MacCumhail: The Case of the Entered Novitiate",
+        "created_by": "Matthew Barney",
+        "author_id": 348,
+        "artwork_in_period": 2002,
+        "dimension": 28120,
+        "relevance": "High",
+        "style": [
+            "21st Century"
+        ],
+        "complexity": 8
+    },
+    {
+        "artwork_id": 182728,
+        "artwork_name": "Urns (Set of 8)",
+        "created_by": "Thomas Schutte",
+        "author_id": 349,
+        "artwork_in_period": 1999,
+        "dimension": 29205,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 32
+    },
+    {
+        "artwork_id": 183077,
+        "artwork_name": "Chair (Kiti Cha Enzi)",
+        "created_by": "Swahili Lamu,",
+        "author_id": 350,
+        "artwork_in_period": 1564,
+        "dimension": 9375,
+        "relevance": "High",
+        "style": [
+            "swahili",
+            "Arts of Africa",
+            "19th century",
+            "african Art",
+            "Eastern and Southern Africa"
+        ],
+        "complexity": 40
+    },
+    {
+        "artwork_id": 183277,
+        "artwork_name": "Landscape",
+        "created_by": "Li Huayi",
+        "author_id": 351,
+        "artwork_in_period": 2002,
+        "dimension": 17836,
+        "relevance": "High",
+        "style": [
+            "Chinese (culture or style)",
+            "21st Century"
+        ],
+        "complexity": 24
+    },
+    {
+        "artwork_id": 184095,
+        "artwork_name": "Near the Lagoon",
+        "created_by": "Jasper Johns",
+        "author_id": 352,
+        "artwork_in_period": 2002,
+        "dimension": 2409,
+        "relevance": "High",
+        "style": [
+            "21st Century"
+        ],
+        "complexity": 22
+    },
+    {
+        "artwork_id": 184186,
+        "artwork_name": "The Long Road to Mazatlán",
+        "created_by": "Isaac Julien",
+        "author_id": 353,
+        "artwork_in_period": 1999,
+        "dimension": 8434,
+        "relevance": "High",
+        "style": [
+            "21st Century"
+        ],
+        "complexity": 28
+    },
+    {
+        "artwork_id": 184193,
+        "artwork_name": "Delphine",
+        "created_by": "Diana Thater",
+        "author_id": 354,
+        "artwork_in_period": 1999,
+        "dimension": 2120,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 33
+    },
+    {
+        "artwork_id": 184324,
+        "artwork_name": "Saint Michael and the Devil",
+        "created_by": "Spanish",
+        "author_id": 355,
+        "artwork_in_period": 1475,
+        "dimension": 1144,
+        "relevance": "High",
+        "style": [],
+        "complexity": 22
+    },
+    {
+        "artwork_id": 184362,
+        "artwork_name": "Mirror #3 (Six Panels)",
+        "created_by": "Roy Lichtenstein",
+        "author_id": 356,
+        "artwork_in_period": 1971,
+        "dimension": 102175,
+        "relevance": "High",
+        "style": [
+            "Pop Art",
+            "Abstract"
+        ],
+        "complexity": 34
+    },
+    {
+        "artwork_id": 184371,
+        "artwork_name": "The Nativity",
+        "created_by": "Fra Bartolommeo",
+        "author_id": 357,
+        "artwork_in_period": 1504,
+        "dimension": 816,
+        "relevance": "High",
+        "style": [
+            "Renaissance",
+            "16th Century"
+        ],
+        "complexity": 48
+    },
+    {
+        "artwork_id": 184672,
+        "artwork_name": "Sideboard",
+        "created_by": "Daniel Pabst",
+        "author_id": 358,
+        "artwork_in_period": 1868,
+        "dimension": 47360,
+        "relevance": "High",
+        "style": [
+            "19th century"
+        ],
+        "complexity": 33
+    },
+    {
+        "artwork_id": 185180,
+        "artwork_name": "Chaekgeori",
+        "created_by": "Korea",
+        "author_id": 359,
+        "artwork_in_period": 1767,
+        "dimension": 67230,
+        "relevance": "High",
+        "style": [
+            "Korean (culture or style)",
+            "chosen"
+        ],
+        "complexity": 34
+    },
+    {
+        "artwork_id": 185184,
+        "artwork_name": "Venus de Milo with Drawers",
+        "created_by": "Salvador Dalí",
+        "author_id": 360,
+        "artwork_in_period": 1936,
+        "dimension": 3136,
+        "relevance": "High",
+        "style": [
+            "Surrealism"
+        ],
+        "complexity": 64
+    },
+    {
+        "artwork_id": 185222,
+        "artwork_name": "Group Pilgrimage to the Jizo Nun",
+        "created_by": "Ike Taiga",
+        "author_id": 361,
+        "artwork_in_period": 1755,
+        "dimension": 6642,
+        "relevance": "High",
+        "style": [
+            "Japanese (culture or style)",
+            "18th Century"
+        ],
+        "complexity": 61
+    },
+    {
+        "artwork_id": 185619,
+        "artwork_name": "Woman's Robe",
+        "created_by": "Uzbekistan, Bukhara",
+        "author_id": 362,
+        "artwork_in_period": 1840,
+        "dimension": 22378,
+        "relevance": "High",
+        "style": [],
+        "complexity": 38
+    },
+    {
+        "artwork_id": 185651,
+        "artwork_name": "Triptych Icon",
+        "created_by": "Central Ethiopia",
+        "author_id": 363,
+        "artwork_in_period": 1817,
+        "dimension": 4958,
+        "relevance": "High",
+        "style": [
+            "gondar",
+            "Arts of Africa",
+            "ethiopia",
+            "african Art",
+            "Eastern and Southern Africa"
+        ],
+        "complexity": 38
+    },
+    {
+        "artwork_id": 185760,
+        "artwork_name": "Forest and Sun",
+        "created_by": "Max Ernst",
+        "author_id": 364,
+        "artwork_in_period": 1927,
+        "dimension": 5412,
+        "relevance": "High",
+        "style": [],
+        "complexity": 57
+    },
+    {
+        "artwork_id": 185766,
+        "artwork_name": "Festival in Montmartre",
+        "created_by": "Gino Severini",
+        "author_id": 365,
+        "artwork_in_period": 1913,
+        "dimension": 10208,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 133
+    },
+    {
+        "artwork_id": 185905,
+        "artwork_name": "Lamp with “Hanging Head Dragonfly” Shade and “Mosaic and Turtleback” Base",
+        "created_by": "Design attributed",
+        "author_id": 366,
+        "artwork_in_period": 1906,
+        "dimension": 23749,
+        "relevance": "High",
+        "style": [
+            "Arts and Crafts Movement",
+            "Art Nouveau",
+            "Modernism",
+            "American Arts and Crafts Movement"
+        ],
+        "complexity": 32
+    },
+    {
+        "artwork_id": 185963,
+        "artwork_name": "Cauldron",
+        "created_by": "China",
+        "author_id": 367,
+        "artwork_in_period": 1046,
+        "dimension": 2107,
+        "relevance": "High",
+        "style": [
+            "Chinese (culture or style)",
+            "zhou"
+        ],
+        "complexity": 32
+    },
+    {
+        "artwork_id": 186047,
+        "artwork_name": "Sideboard",
+        "created_by": "Designed by",
+        "author_id": 368,
+        "artwork_in_period": 1867,
+        "dimension": 4667,
+        "relevance": "High",
+        "style": [
+            "Aesthetic Movement",
+            "Arts and Crafts Movement",
+            "japonism"
+        ],
+        "complexity": 37
+    },
+    {
+        "artwork_id": 186049,
+        "artwork_name": "The First Part of the Return from Parnassus",
+        "created_by": "Cy Twombly",
+        "author_id": 369,
+        "artwork_in_period": 1961,
+        "dimension": 72000,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 17
+    },
+    {
+        "artwork_id": 187155,
+        "artwork_name": "The Ballad of Sexual Dependency",
+        "created_by": "Nan Goldin",
+        "author_id": 371,
+        "artwork_in_period": 1979,
+        "dimension": 24977,
+        "relevance": "High",
+        "style": [
+            "21st Century"
+        ],
+        "complexity": 40
+    },
+    {
+        "artwork_id": 187165,
+        "artwork_name": "Monogram",
+        "created_by": "Louise Lawler",
+        "author_id": 372,
+        "artwork_in_period": 1984,
+        "dimension": 7100,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 34
+    },
+    {
+        "artwork_id": 187528,
+        "artwork_name": "Head",
+        "created_by": "Fang Gabon",
+        "author_id": 373,
+        "artwork_in_period": 1539,
+        "dimension": 9171,
+        "relevance": "High",
+        "style": [
+            "fang",
+            "Arts of Africa",
+            "african Art",
+            "Central Africa"
+        ],
+        "complexity": 25
+    },
+    {
+        "artwork_id": 188540,
+        "artwork_name": "Sur, Long Island City, New York",
+        "created_by": "Hernán Díaz",
+        "author_id": 374,
+        "artwork_in_period": 2005,
+        "dimension": 17105,
+        "relevance": "High",
+        "style": [
+            "21st Century"
+        ],
+        "complexity": 42
+    },
+    {
+        "artwork_id": 188844,
+        "artwork_name": "Near Jackson, Mississippi",
+        "created_by": "William Eggleston",
+        "author_id": 375,
+        "artwork_in_period": 1970,
+        "dimension": 17392,
+        "relevance": "High",
+        "style": [
+            "21st Century"
+        ],
+        "complexity": 35
+    },
+    {
+        "artwork_id": 188845,
+        "artwork_name": "Corallo Chair",
+        "created_by": "Campana Brothers",
+        "author_id": 376,
+        "artwork_in_period": 2006,
+        "dimension": 15989,
+        "relevance": "High",
+        "style": [
+            "21st Century"
+        ],
+        "complexity": 29
+    },
+    {
+        "artwork_id": 189207,
+        "artwork_name": "Hinoki",
+        "created_by": "Charles Ray",
+        "author_id": 377,
+        "artwork_in_period": 2007,
+        "dimension": 12242,
+        "relevance": "High",
+        "style": [
+            "21st Century"
+        ],
+        "complexity": 49
+    },
+    {
+        "artwork_id": 189289,
+        "artwork_name": "Gingold Living Room End Table (1 of 2)",
+        "created_by": "Rudolph Schindler",
+        "author_id": 378,
+        "artwork_in_period": 1943,
+        "dimension": 3397,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 31
+    },
+    {
+        "artwork_id": 189290,
+        "artwork_name": "Gingold Living Room End Table (2 of 2)",
+        "created_by": "Rudolph Schindler",
+        "author_id": 379,
+        "artwork_in_period": 1943,
+        "dimension": 2279,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 31
+    },
+    {
+        "artwork_id": 189595,
+        "artwork_name": "Pair of Headdresses (Tyi Wara Kunw)",
+        "created_by": "Bamana Baninko",
+        "author_id": 380,
+        "artwork_in_period": 1608,
+        "dimension": 3920,
+        "relevance": "High",
+        "style": [
+            "bamana",
+            "Arts of Africa",
+            "african Art",
+            "Northern Africa and the Sahel"
+        ],
+        "complexity": 32
+    },
+    {
+        "artwork_id": 189600,
+        "artwork_name": "Fragment",
+        "created_by": "Spain; probably",
+        "author_id": 381,
+        "artwork_in_period": 1230,
+        "dimension": 1800,
+        "relevance": "High",
+        "style": [
+            "nasrid"
+        ],
+        "complexity": 27
+    },
+    {
+        "artwork_id": 189715,
+        "artwork_name": "King Vulture",
+        "created_by": "Meissen Porcelain",
+        "author_id": 382,
+        "artwork_in_period": 1734,
+        "dimension": 2494,
+        "relevance": "High",
+        "style": [],
+        "complexity": 25
+    },
+    {
+        "artwork_id": 189775,
+        "artwork_name": "The Emperor Sailing, from The Story of the Emperor of China",
+        "created_by": "After a",
+        "author_id": 383,
+        "artwork_in_period": 1716,
+        "dimension": 136675,
+        "relevance": "High",
+        "style": [],
+        "complexity": 20
+    },
+    {
+        "artwork_id": 189807,
+        "artwork_name": "Object",
+        "created_by": "Claude Cahun",
+        "author_id": 384,
+        "artwork_in_period": 1936,
+        "dimension": 130,
+        "relevance": "High",
+        "style": [
+            "Surrealism"
+        ],
+        "complexity": 59
+    },
+    {
+        "artwork_id": 189932,
+        "artwork_name": "Bloom",
+        "created_by": "Julia Fish",
+        "author_id": 385,
+        "artwork_in_period": 1989,
+        "dimension": 5168,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 39
+    },
+    {
+        "artwork_id": 190224,
+        "artwork_name": "River City, Aerial Perspective",
+        "created_by": "Bertrand Goldberg",
+        "author_id": 386,
+        "artwork_in_period": 1979,
+        "dimension": 2565,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 34
+    },
+    {
+        "artwork_id": 190558,
+        "artwork_name": "Spindle Cube Chair",
+        "created_by": "Frank Lloyd",
+        "author_id": 387,
+        "artwork_in_period": 1902,
+        "dimension": 5329,
+        "relevance": "High",
+        "style": [
+            "Arts and Crafts Movement",
+            "20th Century",
+            "Modernism",
+            "American Arts and Crafts Movement"
+        ],
+        "complexity": 30
+    },
+    {
+        "artwork_id": 191197,
+        "artwork_name": "Honey-Pop",
+        "created_by": "Tokujin Yoshioka",
+        "author_id": 388,
+        "artwork_in_period": 2001,
+        "dimension": 13468,
+        "relevance": "High",
+        "style": [
+            "21st Century"
+        ],
+        "complexity": 27
+    },
+    {
+        "artwork_id": 191454,
+        "artwork_name": "Dead Fish, Salton Sea, from the series Desert Cantos III: The Floof",
+        "created_by": "Richard Misrach",
+        "author_id": 390,
+        "artwork_in_period": 1983,
+        "dimension": 17891,
+        "relevance": "High",
+        "style": [
+            "21st Century"
+        ],
+        "complexity": 29
+    },
+    {
+        "artwork_id": 191556,
+        "artwork_name": "The Room No. VI",
+        "created_by": "Eldzier Cortor",
+        "author_id": 391,
+        "artwork_in_period": 1948,
+        "dimension": 8374,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 38
+    },
+    {
+        "artwork_id": 192890,
+        "artwork_name": "Dymaxion Car, Section",
+        "created_by": "Richard Buckminster",
+        "author_id": 393,
+        "artwork_in_period": 1933,
+        "dimension": 3094,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 31
+    },
+    {
+        "artwork_id": 193664,
+        "artwork_name": "The Captive Slave (Ira Aldridge)",
+        "created_by": "John Philip",
+        "author_id": 394,
+        "artwork_in_period": 1827,
+        "dimension": 12827,
+        "relevance": "High",
+        "style": [
+            "nineteenth century",
+            "19th century"
+        ],
+        "complexity": 52
+    },
+    {
+        "artwork_id": 196323,
+        "artwork_name": "Plate 49 from Plan of Chicago 1909: Chicago. View of the City from Jackson Park to Grant Park, Looking Towards the West. The proposed shore treatment as a park enclosing a waterway (or a series of lagoons) is shown, together with the enlarged yacht harbor, recreation piers, and a scheme for Grant Park.",
+        "created_by": "Daniel Hudson",
+        "author_id": 395,
+        "artwork_in_period": 1907,
+        "dimension": 49440,
+        "relevance": "High",
+        "style": [
+            "20th Century"
+        ],
+        "complexity": 33
+    },
+    {
+        "artwork_id": 198809,
+        "artwork_name": "Self-Portrait of My Sister",
+        "created_by": "Gertrude Abercrombie",
+        "author_id": 396,
+        "artwork_in_period": 1941,
+        "dimension": 3740,
+        "relevance": "High",
+        "style": [
+            "Surrealism",
+            "Modernism"
+        ],
+        "complexity": 100
+    },
+    {
+        "artwork_id": 199002,
+        "artwork_name": "In Memory of My Father",
+        "created_by": "Sylvia Plimack",
+        "author_id": 397,
+        "artwork_in_period": 1976,
+        "dimension": 13908,
+        "relevance": "High",
+        "style": [],
+        "complexity": 36
+    },
+    {
+        "artwork_id": 199854,
+        "artwork_name": "Shaffron",
+        "created_by": "Italian, Milan",
+        "author_id": 398,
+        "artwork_in_period": 1575,
+        "dimension": 4980,
+        "relevance": "High",
+        "style": [],
+        "complexity": 20
+    },
+    {
+        "artwork_id": 207293,
+        "artwork_name": "Painterly Realism of a Football Player—Color Masses in the 4th Dimension",
+        "created_by": "Kazimir Malevich",
+        "author_id": 399,
+        "artwork_in_period": 1915,
+        "dimension": 3124,
+        "relevance": "High",
+        "style": [
+            "suprematist"
+        ],
+        "complexity": 143
+    },
+    {
+        "artwork_id": 210482,
+        "artwork_name": "I'timad-ud-Daula's Tomb at Agra",
+        "created_by": "India Agra",
+        "author_id": 400,
+        "artwork_in_period": 1820,
+        "dimension": 3774,
+        "relevance": "High",
+        "style": [
+            "Indian (South Asian)"
+        ],
+        "complexity": 38
+    },
+    {
+        "artwork_id": 210511,
+        "artwork_name": "A Monumental Portrait of a Monkey",
+        "created_by": "India Rajasthan,",
+        "author_id": 401,
+        "artwork_in_period": 1705,
+        "dimension": 2784,
+        "relevance": "High",
+        "style": [
+            "South Asian"
+        ],
+        "complexity": 29
+    },
+    {
+        "artwork_id": 217201,
+        "artwork_name": "Cotton Pickers",
+        "created_by": "Thomas Hart",
+        "author_id": 402,
+        "artwork_in_period": 1945,
+        "dimension": 9801,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 23
+    },
+    {
+        "artwork_id": 218612,
+        "artwork_name": "Khee II",
+        "created_by": "Jack Whitten",
+        "author_id": 403,
+        "artwork_in_period": 1978,
+        "dimension": 38766,
+        "relevance": "High",
+        "style": [],
+        "complexity": 36
+    },
+    {
+        "artwork_id": 220179,
+        "artwork_name": "Object with Number 1",
+        "created_by": "Joaquín Torres-García",
+        "author_id": 404,
+        "artwork_in_period": 1932,
+        "dimension": 1034,
+        "relevance": "High",
+        "style": [
+            "Constructivism",
+            "Modern Latin American Art"
+        ],
+        "complexity": 58
+    },
+    {
+        "artwork_id": 220272,
+        "artwork_name": "Golden Wings Brushing the Clouds Incarnated from Earthly Wide Star (Chikatsusei Maunkinshi)",
+        "created_by": "Kazuo Shiraga",
+        "author_id": 405,
+        "artwork_in_period": 1960,
+        "dimension": 25350,
+        "relevance": "High",
+        "style": [
+            "Gutai group",
+            "contemporary"
+        ],
+        "complexity": 35
+    },
+    {
+        "artwork_id": 221885,
+        "artwork_name": "We Must Bear",
+        "created_by": "Nilima Sheikh",
+        "author_id": 406,
+        "artwork_in_period": 2014,
+        "dimension": 55328,
+        "relevance": "High",
+        "style": [
+            "21st Century"
+        ],
+        "complexity": 38
+    },
+    {
+        "artwork_id": 225016,
+        "artwork_name": "A Siren Beside a Ship",
+        "created_by": "Mark Bradford",
+        "author_id": 408,
+        "artwork_in_period": 2014,
+        "dimension": 94535,
+        "relevance": "High",
+        "style": [
+            "21st Century"
+        ],
+        "complexity": 40
+    },
+    {
+        "artwork_id": 227420,
+        "artwork_name": "Male-Female Figure with Pomegranate",
+        "created_by": "Ibrahim El-Salahi",
+        "author_id": 409,
+        "artwork_in_period": 1968,
+        "dimension": 8464,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 42
+    },
+    {
+        "artwork_id": 229351,
+        "artwork_name": "Target",
+        "created_by": "Jasper Johns",
+        "author_id": 410,
+        "artwork_in_period": 1961,
+        "dimension": 27889,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 31
+    },
+    {
+        "artwork_id": 229406,
+        "artwork_name": "Liz #3 [Early Colored Liz]",
+        "created_by": "Andy Warhol",
+        "author_id": 413,
+        "artwork_in_period": 1963,
+        "dimension": 10201,
+        "relevance": "High",
+        "style": [
+            "Pop Art"
+        ],
+        "complexity": 33
+    },
+    {
+        "artwork_id": 229510,
+        "artwork_name": "AC10",
+        "created_by": "Zhang Wei",
+        "author_id": 414,
+        "artwork_in_period": 1984,
+        "dimension": 27900,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 38
+    },
+    {
+        "artwork_id": 229866,
+        "artwork_name": "Finnish Painting",
+        "created_by": "Pope.L American,",
+        "author_id": 415,
+        "artwork_in_period": 2015,
+        "dimension": 32314,
+        "relevance": "High",
+        "style": [
+            "21st Century"
+        ],
+        "complexity": 50
+    },
+    {
+        "artwork_id": 230189,
+        "artwork_name": "Celestial Chaos No. 1",
+        "created_by": "Tai Xiangzhou",
+        "author_id": 416,
+        "artwork_in_period": 2014,
+        "dimension": 40866,
+        "relevance": "High",
+        "style": [
+            "Chinese (culture or style)",
+            "21st Century"
+        ],
+        "complexity": 39
+    },
+    {
+        "artwork_id": 234433,
+        "artwork_name": "Involvement Series",
+        "created_by": "Wanda Pimentel",
+        "author_id": 418,
+        "artwork_in_period": 1968,
+        "dimension": 12740,
+        "relevance": "High",
+        "style": [
+            "contemporary"
+        ],
+        "complexity": 23
+    },
+    {
+        "artwork_id": 234781,
+        "artwork_name": "Christ Carrying the Cross",
+        "created_by": "Sebastiano del",
+        "author_id": 419,
+        "artwork_in_period": 1515,
+        "dimension": 10856,
+        "relevance": "High",
+        "style": [
+            "Renaissance",
+            "16th Century"
+        ],
+        "complexity": 64
+    },
+    {
+        "artwork_id": 234972,
+        "artwork_name": "Small Town by Day (Badische Kleinstadt bei Tage)",
+        "created_by": "Georg Scholz",
+        "author_id": 420,
+        "artwork_in_period": 1922,
+        "dimension": 7326,
+        "relevance": "High",
+        "style": [
+            "Modernism"
+        ],
+        "complexity": 37
+    },
+    {
+        "artwork_id": 238749,
+        "artwork_name": "Bottle Rack (Porte-Bouteilles)",
+        "created_by": "Marcel Duchamp",
+        "author_id": 421,
+        "artwork_in_period": 1914,
+        "dimension": 2124,
+        "relevance": "High",
+        "style": [],
+        "complexity": 87
+    }
+]

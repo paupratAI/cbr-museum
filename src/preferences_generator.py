@@ -36,7 +36,7 @@
 
 import random
 from scipy.special import softmax
-from clips_to_python import SpecificProblem
+from src.clips_to_python import SpecificProblem
 
 class PreferencesGenerator:
 	def __init__(self, seed: int = 42, themes: list = [], authors: list = []):
