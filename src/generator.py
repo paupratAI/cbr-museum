@@ -40,7 +40,6 @@ if __name__ == "__main__":
             if num_periods == 3 and initial_period_index > 0: 
                 main_periods.append(periods[initial_period_index - 1])
 
-        # Asignar los períodos principales al autor
         author.main_periods = main_periods
     
     # Create a preferences generator
