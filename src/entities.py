@@ -147,21 +147,6 @@ class AbstractProblem:
         self.preferred_themes = self.compute_preferred_themes()
         self.time_coefficient = self.compute_time_coefficient()
 
-        # Assertions
-        assert isinstance(self.preferred_periods, list) and all(isinstance(p, Period) for p in self.preferred_periods), \
-            "preferred_periods must be a list of Period instances"
-        assert isinstance(self.preferred_author, (Author, type(None))), \
-            "preferred_author must be an Author instance or None"
-        assert isinstance(self.art_knowledge, int) and 1 <= self.art_knowledge <= 4, \
-            "art_knowledge must be between 1 and 4"
-        assert isinstance(self.group_size, int) and 1 <= self.group_size <= 4, \
-            "group_size must be between 1 and 4"
-        assert self.group_type in {"casual", "family", "scholar"}, \
-            "group_type must be 'casual', 'family', or 'scholar'"
-        assert isinstance(self.preferred_themes, list) and all(isinstance(t, str) for t in self.preferred_themes), \
-            "preferred_themes must be a list of strings"
-        assert isinstance(self.time_coefficient, float) and self.time_coefficient > 0, \
-            "time_coefficient must be a positive float"
 
     def compute_group_size(self) -> int:
         num_people = self.specific_problem.num_people

@@ -1,12 +1,13 @@
 from dataclasses import dataclass, field, asdict
 import json
 import random 
-from flores.entities import Author, Period, AbstractProblem
+from entities import Author, Period, AbstractProblem
 from periods import periods
 from themes import theme_instances
 
 from preferences_generator import PreferencesGenerator
 from utils import save_in_sqlite3
+from cbr import CBRSystem
 
 @dataclass
 class GenArtArgs():
@@ -75,3 +76,13 @@ if __name__ == "__main__":
 
     elif gen_art_args.format == "sqlite":
         save_in_sqlite3(results)
+    
+    '''cbr = CBRSystem()
+    for ap in results:
+        print(ap)
+        retrieved_cases = cbr.retrieve_cases(ap)
+        for case, similarity in retrieved_cases:
+            print(case)
+            print(similarity)
+            print()
+        break'''

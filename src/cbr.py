@@ -1,6 +1,9 @@
 import sqlite3
 from entities import AbstractProblem, SpecificProblem, Author, Period, Theme
 from typing import List, Dict
+import json
+from themes import theme_instances
+
 
 class CBRSystem:
     def __init__(self):
@@ -20,12 +23,12 @@ class CBRSystem:
         """Calculates the similarity between the current problem and a stored problem."""
         weights = {
             "group_size": 0.05,
-            "group_type": 0.05,
-            "art_knowledge": 0.15,
-            "preferred_periods": 0.15,
+            "group_type": 0.1,
+            "art_knowledge": 0.2,
+            "preferred_periods": 0.2,
             "preferred_author": 0.2,
-            "preferred_themes": 0.15,
-            "time_coefficient": 0.25
+            "preferred_themes": 0.2,
+            "time_coefficient": 0.05
         }
         similarity = 0
 
@@ -53,16 +56,35 @@ class CBRSystem:
             similarity += weights["art_knowledge"] * 0.1
         
         # Preferred periods
-        if problem.preferred_periods == preferred_periods:
-            similarity += weights["preferred_periods"]
-        
+        matched_periods = [
+            period for period in problem.preferred_periods 
+            if any(p.year_beginning <= period.year_beginning <= p.year_end or 
+                p.year_beginning <= period.year_end <= p.year_end 
+                for p in preferred_periods)
+        ]
+        if matched_periods:
+            similarity += weights["preferred_periods"] * (len(matched_periods) / len(problem.preferred_periods))
+
         # Preferred author
-        if problem.preferred_author == preferred_author:
-            similarity += weights["preferred_author"]
+        if problem.preferred_author:
+            if problem.preferred_author.author_id == preferred_author.author_id:
+                similarity += weights["preferred_author"]
+            else:
+                # Check overlapping periods with the preferred author
+                matched_author_periods = [
+                    period for period in problem.preferred_author.main_periods
+                    if any(p.year_beginning <= period.year_beginning <= p.year_end or
+                        p.year_beginning <= period.year_end <= p.year_end
+                        for p in preferred_author.main_periods)
+                ]
+                if matched_author_periods:
+                    similarity += weights["preferred_author"] * (len(matched_author_periods) / len(problem.preferred_author.main_periods))
+
+        print(f"similarity before themes: {similarity}")
         
         # Preferred themes
-        if set(problem.preferred_themes) & set(preferred_themes):
-            similarity += weights["preferred_themes"]
+        
+
         
         # Time coefficient
         diff_time_coefficient = abs(problem.time_coefficient - time_coefficient)
@@ -73,7 +95,7 @@ class CBRSystem:
         elif diff_time_coefficient <= 1:
             similarity += weights["time_coefficient"] * 0.1
 
-        return similarity
+        return round(similarity, 2)
 
 
     def retrieve_cases(self, problem: AbstractProblem, top_k=3):
@@ -84,9 +106,21 @@ class CBRSystem:
         # Convert rows to AbstractProblem and calculate similarity
         cases_with_similarity = []
         for row in rows:
-            similarity = self.calculate_similarity(problem, group_size=row[1], group_type=row[2], art_knowledge=row[3], 
-                                                   preferred_periods=row[4].split(','), preferred_author=row[5], preferred_themes=row[6].split(','), 
-                                                   time_coefficient=row[7])
+            # Deserialize periods
+            stored_periods = deserialize_periods(row[4]) 
+            # Deserialize author
+            stored_author = deserialize_author(row[5])  
+            # Calculate similarity
+            similarity = self.calculate_similarity(
+                problem,
+                group_size=row[1],
+                group_type=row[2],
+                art_knowledge=row[3],
+                preferred_periods=stored_periods,
+                preferred_author=stored_author,
+                preferred_themes=row[6].split(','),
+                time_coefficient=row[7]
+            )
             cases_with_similarity.append((row, similarity))
 
         # Sort by similarity and return top_k
@@ -135,3 +169,37 @@ class CBRSystem:
         adapted_case = retrieved_case.copy()
         adapted_case["problem"] = new_problem
         return adapted_case
+
+
+def deserialize_periods(periods_json: str) -> List[Period]:
+    """Transform a JSON string of periods into a list of Period objects."""
+    periods = json.loads(periods_json)  
+    return [
+        Period(
+            period_id=p['period_id'],
+            year_beginning=p['year_beginning'],
+            year_end=p['year_end'],
+            themes=p.get('themes', []),
+            period_name=p.get('period_name')
+        )
+        for p in periods
+    ]
+
+def deserialize_author(author_json: str) -> Author:
+    """Deserializa un JSON de autor a un objeto Author."""
+    author_data = json.loads(author_json)  
+    return Author(
+        author_id=author_data['author_id'],
+        author_name=author_data['author_name'],
+        main_periods=[
+            Period(
+                period_id=p['period_id'],
+                year_beginning=p['year_beginning'],
+                year_end=p['year_end'],
+                themes=p.get('themes', []),
+                period_name=p.get('period_name')
+            )
+            for p in author_data.get('main_periods', [])
+        ]
+    )
+
