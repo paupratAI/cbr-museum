@@ -1,9 +1,30 @@
+import sqlite3
 from entities import Museum, Room, Author, Theme, Period, Artwork, SpecificProblem, Match
 from typing import List, Dict
 
 class CBRSystem:
     def __init__(self):
-        self.case_library = []
+        self.conn = sqlite3.connect('src/pau/db_cases.db')
+        self.create_table()
+
+    def create_table(self):
+        """Creates the cases table in the database."""
+        with self.conn:
+            self.conn.execute('''
+                CREATE TABLE IF NOT EXISTS cases (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    num_people INTEGER,
+                    favorite_author INTEGER,
+                    favorite_period INTEGER,
+                    favorite_theme TEXT,
+                    guided_visit BOOLEAN,
+                    minors BOOLEAN,
+                    num_experts INTEGER,
+                    route_artworks TEXT,
+                    feedback TEXT,
+                    utility REAL
+                )
+            ''')
 
     def calculate_similarity(self, problem: SpecificProblem, stored_problem: SpecificProblem) -> float:
         """Calculates the similarity between the current problem and a stored problem."""
@@ -48,26 +69,64 @@ class CBRSystem:
 
     def retrieve_cases(self, problem: SpecificProblem, top_k=3):
         """Retrieves the most similar cases to the current problem."""
-        ranked_cases = sorted(
-            [(stored_case, self.calculate_similarity(problem, stored_case["problem"])) for stored_case in self.case_library],
-            key=lambda x: x[1],
-            reverse=True
-        )
+        query = "SELECT * FROM cases"
+        rows = self.conn.execute(query).fetchall()
+
+        # Convert rows to SpecificProblem and calculate similarity
+        cases_with_similarity = []
+        for row in rows:
+            stored_problem = SpecificProblem(
+                num_people=row[1],
+                favorite_author=row[2],
+                favorite_period=row[3],
+                favorite_theme=row[4],
+                guided_visit=bool(row[5]),
+                minors=bool(row[6]),
+                num_experts=row[7],
+                utility=row[10]
+            )
+            similarity = self.calculate_similarity(problem, stored_problem)
+            cases_with_similarity.append((row, similarity))
+
+        # Sort by similarity and return top_k
+        ranked_cases = sorted(cases_with_similarity, key=lambda x: x[1], reverse=True)
         return ranked_cases[:top_k]
 
+
     def store_case(self, problem: SpecificProblem, route_artworks: List[int], feedback: List[int]):
-        """Stores a new case in the library."""
-        case = {
-            "problem": problem,
-            "route_artworks": route_artworks,
-            "feedback": feedback,
-            "utility": sum(feedback) / len(feedback) if feedback else 0
-        }
-        self.case_library.append(case)
+        """Stores a new case in the database if it does not already exist."""
+        utility = sum(feedback) / len(feedback) if feedback else 0
+
+        # Verify if the case already exists
+        query = '''
+            SELECT COUNT(*) FROM cases
+            WHERE num_people = ? AND favorite_author = ? AND favorite_period = ? AND
+                favorite_theme = ? AND guided_visit = ? AND minors = ? AND 
+                num_experts = ? AND route_artworks = ? AND feedback = ?;
+        '''
+        params = (
+            problem.num_people, problem.favorite_author, problem.favorite_period, problem.favorite_theme,
+            problem.guided_visit, problem.minors, problem.num_experts,
+            ','.join(map(str, route_artworks)), ','.join(map(str, feedback))
+        )
+        result = self.conn.execute(query, params).fetchone()
+
+        if result[0] == 0:  # Case does not exist
+            with self.conn:
+                self.conn.execute('''
+                    INSERT INTO cases (
+                        num_people, favorite_author, favorite_period, favorite_theme, guided_visit, minors, num_experts, route_artworks, feedback, utility
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (
+                    problem.num_people, problem.favorite_author, problem.favorite_period, problem.favorite_theme,
+                    problem.guided_visit, problem.minors, problem.num_experts,
+                    ','.join(map(str, route_artworks)), ','.join(map(str, feedback)), utility
+                ))
 
     def forget_cases(self, threshold=0.05):
-        """Removes cases with low utility."""
-        self.case_library = [case for case in self.case_library if case["utility"] > threshold]
+        """Removes cases with low utility from the database."""
+        with self.conn:
+            self.conn.execute("DELETE FROM cases WHERE utility <= ?", (threshold,))
 
     def adapt_case(self, retrieved_case: Dict, new_problem: SpecificProblem):
         """Adapts a retrieved case to the new problem."""
@@ -108,4 +167,7 @@ new_problem = SpecificProblem(12, 5, 1605, "abstract", True, False, 1, 10)
 retrieved_cases = cbr_system.retrieve_cases(new_problem)
 print("Retrieved Cases:")
 for case, similarity in retrieved_cases:
-    print(f"Problem: {case['problem']}, Similarity: {similarity:.2f}")
+    print(f"Problem: id={case[0]}, num_people={case[1]}, favorite_author={case[2]}, "
+          f"favorite_period={case[3]}, favorite_theme={case[4]}, "
+          f"guided_visit={case[5]}, minors={case[6]}, num_experts={case[7]}, "
+          f"Similarity: {similarity:.2f}")

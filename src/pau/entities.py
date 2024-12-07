@@ -110,6 +110,7 @@ class SpecificProblem:
     minors: bool = False  
     num_experts: int = 0  
     past_museum_visits: int = 0  
+    utility: float = 0.0
 
     def __post_init__(self):
         assert isinstance(self.num_people, int) and 1 <= self.num_people <= 50, "num_people must be between 1 and 50"
@@ -122,6 +123,7 @@ class SpecificProblem:
         assert isinstance(self.minors, bool), "minors must be a boolean"
         assert isinstance(self.num_experts, int) and 0 <= self.num_experts <= self.num_people, "num_experts must be between 0 and num_people"
         assert isinstance(self.past_museum_visits, int) and 0 <= self.past_museum_visits <= 50, "past_museum_visits must be between 0 and 50"
+        assert isinstance(self.utility, (int, float)), "utility must be a number"
 
 class AbstractProblem:
     def __init__(
