@@ -2,8 +2,7 @@ import sqlite3
 from entities import AbstractProblem, SpecificProblem, Author, Period, Theme
 from typing import List, Dict
 import json
-from themes import theme_instances
-
+import ast
 
 class CBRSystem:
     def __init__(self):
@@ -80,12 +79,11 @@ class CBRSystem:
                 if matched_author_periods:
                     similarity += weights["preferred_author"] * (len(matched_author_periods) / len(problem.preferred_author.main_periods))
 
-        print(f"similarity before themes: {similarity}")
         
         # Preferred themes
-        
+        if problem.preferred_themes[0] == preferred_themes[0]:
+            similarity += weights["preferred_themes"]
 
-        
         # Time coefficient
         diff_time_coefficient = abs(problem.time_coefficient - time_coefficient)
         if diff_time_coefficient == 0:
@@ -118,7 +116,7 @@ class CBRSystem:
                 art_knowledge=row[3],
                 preferred_periods=stored_periods,
                 preferred_author=stored_author,
-                preferred_themes=row[6].split(','),
+                preferred_themes = ast.literal_eval(row[6]),
                 time_coefficient=row[7]
             )
             cases_with_similarity.append((row, similarity))
