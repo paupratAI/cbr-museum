@@ -1,45 +1,49 @@
 import pandas as pd
 import sqlite3
+import json
+from dataclasses import asdict
 
 def save_in_sqlite3(results: list):
-    # Guardar en una base de datos SQLite
-    # Conectar a la base de datos (creará el archivo si no existe)
+    # results es una lista de AbstractProblem
+
     conn = sqlite3.connect("data/database.db")
     cursor = conn.cursor()
 
     # Crear la tabla si no existe
-    # Ajusta las columnas al tipo de datos que necesitas
+    # 7 columnas: group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS specific_problems (
+    CREATE TABLE IF NOT EXISTS abstract_problems (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        num_people INTEGER,
-        favorite_author INTEGER,
-        favorite_period INTEGER,
-        favorite_theme TEXT,
-        guided_visit BOOLEAN,
-        minors BOOLEAN,
-        num_experts INTEGER,
-        past_museum_visits INTEGER
+        group_size INTEGER,
+        group_type TEXT,
+        art_knowledge INTEGER,
+        preferred_periods TEXT,
+        preferred_author TEXT,
+        preferred_themes TEXT,
+        time_coefficient REAL
     )
     """)
 
     # Insertar cada registro en la tabla
-    for record in results:
+    for ap in results:
+        # Convertir objetos complejos a algo serializable
+        preferred_periods_json = json.dumps([asdict(p) for p in ap.preferred_periods], ensure_ascii=False)
+        preferred_author_json = json.dumps(asdict(ap.preferred_author), ensure_ascii=False) if ap.preferred_author else None
+        preferred_themes_json = json.dumps(ap.preferred_themes, ensure_ascii=False)
+
         cursor.execute("""
-        INSERT INTO specific_problems
-        (num_people, favorite_author, favorite_period, favorite_theme, guided_visit, minors, num_experts, past_museum_visits)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO abstract_problems
+        (group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """, (
-            record['num_people'],
-            record['favorite_author'],
-            record['favorite_period'],
-            record['favorite_theme'],
-            record['guided_visit'],
-            record['minors'],
-            record['num_experts'],
-            record['past_museum_visits']
+            ap.group_size,
+            ap.group_type,
+            ap.art_knowledge,
+            preferred_periods_json,
+            preferred_author_json,
+            preferred_themes_json,
+            ap.time_coefficient
         ))
 
-    # Confirmar transacciones
     conn.commit()
     conn.close()

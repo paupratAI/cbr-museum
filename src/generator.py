@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field, asdict
 import json
 import random 
-from flores.entities import Author, Period  
+from flores.entities import Author, Period, AbstractProblem
 from periods import periods
 from themes import theme_instances
 
@@ -14,7 +14,7 @@ class GenArtArgs():
     data: list = field(default_factory=list)
     num_artworks: int = 10
     num_cases: int = 100
-    format: str = "json"
+    format: str = "sqlite"
 
     def __post_init__(self):
         with open("data/filtered_artworks.json", "r", encoding="utf-8") as file:
@@ -47,10 +47,31 @@ if __name__ == "__main__":
     preferences_generator = PreferencesGenerator(themes=theme_instances,authors=list(authors))
     for _ in range(gen_art_args.num_cases):
         sp = preferences_generator.sample()
-        results.append(asdict(sp))
+
+        ap = AbstractProblem(
+            specific_problem=sp,
+            available_periods=periods,
+            available_authors=list(authors),
+            available_themes=theme_instances)
+        
+        results.append((ap))
 
     if gen_art_args.format == "json":
+        serializable_results = []
+        for ap in results:
+            ap_dict = {
+                "group_size": ap.group_size,
+                "group_type": ap.group_type,
+                "art_knowledge": ap.art_knowledge,
+                "preferred_periods": [asdict(p) for p in ap.preferred_periods],
+                "preferred_author": asdict(ap.preferred_author) if ap.preferred_author else None,
+                "preferred_themes": ap.preferred_themes,
+                "time_coefficient": ap.time_coefficient
+            }
+            serializable_results.append(ap_dict)
+
         with open("data/database.json", "w", encoding="utf-8") as f:
-            json.dump(results, f, ensure_ascii=False, indent=4)
+            json.dump(serializable_results, f, ensure_ascii=False, indent=4)
+
     elif gen_art_args.format == "sqlite":
         save_in_sqlite3(results)

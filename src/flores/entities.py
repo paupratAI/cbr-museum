@@ -101,7 +101,7 @@ class AbstractProblem:
         specific_problem: 'SpecificProblem',
         available_periods: List['Period'],
         available_authors: List['Author'],
-        available_themes: Dict[str, 'Theme']
+        available_themes: List['Theme']
     ):
         self.specific_problem = specific_problem
         self.available_periods = available_periods
@@ -188,11 +188,14 @@ class AbstractProblem:
 
     def compute_preferred_themes(self) -> List[str]:
         favorite_theme_choice = self.specific_problem.favorite_theme
-        if favorite_theme_choice is None or favorite_theme_choice.lower() == "any":
-            return list(self.available_themes.keys())
-        else:
-            theme = self.available_themes.get(favorite_theme_choice.lower())
-            return theme.labels if theme else []
+        if not favorite_theme_choice or favorite_theme_choice.lower() == "any":
+            return [t.theme_name for t in self.available_themes]
+        
+        theme = next(
+            (t for t in self.available_themes if t.theme_name.lower() == favorite_theme_choice.lower()),
+            None
+        )
+        return theme.labels if theme else []
 
     def compute_time_coefficient(self) -> float:
         if self.specific_problem.guided_visit:
