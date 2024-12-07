@@ -1,5 +1,5 @@
 import sqlite3
-from entities import Museum, Room, Author, Theme, Period, Artwork, SpecificProblem, Match
+from entities import AbstractProblem, SpecificProblem, Author, Period, Theme
 from typing import List, Dict
 
 class CBRSystem:
@@ -11,69 +11,88 @@ class CBRSystem:
         """Create indices for faster query performance."""
         with self.conn:
             # Índices para columnas frecuentemente usadas en consultas
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_author ON specific_problems(favorite_author);")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_period ON specific_problems(favorite_period);")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_theme ON specific_problems(favorite_theme);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_author ON abstract_problems(preferred_author);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_period ON abstract_problems(preferred_periods);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_period ON abstract_problems(group_type);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_period ON abstract_problems(group_size);")
 
 
-    def calculate_similarity(self, problem: SpecificProblem, stored_problem: SpecificProblem) -> float:
+    def calculate_similarity(self, problem: AbstractProblem, stored_problem: AbstractProblem) -> float:
         """Calculates the similarity between the current problem and a stored problem."""
         weights = {
-            "num_people": 0.1,
-            "favorite_author": 0.3,
-            "favorite_period": 0.2,
-            "favorite_theme": 0.2,
-            "guided_visit": 0.1,
-            "minors": 0.05,
-            "num_experts": 0.05
+            "group_size": 0.05,
+            "group_type": 0.05,
+            "art_knowledge": 0.15,
+            "preferred_periods": 0.15,
+            "preferred_author": 0.2,
+            "preferred_themes": 0.15,
+            "time_coefficient": 0.25
         }
         similarity = 0
 
-        # Compare the number of people (smaller difference means higher similarity)
-        similarity += weights["num_people"] * (1 - abs(problem.num_people - stored_problem.num_people) / 50)
+        # Group size
+        diff_group_size = abs(problem.group_size - stored_problem.group_size)
 
-        # Compare the favorite author
-        if problem.favorite_author == stored_problem.favorite_author:
-            similarity += weights["favorite_author"]
-
-        # Compare the favorite period
-        if problem.favorite_period and stored_problem.favorite_period:
-            similarity += weights["favorite_period"] * (1 - abs(problem.favorite_period - stored_problem.favorite_period) / 900)
-
-        # Compare the favorite theme
-        if problem.favorite_theme and problem.favorite_theme == stored_problem.favorite_theme:
-            similarity += weights["favorite_theme"]
-
-        # Compare if a guided visit is preferred
-        if problem.guided_visit == stored_problem.guided_visit:
-            similarity += weights["guided_visit"]
-
-        # Compare if there are minors in the group
-        if problem.minors == stored_problem.minors:
-            similarity += weights["minors"]
-
-        # Compare the number of experts in the group
-        similarity += weights["num_experts"] * (1 - abs(problem.num_experts - stored_problem.num_experts) / max(problem.num_people, stored_problem.num_people))
+        if diff_group_size == 0:
+            similarity += weights["group_size"]
+        elif diff_group_size == 1:
+            similarity += weights["group_size"] * 0.5
+        elif diff_group_size == 2:
+            similarity += weights["group_size"] * 0.1
+        
+        # Group type
+        if problem.group_type == stored_problem.group_type:
+            similarity += weights["group_type"]
+        
+        # Art knowledge
+        diff_art_knowledge = abs(problem.art_knowledge - stored_problem.art_knowledge)
+        if diff_art_knowledge == 0:
+            similarity += weights["art_knowledge"]
+        elif diff_art_knowledge == 1:
+            similarity += weights["art_knowledge"] * 0.5
+        elif diff_art_knowledge == 2:
+            similarity += weights["art_knowledge"] * 0.1
+        
+        # Preferred periods
+        if problem.preferred_periods == stored_problem.preferred_periods:
+            similarity += weights["preferred_periods"]
+        
+        # Preferred author
+        if problem.preferred_author == stored_problem.preferred_author:
+            similarity += weights["preferred_author"]
+        
+        # Preferred themes
+        if problem.preferred_themes == stored_problem.preferred_themes:
+            similarity += weights["preferred_themes"]
+        
+        # Time coefficient
+        diff_time_coefficient = abs(problem.time_coefficient - stored_problem.time_coefficient)
+        if diff_time_coefficient == 0:
+            similarity += weights["time_coefficient"]
+        elif diff_time_coefficient < 0.5:
+            similarity += weights["time_coefficient"] * 0.5
+        elif diff_time_coefficient <= 1:
+            similarity += weights["time_coefficient"] * 0.1
 
         return similarity
 
-    def retrieve_cases(self, problem: SpecificProblem, top_k=3):
+
+    def retrieve_cases(self, problem: AbstractProblem, top_k=3):
         """Retrieves the most similar cases to the current problem."""
-        query = "SELECT * FROM specific_problems"
+        query = "SELECT * FROM abstract_problems"
         rows = self.conn.execute(query).fetchall()
 
-        # Convert rows to SpecificProblem and calculate similarity
+        # Convert rows to AbstractProblem and calculate similarity
         cases_with_similarity = []
         for row in rows:
-            stored_problem = SpecificProblem(
-                num_people=row[1],
-                favorite_author=row[2],
-                favorite_period=row[3],
-                favorite_theme=row[4],
-                guided_visit=bool(row[5]),
-                minors=bool(row[6]),
-                num_experts=row[7],
-                past_museum_visits=row[8]
+            stored_problem = AbstractProblem(
+                group_size=row[1],
+                group_type=row[2],
+                art_knowledge=row[3],
+                preferred_periods=row[4],
+                preferred_author=row[5],
+                preferred_themes=row[6],
+                time_coefficient=row[7],
             )
             similarity = self.calculate_similarity(problem, stored_problem)
             cases_with_similarity.append((row, similarity))
@@ -83,16 +102,16 @@ class CBRSystem:
         return ranked_cases[:top_k]
 
 
-    def store_case(self, problem: SpecificProblem, route_artworks: List[int], feedback: List[int]):
+    def store_case(self, problem: AbstractProblem, route_artworks: List[int], feedback: List[int]):
         """Stores a new case in the database if it does not already exist."""
         utility = sum(feedback) / len(feedback) if feedback else 0
 
         # Verify if the case already exists
         query = '''
-            SELECT COUNT(*) FROM specific_problems
-            WHERE num_people = ? AND favorite_author = ? AND favorite_period = ? AND
-                favorite_theme = ? AND guided_visit = ? AND minors = ? AND 
-                num_experts = ? AND past_museum_visits = ? AND route_artworks = ? AND feedback = ?;
+            SELECT COUNT(*) FROM abstract_problems
+            WHERE group_size = ? AND group_type = ? AND art_knowledge = ? AND
+                preferred_periods = ? AND preferred_author = ? AND preferred_themes = ? AND 
+                time_coefficient = ? AND route_artworks = ? AND feedback = ?;
         '''
         params = (
             problem.num_people, problem.favorite_author, problem.favorite_period, problem.favorite_theme,
@@ -104,8 +123,8 @@ class CBRSystem:
         if result[0] == 0:  # Case does not exist
             with self.conn:
                 self.conn.execute('''
-                    INSERT INTO specific_problems (
-                        num_people, favorite_author, favorite_period, favorite_theme, guided_visit, minors, num_experts, past_museum_visits, route_artworks, feedback, utility
+                    INSERT INTO abstract_problems (
+                        group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, route_artworks, feedback, utility
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     problem.num_people, problem.favorite_author, problem.favorite_period, problem.favorite_theme,
@@ -116,26 +135,10 @@ class CBRSystem:
     def forget_cases(self, threshold=0.05):
         """Removes cases with low utility from the database."""
         with self.conn:
-            self.conn.execute("DELETE FROM specific_problems WHERE utility <= ?", (threshold,))
+            self.conn.execute("DELETE FROM abstract_problems WHERE utility <= ?", (threshold,))
 
-    def adapt_case(self, retrieved_case: Dict, new_problem: SpecificProblem):
+    def adapt_case(self, retrieved_case: Dict, new_problem: AbstractProblem):
         """Adapts a retrieved case to the new problem."""
         adapted_case = retrieved_case.copy()
         adapted_case["problem"] = new_problem
         return adapted_case
-
-
-### How to use it: ###
-cbr_system = CBRSystem()
-
-# Create a new problem
-new_problem = SpecificProblem(12, 5, 1605, "abstract", True, False, 1, 10)
-
-# Retrieve the most similar cases
-retrieved_cases = cbr_system.retrieve_cases(new_problem)
-print("Retrieved Cases:")
-for case, similarity in retrieved_cases:
-    print(f"Problem: id={case[0]}, num_people={case[1]}, favorite_author={case[2]}, "
-          f"favorite_period={case[3]}, favorite_theme={case[4]}, "
-          f"guided_visit={case[5]}, minors={case[6]}, num_experts={case[7]}, "
-          f"Similarity: {similarity:.2f}")
