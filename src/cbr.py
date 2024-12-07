@@ -88,9 +88,9 @@ class CBRSystem:
         diff_time_coefficient = abs(problem.time_coefficient - time_coefficient)
         if diff_time_coefficient == 0:
             similarity += weights["time_coefficient"]
-        elif diff_time_coefficient < 0.5:
+        elif diff_time_coefficient < 0.2:
             similarity += weights["time_coefficient"] * 0.5
-        elif diff_time_coefficient <= 1:
+        elif diff_time_coefficient <= 0.5:
             similarity += weights["time_coefficient"] * 0.1
 
         return round(similarity, 2)
