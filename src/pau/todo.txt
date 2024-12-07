@@ -1,0 +1,14 @@
+
+- Mesures d'utilitat
+- Factor d'oblit
+- Manteniment general de la base de casos
+- Avaluació de funcionament
+- Adaptació
+
+Dataset:
+    atributs de SpecificProblem per separat
+    llista de 25 quadres
+    llista de longitud [quadres que ha vist] i cada posició de la llista és el valor de matching de cada quadre
+
+Adaptar la solució segons el cas recuperat
+
