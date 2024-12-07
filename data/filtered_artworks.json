@@ -28,17 +28,6 @@
         "complexity": 59
     },
     {
-        "artwork_id": 2816,
-        "artwork_name": "Interior at Nice",
-        "created_by": "Henri Matisse",
-        "author_id": 2,
-        "artwork_in_period": 1919,
-        "dimension": 11790,
-        "relevance": "High",
-        "style": [],
-        "complexity": 128
-    },
-    {
         "artwork_id": 4081,
         "artwork_name": "Gian Lodovico Madruzzo",
         "created_by": "Giovanni Battista",
@@ -203,17 +192,6 @@
         "complexity": 75
     },
     {
-        "artwork_id": 7124,
-        "artwork_name": "Seated Nude",
-        "created_by": "Henri Matisse",
-        "author_id": 15,
-        "artwork_in_period": 1922,
-        "dimension": 6084,
-        "relevance": "High",
-        "style": [],
-        "complexity": 34
-    },
-    {
         "artwork_id": 8624,
         "artwork_name": "Portrait of Pablo Picasso",
         "created_by": "Juan Gris",
@@ -225,17 +203,6 @@
             "Cubism"
         ],
         "complexity": 143
-    },
-    {
-        "artwork_id": 8633,
-        "artwork_name": "Hero Construction",
-        "created_by": "Richard Hunt",
-        "author_id": 17,
-        "artwork_in_period": 1958,
-        "dimension": 11826,
-        "relevance": "High",
-        "style": [],
-        "complexity": 37
     },
     {
         "artwork_id": 8958,
@@ -374,17 +341,6 @@
             "19th century"
         ],
         "complexity": 149
-    },
-    {
-        "artwork_id": 13720,
-        "artwork_name": "Alabama Cotton Tenant Farmer's Wife",
-        "created_by": "Walker Evans",
-        "author_id": 28,
-        "artwork_in_period": 1936,
-        "dimension": 357,
-        "relevance": "High",
-        "style": [],
-        "complexity": 52
     },
     {
         "artwork_id": 13853,
@@ -703,17 +659,6 @@
             "19th century"
         ],
         "complexity": 200
-    },
-    {
-        "artwork_id": 16776,
-        "artwork_name": "After the Hurricane, Bahamas",
-        "created_by": "Winslow Homer",
-        "author_id": 51,
-        "artwork_in_period": 1899,
-        "dimension": 1998,
-        "relevance": "High",
-        "style": [],
-        "complexity": 214
     },
     {
         "artwork_id": 16964,

@@ -36,7 +36,7 @@
 
 import random
 from scipy.special import softmax
-from src.clips_to_python import SpecificProblem
+from flores.entities import SpecificProblem
 
 class PreferencesGenerator:
 	def __init__(self, seed: int = 42, themes: list = [], authors: list = []):
@@ -53,8 +53,8 @@ class PreferencesGenerator:
 		num_experts = random.randint(0, num_people)
 		past_museums_visits = random.randint(0, 50)
 		favorite_period = random.randint(1000, 1900)
-		favorite_theme = random.choice(self.themes)
-		favorite_author = random.choice(self.authors)
+		favorite_theme = random.choice(self.themes).theme_name
+		favorite_author = random.choice(self.authors).author_id
 
 		sp = SpecificProblem(
 			num_people=num_people,

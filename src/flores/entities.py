@@ -31,6 +31,14 @@ class Author:
     author_name: str
     main_periods: List['Period'] = field(default_factory=list)
 
+    def __hash__(self):
+        return hash(self.author_id)
+
+    def __eq__(self, other):
+        if not isinstance(other, Author):
+            return False
+        return self.author_id == other.author_id
+
 @dataclass
 class Theme:
     theme_name: str
@@ -60,11 +68,11 @@ class Artwork:
     created_by: Author
     artwork_in_period: Period
     artwork_theme: str
-    artwork_style: List[Style] = field(default_factory=list)
     dimension: float
     relevance: float
     complexity: float
     default_time: int
+    artwork_style: List[Style] = field(default_factory=list)
 
 @dataclass
 class SpecificProblem:

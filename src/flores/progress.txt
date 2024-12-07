@@ -1,4 +1,0 @@
-Nuestro objetivo es conseguir un generador de datos.
-
-El resultado es una tabla con una identificación del usuario, sus preferencias, su ruta y su feedback. Partiendo de esta base, crearemos un generador que poco a poco contendrá
-lo referenciado anteriormente.
