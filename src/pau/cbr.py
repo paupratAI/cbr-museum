@@ -10,11 +10,10 @@ class CBRSystem:
     def create_indices(self):
         """Create indices for faster query performance."""
         with self.conn:
-            # Índices para columnas frecuentemente usadas en consultas
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_author ON abstract_problems(preferred_author);")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_period ON abstract_problems(preferred_periods);")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_period ON abstract_problems(group_type);")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_period ON abstract_problems(group_size);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_preferred_author ON abstract_problems(preferred_author);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_preferred_periods ON abstract_problems(preferred_periods);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_group_type ON abstract_problems(group_type);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_group_size ON abstract_problems(group_size);")
 
 
     def calculate_similarity(self, problem: AbstractProblem, stored_problem: AbstractProblem) -> float:
@@ -54,7 +53,7 @@ class CBRSystem:
             similarity += weights["art_knowledge"] * 0.1
         
         # Preferred periods
-        if problem.preferred_periods == stored_problem.preferred_periods:
+        if set(problem.preferred_periods) & set(stored_problem.preferred_periods):
             similarity += weights["preferred_periods"]
         
         # Preferred author
@@ -62,7 +61,7 @@ class CBRSystem:
             similarity += weights["preferred_author"]
         
         # Preferred themes
-        if problem.preferred_themes == stored_problem.preferred_themes:
+        if set(problem.preferred_themes) & set(stored_problem.preferred_themes):
             similarity += weights["preferred_themes"]
         
         # Time coefficient
@@ -114,9 +113,9 @@ class CBRSystem:
                 time_coefficient = ? AND route_artworks = ? AND feedback = ?;
         '''
         params = (
-            problem.num_people, problem.favorite_author, problem.favorite_period, problem.favorite_theme,
-            problem.guided_visit, problem.minors, problem.num_experts,
-            ','.join(map(str, route_artworks)), ','.join(map(str, feedback))
+            problem.group_size, problem.group_type, problem.art_knowledge,
+            problem.preferred_periods, problem.preferred_author, problem.preferred_themes,
+            problem.time_coefficient
         )
         result = self.conn.execute(query, params).fetchone()
 
@@ -127,9 +126,10 @@ class CBRSystem:
                         group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, route_artworks, feedback, utility
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
-                    problem.num_people, problem.favorite_author, problem.favorite_period, problem.favorite_theme,
-                    problem.guided_visit, problem.minors, problem.num_experts,
-                    ','.join(map(str, route_artworks)), ','.join(map(str, feedback)), utility
+                    problem.group_size, problem.group_type, problem.art_knowledge,
+                    problem.preferred_periods, problem.preferred_author, problem.preferred_themes,
+                    problem.time_coefficient, ','.join(map(str, route_artworks)), 
+                    ','.join(map(str, feedback)), utility
                 ))
 
     def forget_cases(self, threshold=0.05):
