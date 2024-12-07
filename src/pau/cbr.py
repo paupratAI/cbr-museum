@@ -1,9 +1,20 @@
+import sqlite3
 from entities import Museum, Room, Author, Theme, Period, Artwork, SpecificProblem, Match
 from typing import List, Dict
 
 class CBRSystem:
     def __init__(self):
-        self.case_library = []
+        self.conn = sqlite3.connect('data/database.db')
+        self.create_indices()
+
+    def create_indices(self):
+        """Create indices for faster query performance."""
+        with self.conn:
+            # Índices para columnas frecuentemente usadas en consultas
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_author ON specific_problems(favorite_author);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_period ON specific_problems(favorite_period);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_theme ON specific_problems(favorite_theme);")
+
 
     def calculate_similarity(self, problem: SpecificProblem, stored_problem: SpecificProblem) -> float:
         """Calculates the similarity between the current problem and a stored problem."""
@@ -42,32 +53,70 @@ class CBRSystem:
             similarity += weights["minors"]
 
         # Compare the number of experts in the group
-        similarity += weights["num_experts"] * (1 - abs(problem.num_experts - stored_problem.num_experts) / problem.num_people)
+        similarity += weights["num_experts"] * (1 - abs(problem.num_experts - stored_problem.num_experts) / max(problem.num_people, stored_problem.num_people))
 
         return similarity
 
     def retrieve_cases(self, problem: SpecificProblem, top_k=3):
         """Retrieves the most similar cases to the current problem."""
-        ranked_cases = sorted(
-            [(stored_case, self.calculate_similarity(problem, stored_case["problem"])) for stored_case in self.case_library],
-            key=lambda x: x[1],
-            reverse=True
-        )
+        query = "SELECT * FROM specific_problems"
+        rows = self.conn.execute(query).fetchall()
+
+        # Convert rows to SpecificProblem and calculate similarity
+        cases_with_similarity = []
+        for row in rows:
+            stored_problem = SpecificProblem(
+                num_people=row[1],
+                favorite_author=row[2],
+                favorite_period=row[3],
+                favorite_theme=row[4],
+                guided_visit=bool(row[5]),
+                minors=bool(row[6]),
+                num_experts=row[7],
+                past_museum_visits=row[8]
+            )
+            similarity = self.calculate_similarity(problem, stored_problem)
+            cases_with_similarity.append((row, similarity))
+
+        # Sort by similarity and return top_k
+        ranked_cases = sorted(cases_with_similarity, key=lambda x: x[1], reverse=True)
         return ranked_cases[:top_k]
 
-    def store_case(self, problem: SpecificProblem, route_artworks: List[int], feedback: List[int]):
-        """Stores a new case in the library."""
-        case = {
-            "problem": problem,
-            "route_artworks": route_artworks,
-            "feedback": feedback,
-            "utility": sum(feedback) / len(feedback) if feedback else 0
-        }
-        self.case_library.append(case)
 
-    def forget_cases(self, threshold=0.2):
-        """Removes cases with low utility."""
-        self.case_library = [case for case in self.case_library if case["utility"] > threshold]
+    def store_case(self, problem: SpecificProblem, route_artworks: List[int], feedback: List[int]):
+        """Stores a new case in the database if it does not already exist."""
+        utility = sum(feedback) / len(feedback) if feedback else 0
+
+        # Verify if the case already exists
+        query = '''
+            SELECT COUNT(*) FROM specific_problems
+            WHERE num_people = ? AND favorite_author = ? AND favorite_period = ? AND
+                favorite_theme = ? AND guided_visit = ? AND minors = ? AND 
+                num_experts = ? AND past_museum_visits = ? AND route_artworks = ? AND feedback = ?;
+        '''
+        params = (
+            problem.num_people, problem.favorite_author, problem.favorite_period, problem.favorite_theme,
+            problem.guided_visit, problem.minors, problem.num_experts,
+            ','.join(map(str, route_artworks)), ','.join(map(str, feedback))
+        )
+        result = self.conn.execute(query, params).fetchone()
+
+        if result[0] == 0:  # Case does not exist
+            with self.conn:
+                self.conn.execute('''
+                    INSERT INTO specific_problems (
+                        num_people, favorite_author, favorite_period, favorite_theme, guided_visit, minors, num_experts, past_museum_visits, route_artworks, feedback, utility
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (
+                    problem.num_people, problem.favorite_author, problem.favorite_period, problem.favorite_theme,
+                    problem.guided_visit, problem.minors, problem.num_experts,
+                    ','.join(map(str, route_artworks)), ','.join(map(str, feedback)), utility
+                ))
+
+    def forget_cases(self, threshold=0.05):
+        """Removes cases with low utility from the database."""
+        with self.conn:
+            self.conn.execute("DELETE FROM specific_problems WHERE utility <= ?", (threshold,))
 
     def adapt_case(self, retrieved_case: Dict, new_problem: SpecificProblem):
         """Adapts a retrieved case to the new problem."""
@@ -79,19 +128,14 @@ class CBRSystem:
 ### How to use it: ###
 cbr_system = CBRSystem()
 
-stored_problem_1 = SpecificProblem(10, 1, 1600, "historical", True, False, 2, 5)
-stored_problem_2 = SpecificProblem(15, 2, 1700, "religious", False, True, 3, 20)
-stored_problem_3 = SpecificProblem(20, 3, 1800, "natural", True, True, 4, 30)
-
-cbr_system.store_case(stored_problem_1, [1, 2, 3], [4, 5, 3])
-cbr_system.store_case(stored_problem_2, [4, 5, 6], [5, 5, 4])
-cbr_system.store_case(stored_problem_3, [7, 8, 9], [3, 4, 5])
-
 # Create a new problem
-new_problem = SpecificProblem(12, 1, 1605, "historical", True, False, 1, 10)
+new_problem = SpecificProblem(12, 5, 1605, "abstract", True, False, 1, 10)
 
 # Retrieve the most similar cases
 retrieved_cases = cbr_system.retrieve_cases(new_problem)
 print("Retrieved Cases:")
 for case, similarity in retrieved_cases:
-    print(f"Problem: {case['problem']}, Similarity: {similarity:.2f}")
+    print(f"Problem: id={case[0]}, num_people={case[1]}, favorite_author={case[2]}, "
+          f"favorite_period={case[3]}, favorite_theme={case[4]}, "
+          f"guided_visit={case[5]}, minors={case[6]}, num_experts={case[7]}, "
+          f"Similarity: {similarity:.2f}")

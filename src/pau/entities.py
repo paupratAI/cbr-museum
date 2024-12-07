@@ -9,6 +9,10 @@ class Museum:
     rooms: List['Room'] = field(default_factory=list)
     auxiliary_rooms: List['Room'] = field(default_factory=list)
 
+    def __post_init__(self):
+        assert isinstance(self.museum_id, int), "museum_id must be an integer"
+        assert isinstance(self.museum_name, str), "museum_name must be a string"
+
 @dataclass
 class Room:
     room_id: int
@@ -21,6 +25,13 @@ class Room:
     room_name: Optional[str] = None  
 
     def __post_init__(self):
+        assert isinstance(self.room_id, int), "room_id must be an integer"
+        assert isinstance(self.room_in_museum, Museum), "room_in_museum must be a Museum instance"
+        assert isinstance(self.adjacent_rooms, list), "adjacent_rooms must be a list of Room instances"
+        assert isinstance(self.is_entry, bool), "is_entry must be a boolean"
+        assert isinstance(self.is_exit, bool), "is_exit must be a boolean"
+        assert isinstance(self.is_elevator, bool), "is_elevator must be a boolean"
+        assert isinstance(self.is_stairs, bool), "is_stairs must be a boolean"
         assert not (self.is_entry and self.is_stairs), "The entry cannot be stairs."
         if self.room_name is None:
             self.room_name = f"room{self.room_id}"
@@ -32,10 +43,18 @@ class Author:
     author_name: str
     main_periods: List['Period'] = field(default_factory=list)
 
+    def __post_init__(self):
+        assert isinstance(self.author_id, int), "author_id must be an integer"
+        assert isinstance(self.author_name, str), "author_name must be a string"
+
+
 @dataclass
 class Theme:
     theme_name: str
     labels: List[str] = field(default_factory=list)
+
+    def __post_init__(self):
+        assert all(isinstance(label, str) for label in self.labels), "All labels must be strings"
 
 @dataclass
 class Period:
@@ -53,6 +72,10 @@ class Period:
 class Style:
     style_name: str
 
+    def __post_init__(self):
+        assert isinstance(self.style_name, str), "style_name must be a string"
+    
+
 @dataclass
 class Artwork:
     artwork_id: int
@@ -67,6 +90,15 @@ class Artwork:
     artwork_in_room: Optional[str] = None
     artwork_style: List[Style] = field(default_factory=list)
 
+    def __post_init__(self):
+        assert isinstance(self.artwork_id, int), "artwork_id must be an integer"
+        assert isinstance(self.artwork_name, str), "artwork_name must be a string"
+        assert isinstance(self.created_by, Author), "created_by must be an Author instance"
+        assert isinstance(self.artwork_in_room, Room), "artwork_in_room must be a Room instance"
+        assert isinstance(self.artwork_theme, Theme), "artwork_theme must be a Theme instance"
+        assert isinstance(self.artwork_in_period, Period), "artwork_in_period must be a Period instance"
+        assert isinstance(self.default_time, int) and self.default_time > 0, "default_time must be a positive integer"
+
 
 @dataclass
 class SpecificProblem:
@@ -78,11 +110,14 @@ class SpecificProblem:
     minors: bool = False  
     num_experts: int = 0  
     past_museum_visits: int = 0  
+ 
 
     def __post_init__(self):
         assert isinstance(self.num_people, int) and 1 <= self.num_people <= 50, "num_people must be between 1 and 50"
         assert isinstance(self.favorite_author, (int, type(None))), "favorite_author must be an integer or None"
         assert isinstance(self.favorite_period, (int, type(None))), "favorite_period must be an integer or None"
+        if self.favorite_period is not None:
+            assert 1000 <= self.favorite_period <= 1900, "favorite_period must be between 1000 and 1900"
         assert isinstance(self.favorite_theme, (str, type(None))), "favorite_theme must be a string or None"
         assert isinstance(self.guided_visit, bool), "guided_visit must be a boolean"
         assert isinstance(self.minors, bool), "minors must be a boolean"
