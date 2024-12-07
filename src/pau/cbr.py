@@ -42,7 +42,7 @@ class CBRSystem:
             similarity += weights["minors"]
 
         # Compare the number of experts in the group
-        similarity += weights["num_experts"] * (1 - abs(problem.num_experts - stored_problem.num_experts) / problem.num_people)
+        similarity += weights["num_experts"] * (1 - abs(problem.num_experts - stored_problem.num_experts) / max(problem.num_people, stored_problem.num_people))
 
         return similarity
 
@@ -65,7 +65,7 @@ class CBRSystem:
         }
         self.case_library.append(case)
 
-    def forget_cases(self, threshold=0.2):
+    def forget_cases(self, threshold=0.05):
         """Removes cases with low utility."""
         self.case_library = [case for case in self.case_library if case["utility"] > threshold]
 
