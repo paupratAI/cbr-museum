@@ -5,6 +5,16 @@ from typing import List, Dict
 class CBRSystem:
     def __init__(self):
         self.conn = sqlite3.connect('data/database.db')
+        self.create_indices()
+
+    def create_indices(self):
+        """Create indices for faster query performance."""
+        with self.conn:
+            # Índices para columnas frecuentemente usadas en consultas
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_author ON specific_problems(favorite_author);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_period ON specific_problems(favorite_period);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_favorite_theme ON specific_problems(favorite_theme);")
+
 
     def calculate_similarity(self, problem: SpecificProblem, stored_problem: SpecificProblem) -> float:
         """Calculates the similarity between the current problem and a stored problem."""
