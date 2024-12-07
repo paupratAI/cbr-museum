@@ -16,7 +16,7 @@ class CBRSystem:
             self.conn.execute("CREATE INDEX IF NOT EXISTS idx_group_size ON abstract_problems(group_size);")
 
 
-    def calculate_similarity(self, problem: AbstractProblem, stored_problem: AbstractProblem) -> float:
+    def calculate_similarity(self, problem: AbstractProblem, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient) -> float:
         """Calculates the similarity between the current problem and a stored problem."""
         weights = {
             "group_size": 0.05,
@@ -30,7 +30,7 @@ class CBRSystem:
         similarity = 0
 
         # Group size
-        diff_group_size = abs(problem.group_size - stored_problem.group_size)
+        diff_group_size = abs(problem.group_size - group_size)
 
         if diff_group_size == 0:
             similarity += weights["group_size"]
@@ -40,11 +40,11 @@ class CBRSystem:
             similarity += weights["group_size"] * 0.1
         
         # Group type
-        if problem.group_type == stored_problem.group_type:
+        if problem.group_type == group_type:
             similarity += weights["group_type"]
         
         # Art knowledge
-        diff_art_knowledge = abs(problem.art_knowledge - stored_problem.art_knowledge)
+        diff_art_knowledge = abs(problem.art_knowledge - art_knowledge)
         if diff_art_knowledge == 0:
             similarity += weights["art_knowledge"]
         elif diff_art_knowledge == 1:
@@ -53,19 +53,19 @@ class CBRSystem:
             similarity += weights["art_knowledge"] * 0.1
         
         # Preferred periods
-        if set(problem.preferred_periods) & set(stored_problem.preferred_periods):
+        if problem.preferred_periods == preferred_periods:
             similarity += weights["preferred_periods"]
         
         # Preferred author
-        if problem.preferred_author == stored_problem.preferred_author:
+        if problem.preferred_author == preferred_author:
             similarity += weights["preferred_author"]
         
         # Preferred themes
-        if set(problem.preferred_themes) & set(stored_problem.preferred_themes):
+        if set(problem.preferred_themes) & set(preferred_themes):
             similarity += weights["preferred_themes"]
         
         # Time coefficient
-        diff_time_coefficient = abs(problem.time_coefficient - stored_problem.time_coefficient)
+        diff_time_coefficient = abs(problem.time_coefficient - time_coefficient)
         if diff_time_coefficient == 0:
             similarity += weights["time_coefficient"]
         elif diff_time_coefficient < 0.5:
@@ -84,16 +84,9 @@ class CBRSystem:
         # Convert rows to AbstractProblem and calculate similarity
         cases_with_similarity = []
         for row in rows:
-            stored_problem = AbstractProblem(
-                group_size=row[1],
-                group_type=row[2],
-                art_knowledge=row[3],
-                preferred_periods=row[4],
-                preferred_author=row[5],
-                preferred_themes=row[6],
-                time_coefficient=row[7],
-            )
-            similarity = self.calculate_similarity(problem, stored_problem)
+            similarity = self.calculate_similarity(problem, group_size=row[1], group_type=row[2], art_knowledge=row[3], 
+                                                   preferred_periods=row[4].split(','), preferred_author=row[5], preferred_themes=row[6].split(','), 
+                                                   time_coefficient=row[7])
             cases_with_similarity.append((row, similarity))
 
         # Sort by similarity and return top_k
