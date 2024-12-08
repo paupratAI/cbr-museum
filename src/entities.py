@@ -21,8 +21,8 @@ class Room:
     is_exit: bool
     is_stairs: bool
     is_elevator: bool
+    room_name: Optional[str] = None
     adjacent_rooms: List['Room'] = field(default_factory=list)
-    room_name: Optional[str] = None  
 
     def __post_init__(self):
         assert isinstance(self.room_id, int), "room_id must be an integer"
@@ -43,10 +43,13 @@ class Author:
     author_name: str
     main_periods: List['Period'] = field(default_factory=list)
 
-    def __post_init__(self):
-        assert isinstance(self.author_id, int), "author_id must be an integer"
-        assert isinstance(self.author_name, str), "author_name must be a string"
+    def __hash__(self):
+        return hash(self.author_id)
 
+    def __eq__(self, other):
+        if not isinstance(other, Author):
+            return False
+        return self.author_id == other.author_id
 
 @dataclass
 class Theme:
@@ -62,7 +65,7 @@ class Period:
     year_beginning: int
     year_end: int
     themes: List[str] = field(default_factory=list)
-    period_name: Optional[str] = None  
+    period_name: Optional[str] = None
 
     def __post_init__(self):
         if self.period_name is None:
@@ -80,14 +83,14 @@ class Style:
 class Artwork:
     artwork_id: int
     artwork_name: str
+    artwork_in_room: Optional[str]
+    created_by: Author
+    artwork_in_period: Period
+    artwork_theme: str
     dimension: float
     relevance: float
     complexity: float
     default_time: int
-    created_by: Optional[Author] = None
-    artwork_in_period: Optional[Period] = None
-    artwork_theme: Optional[str] = None
-    artwork_in_room: Optional[str] = None
     artwork_style: List[Style] = field(default_factory=list)
 
     def __post_init__(self):
@@ -103,14 +106,13 @@ class Artwork:
 @dataclass
 class SpecificProblem:
     num_people: int
-    favorite_author: Optional[int] = None  
-    favorite_period: Optional[int] = None  
-    favorite_theme: Optional[str] = None  
-    guided_visit: bool = False  
-    minors: bool = False  
-    num_experts: int = 0  
-    past_museum_visits: int = 0  
- 
+    favorite_author: Optional[int]  # Author ID
+    favorite_period: Optional[int]  # Year
+    favorite_theme: Optional[str]
+    guided_visit: bool
+    minors: bool
+    num_experts: int
+    past_museum_visits: int
 
     def __post_init__(self):
         assert isinstance(self.num_people, int) and 1 <= self.num_people <= 50, "num_people must be between 1 and 50"
@@ -130,7 +132,7 @@ class AbstractProblem:
         specific_problem: 'SpecificProblem',
         available_periods: List['Period'],
         available_authors: List['Author'],
-        available_themes: Dict[str, 'Theme']
+        available_themes: List['Theme']
     ):
         self.specific_problem = specific_problem
         self.available_periods = available_periods
@@ -145,21 +147,6 @@ class AbstractProblem:
         self.preferred_themes = self.compute_preferred_themes()
         self.time_coefficient = self.compute_time_coefficient()
 
-        # Assertions
-        assert isinstance(self.preferred_periods, list) and all(isinstance(p, Period) for p in self.preferred_periods), \
-            "preferred_periods must be a list of Period instances"
-        assert isinstance(self.preferred_author, (Author, type(None))), \
-            "preferred_author must be an Author instance or None"
-        assert isinstance(self.art_knowledge, int) and 1 <= self.art_knowledge <= 4, \
-            "art_knowledge must be between 1 and 4"
-        assert isinstance(self.group_size, int) and 1 <= self.group_size <= 4, \
-            "group_size must be between 1 and 4"
-        assert self.group_type in {"casual", "family", "scholar"}, \
-            "group_type must be 'casual', 'family', or 'scholar'"
-        assert isinstance(self.preferred_themes, list) and all(isinstance(t, str) for t in self.preferred_themes), \
-            "preferred_themes must be a list of strings"
-        assert isinstance(self.time_coefficient, float) and self.time_coefficient > 0, \
-            "time_coefficient must be a positive float"
 
     def compute_group_size(self) -> int:
         num_people = self.specific_problem.num_people
@@ -217,11 +204,14 @@ class AbstractProblem:
 
     def compute_preferred_themes(self) -> List[str]:
         favorite_theme_choice = self.specific_problem.favorite_theme
-        if favorite_theme_choice is None or favorite_theme_choice.lower() == "any":
-            return list(self.available_themes.keys())
-        else:
-            theme = self.available_themes.get(favorite_theme_choice.lower())
-            return theme.labels if theme else []
+        if not favorite_theme_choice or favorite_theme_choice.lower() == "any":
+            return [t.theme_name for t in self.available_themes]
+        
+        theme = next(
+            (t for t in self.available_themes if t.theme_name.lower() == favorite_theme_choice.lower()),
+            None
+        )
+        return theme.labels if theme else []
 
     def compute_time_coefficient(self) -> float:
         if self.specific_problem.guided_visit:

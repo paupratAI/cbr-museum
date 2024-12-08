@@ -8,6 +8,8 @@ from themes import theme_instances
 from preferences_generator import PreferencesGenerator
 from utils import save_in_sqlite3, calculate_default_time
 from flores.entities import AbstractSolution
+from utils import save_in_sqlite3
+from cbr import CBRSystem
 
 @dataclass
 class GenArtArgs():
@@ -118,3 +120,20 @@ if __name__ == "__main__":
 
     elif gen_art_args.format == "sqlite":
         save_in_sqlite3(results)
+    
+    '''cbr = CBRSystem()
+    ap = results[43]
+    print(ap.group_size)
+    print(ap.group_type)
+    print(ap.art_knowledge)
+    print(ap.preferred_periods)
+    print(ap.preferred_author)
+    print(ap.preferred_themes)
+    print(ap.time_coefficient)
+    print()
+    retrieved_cases = cbr.retrieve_cases(ap)
+    for case, similarity in retrieved_cases:
+        print(case)
+        print(similarity)
+        print()'''
+        
