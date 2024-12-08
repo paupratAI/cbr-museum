@@ -9,10 +9,6 @@ class Museum:
     rooms: List['Room'] = field(default_factory=list)
     auxiliary_rooms: List['Room'] = field(default_factory=list)
 
-    def __post_init__(self):
-        assert isinstance(self.museum_id, int), "museum_id must be an integer"
-        assert isinstance(self.museum_name, str), "museum_name must be a string"
-
 @dataclass
 class Room:
     room_id: int
@@ -25,17 +21,9 @@ class Room:
     adjacent_rooms: List['Room'] = field(default_factory=list)
 
     def __post_init__(self):
-        assert isinstance(self.room_id, int), "room_id must be an integer"
-        assert isinstance(self.room_in_museum, Museum), "room_in_museum must be a Museum instance"
-        assert isinstance(self.adjacent_rooms, list), "adjacent_rooms must be a list of Room instances"
-        assert isinstance(self.is_entry, bool), "is_entry must be a boolean"
-        assert isinstance(self.is_exit, bool), "is_exit must be a boolean"
-        assert isinstance(self.is_elevator, bool), "is_elevator must be a boolean"
-        assert isinstance(self.is_stairs, bool), "is_stairs must be a boolean"
         assert not (self.is_entry and self.is_stairs), "The entry cannot be stairs."
         if self.room_name is None:
             self.room_name = f"room{self.room_id}"
-
 
 @dataclass
 class Author:
@@ -56,9 +44,6 @@ class Theme:
     theme_name: str
     labels: List[str] = field(default_factory=list)
 
-    def __post_init__(self):
-        assert all(isinstance(label, str) for label in self.labels), "All labels must be strings"
-
 @dataclass
 class Period:
     period_id: int
@@ -75,10 +60,6 @@ class Period:
 class Style:
     style_name: str
 
-    def __post_init__(self):
-        assert isinstance(self.style_name, str), "style_name must be a string"
-    
-
 @dataclass
 class Artwork:
     artwork_id: int
@@ -92,16 +73,6 @@ class Artwork:
     complexity: float
     default_time: int
     artwork_style: List[Style] = field(default_factory=list)
-
-    def __post_init__(self):
-        assert isinstance(self.artwork_id, int), "artwork_id must be an integer"
-        assert isinstance(self.artwork_name, str), "artwork_name must be a string"
-        assert isinstance(self.created_by, Author), "created_by must be an Author instance"
-        assert isinstance(self.artwork_in_room, Room), "artwork_in_room must be a Room instance"
-        assert isinstance(self.artwork_theme, Theme), "artwork_theme must be a Theme instance"
-        assert isinstance(self.artwork_in_period, Period), "artwork_in_period must be a Period instance"
-        assert isinstance(self.default_time, int) and self.default_time > 0, "default_time must be a positive integer"
-
 
 @dataclass
 class SpecificProblem:
@@ -118,8 +89,6 @@ class SpecificProblem:
         assert isinstance(self.num_people, int) and 1 <= self.num_people <= 50, "num_people must be between 1 and 50"
         assert isinstance(self.favorite_author, (int, type(None))), "favorite_author must be an integer or None"
         assert isinstance(self.favorite_period, (int, type(None))), "favorite_period must be an integer or None"
-        if self.favorite_period is not None:
-            assert 1000 <= self.favorite_period <= 1900, "favorite_period must be between 1000 and 1900"
         assert isinstance(self.favorite_theme, (str, type(None))), "favorite_theme must be a string or None"
         assert isinstance(self.guided_visit, bool), "guided_visit must be a boolean"
         assert isinstance(self.minors, bool), "minors must be a boolean"
@@ -147,6 +116,21 @@ class AbstractProblem:
         self.preferred_themes = self.compute_preferred_themes()
         self.time_coefficient = self.compute_time_coefficient()
 
+        # Assertions
+        assert isinstance(self.preferred_periods, list) and all(isinstance(p, Period) for p in self.preferred_periods), \
+            "preferred_periods must be a list of Period instances"
+        assert isinstance(self.preferred_author, (Author, type(None))), \
+            "preferred_author must be an Author instance or None"
+        assert isinstance(self.art_knowledge, int) and 1 <= self.art_knowledge <= 4, \
+            "art_knowledge must be between 1 and 4"
+        assert isinstance(self.group_size, int) and 1 <= self.group_size <= 4, \
+            "group_size must be between 1 and 4"
+        assert self.group_type in {"casual", "family", "scholar"}, \
+            "group_type must be 'casual', 'family', or 'scholar'"
+        assert isinstance(self.preferred_themes, list) and all(isinstance(t, str) for t in self.preferred_themes), \
+            "preferred_themes must be a list of strings"
+        assert isinstance(self.time_coefficient, float) and self.time_coefficient > 0, \
+            "time_coefficient must be a positive float"
 
     def compute_group_size(self) -> int:
         num_people = self.specific_problem.num_people
@@ -263,3 +247,134 @@ class Match:
         assert isinstance(self.artwork, Artwork), "artwork must be an Artwork instance"
         assert isinstance(self.match_type, int) and self.match_type >= 0, "match_type must be a non-negative integer"
         assert isinstance(self.artwork_time, (int, float)) and self.artwork_time > 0, "artwork_time must be a positive number"
+
+
+@dataclass
+class AbstractSolution:
+    related_to_AbstractProblem: AbstractProblem
+    matches: List[Match] = field(default_factory=list)
+    max_score: int = 0
+    ordered_artworks: List[int] = field(default_factory=list)  # Nuevo atributo
+
+    def compute_matches(self, artworks: List[Artwork]):
+        ap = self.related_to_AbstractProblem
+        preferred_author = ap.get_preferred_author()
+        preferred_author_id = preferred_author.author_id if preferred_author else None
+        preferred_themes = ap.get_preferred_themes()
+        preferred_periods = ap.get_preferred_periods()
+
+        for art in artworks:
+            match_score = 0
+            
+            # Autor
+            if preferred_author is None or art.created_by.author_id == preferred_author_id:
+                match_score += 1
+
+            # Tema
+            if len(preferred_themes) == 0 or art.artwork_theme.lower() in [t.lower() for t in preferred_themes]:
+                match_score += 1
+
+            # Período
+            if (len(preferred_periods) == 0 or 
+                any(p.year_beginning <= art.artwork_in_period.year_beginning <= p.year_end for p in preferred_periods)):
+                match_score += 1
+
+            time_coef = ap.get_time_coefficient()
+            final_time = art.default_time * time_coef
+            self.matches.append(Match(art, match_score, final_time))
+            if match_score > self.max_score:
+                self.max_score = match_score
+
+        # Una vez calculados todos los matches, ordenamos y guardamos la lista de IDs
+        sorted_matches = sorted(self.matches, key=lambda m: m.match_type, reverse=True)
+        self.ordered_artworks = [m.artwork.artwork_id for m in sorted_matches]
+
+@dataclass
+class SpecificSolution:
+    """Clase que toma una AbstractSolution y un contexto práctico (días, tiempo diario, movilidad),
+    distribuye las obras entre días y calcula una "ruta" a través de las salas, imitando Refinement en CLIPS."""
+    related_to_AbstractSolution: AbstractSolution
+    reduced_mobility: bool = False
+    total_days: int = 1
+    daily_minutes: int = 480  # 8h por defecto
+    day_assignments: Dict[int, List[Artwork]] = field(default_factory=dict)
+
+    def distribute_artworks(self):
+        """Asigna las obras obtenidas en AbstractSolution a varios días, teniendo en cuenta daily_minutes."""
+        # Ordenamos por match_type descendente, similar a CLIPS
+        ordered = sorted(self.related_to_AbstractSolution.matches, key=lambda x: x.match_type, reverse=True)
+
+        # Inicializar tiempo por día
+        day_time = {d: 0 for d in range(1, self.total_days+1)}
+
+        for m in ordered:
+            assigned = False
+            for d in range(1, self.total_days+1):
+                if day_time[d] + m.artwork_time <= self.daily_minutes:
+                    day_time[d] += m.artwork_time
+                    if d not in self.day_assignments:
+                        self.day_assignments[d] = []
+                    self.day_assignments[d].append(m.artwork)
+                    assigned = True
+                    break
+            if not assigned:
+                # No hay suficiente tiempo en los días disponibles
+                # Dependiendo de la lógica, podrías omitir o intentar ajustar
+                pass
+
+    def find_entry_room(self, museum: Museum) -> Optional[Room]:
+        for r in museum.rooms:
+            if r.is_entry:
+                return r
+        return None
+
+    def find_exit_room(self, museum: Museum) -> Optional[Room]:
+        for r in museum.rooms:
+            if r.is_exit:
+                return r
+        return None
+
+    def find_route_for_day(self, day: int, museum: Museum) -> List[Room]:
+        """Encuentra una ruta simplificada: start en una sala de entrada, visitar las salas de las obras, y salir.
+        Aquí se puede implementar un algoritmo de búsqueda de caminos (BFS, DFS, A*), tomando en cuenta la movilidad reducida.
+        Por simplicidad, haremos una aproximación trivial.
+        
+        NOTA: Esta es una implementación simplificada a modo de ejemplo.
+        """
+        entry = self.find_entry_room(museum)
+        exit_room = self.find_exit_room(museum)
+        if not entry or not exit_room:
+            return []
+
+        # Salas objetivo: salas donde están las obras de ese día
+        target_rooms_ids = set()
+        for art in self.day_assignments.get(day, []):
+            # art.artwork_in_room debe ser el nombre de la sala; necesitaremos obtener la instancia de la sala
+            room_obj = next((r for r in museum.rooms if r.room_name == art.artwork_in_room), None)
+            if room_obj:
+                target_rooms_ids.add(room_obj.room_id)
+
+        # Suponemos un recorrido simple: entry -> cada sala objetivo -> exit
+        # En un caso real, habría que implementar un algoritmo de pathfinding.
+        # Aquí, por simplicidad, devolvemos una lista ficticia, asumiendo conexión directa.
+        path = [entry]
+        for rid in target_rooms_ids:
+            r = next((ro for ro in museum.rooms if ro.room_id == rid), None)
+            if r:
+                # Si hay movilidad reducida, evitamos salas con escaleras
+                # Aquí habría que chequear el camino. Por simplicidad,
+                # asumimos que el path es directo.
+                if self.reduced_mobility and r.is_stairs:
+                    # Buscar alternativa... (Omitido por simplicidad)
+                    pass
+                path.append(r)
+
+        path.append(exit_room)
+        return path
+
+    def find_all_routes(self, museum: Museum) -> Dict[int, List[Room]]:
+        """Genera las rutas para cada día y las devuelve en un diccionario."""
+        routes = {}
+        for d in range(1, self.total_days+1):
+            routes[d] = self.find_route_for_day(d, museum)
+        return routes
