@@ -10,5 +10,8 @@ Dataset:
     llista de 25 quadres
     llista de longitud [quadres que ha vist] i cada posició de la llista és el valor de matching de cada quadre
 
-Adaptar la solució segons el cas recuperat
+
+Veure quan calcular la utilitat i posar-la com a columna al dataset (necessito el feedback)
+
+Adaptar la solució segons el cas recuperat: implementar adapt_case() quan hi hagi el feedback al dataset
 

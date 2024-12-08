@@ -162,11 +162,9 @@ class CBRSystem:
         with self.conn:
             self.conn.execute("DELETE FROM abstract_problems WHERE utility <= ?", (threshold,))
 
-    def adapt_case(self, retrieved_case: Dict, new_problem: AbstractProblem):
+    def adapt_case(self):
         """Adapts a retrieved case to the new problem."""
-        adapted_case = retrieved_case.copy()
-        adapted_case["problem"] = new_problem
-        return adapted_case
+        pass
 
 
 def deserialize_periods(periods_json: str) -> List[Period]:
