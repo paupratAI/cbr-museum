@@ -247,3 +247,134 @@ class Match:
         assert isinstance(self.artwork, Artwork), "artwork must be an Artwork instance"
         assert isinstance(self.match_type, int) and self.match_type >= 0, "match_type must be a non-negative integer"
         assert isinstance(self.artwork_time, (int, float)) and self.artwork_time > 0, "artwork_time must be a positive number"
+
+
+@dataclass
+class AbstractSolution:
+    related_to_AbstractProblem: AbstractProblem
+    matches: List[Match] = field(default_factory=list)
+    max_score: int = 0
+    ordered_artworks: List[int] = field(default_factory=list)  # Nuevo atributo
+
+    def compute_matches(self, artworks: List[Artwork]):
+        ap = self.related_to_AbstractProblem
+        preferred_author = ap.get_preferred_author()
+        preferred_author_id = preferred_author.author_id if preferred_author else None
+        preferred_themes = ap.get_preferred_themes()
+        preferred_periods = ap.get_preferred_periods()
+
+        for art in artworks:
+            match_score = 0
+            
+            # Autor
+            if preferred_author is None or art.created_by.author_id == preferred_author_id:
+                match_score += 1
+
+            # Tema
+            if len(preferred_themes) == 0 or art.artwork_theme.lower() in [t.lower() for t in preferred_themes]:
+                match_score += 1
+
+            # Período
+            if (len(preferred_periods) == 0 or 
+                any(p.year_beginning <= art.artwork_in_period.year_beginning <= p.year_end for p in preferred_periods)):
+                match_score += 1
+
+            time_coef = ap.get_time_coefficient()
+            final_time = art.default_time * time_coef
+            self.matches.append(Match(art, match_score, final_time))
+            if match_score > self.max_score:
+                self.max_score = match_score
+
+        # Una vez calculados todos los matches, ordenamos y guardamos la lista de IDs
+        sorted_matches = sorted(self.matches, key=lambda m: m.match_type, reverse=True)
+        self.ordered_artworks = [m.artwork.artwork_id for m in sorted_matches]
+
+@dataclass
+class SpecificSolution:
+    """Clase que toma una AbstractSolution y un contexto práctico (días, tiempo diario, movilidad),
+    distribuye las obras entre días y calcula una "ruta" a través de las salas, imitando Refinement en CLIPS."""
+    related_to_AbstractSolution: AbstractSolution
+    reduced_mobility: bool = False
+    total_days: int = 1
+    daily_minutes: int = 480  # 8h por defecto
+    day_assignments: Dict[int, List[Artwork]] = field(default_factory=dict)
+
+    def distribute_artworks(self):
+        """Asigna las obras obtenidas en AbstractSolution a varios días, teniendo en cuenta daily_minutes."""
+        # Ordenamos por match_type descendente, similar a CLIPS
+        ordered = sorted(self.related_to_AbstractSolution.matches, key=lambda x: x.match_type, reverse=True)
+
+        # Inicializar tiempo por día
+        day_time = {d: 0 for d in range(1, self.total_days+1)}
+
+        for m in ordered:
+            assigned = False
+            for d in range(1, self.total_days+1):
+                if day_time[d] + m.artwork_time <= self.daily_minutes:
+                    day_time[d] += m.artwork_time
+                    if d not in self.day_assignments:
+                        self.day_assignments[d] = []
+                    self.day_assignments[d].append(m.artwork)
+                    assigned = True
+                    break
+            if not assigned:
+                # No hay suficiente tiempo en los días disponibles
+                # Dependiendo de la lógica, podrías omitir o intentar ajustar
+                pass
+
+    def find_entry_room(self, museum: Museum) -> Optional[Room]:
+        for r in museum.rooms:
+            if r.is_entry:
+                return r
+        return None
+
+    def find_exit_room(self, museum: Museum) -> Optional[Room]:
+        for r in museum.rooms:
+            if r.is_exit:
+                return r
+        return None
+
+    def find_route_for_day(self, day: int, museum: Museum) -> List[Room]:
+        """Encuentra una ruta simplificada: start en una sala de entrada, visitar las salas de las obras, y salir.
+        Aquí se puede implementar un algoritmo de búsqueda de caminos (BFS, DFS, A*), tomando en cuenta la movilidad reducida.
+        Por simplicidad, haremos una aproximación trivial.
+        
+        NOTA: Esta es una implementación simplificada a modo de ejemplo.
+        """
+        entry = self.find_entry_room(museum)
+        exit_room = self.find_exit_room(museum)
+        if not entry or not exit_room:
+            return []
+
+        # Salas objetivo: salas donde están las obras de ese día
+        target_rooms_ids = set()
+        for art in self.day_assignments.get(day, []):
+            # art.artwork_in_room debe ser el nombre de la sala; necesitaremos obtener la instancia de la sala
+            room_obj = next((r for r in museum.rooms if r.room_name == art.artwork_in_room), None)
+            if room_obj:
+                target_rooms_ids.add(room_obj.room_id)
+
+        # Suponemos un recorrido simple: entry -> cada sala objetivo -> exit
+        # En un caso real, habría que implementar un algoritmo de pathfinding.
+        # Aquí, por simplicidad, devolvemos una lista ficticia, asumiendo conexión directa.
+        path = [entry]
+        for rid in target_rooms_ids:
+            r = next((ro for ro in museum.rooms if ro.room_id == rid), None)
+            if r:
+                # Si hay movilidad reducida, evitamos salas con escaleras
+                # Aquí habría que chequear el camino. Por simplicidad,
+                # asumimos que el path es directo.
+                if self.reduced_mobility and r.is_stairs:
+                    # Buscar alternativa... (Omitido por simplicidad)
+                    pass
+                path.append(r)
+
+        path.append(exit_room)
+        return path
+
+    def find_all_routes(self, museum: Museum) -> Dict[int, List[Room]]:
+        """Genera las rutas para cada día y las devuelve en un diccionario."""
+        routes = {}
+        for d in range(1, self.total_days+1):
+            routes[d] = self.find_route_for_day(d, museum)
+        return routes
