@@ -4,7 +4,7 @@ from typing import List, Dict
 import json
 import ast
 
-class CBRSystem:
+class CBR:
     def __init__(self):
         self.conn = sqlite3.connect('data/database.db')
         self.create_indices()

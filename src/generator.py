@@ -9,7 +9,7 @@ from preferences_generator import PreferencesGenerator
 from utils import save_in_sqlite3, calculate_default_time
 from flores.entities import AbstractSolution
 from utils import save_in_sqlite3
-from cbr import CBRSystem
+from cbr import CBR
 
 @dataclass
 class GenArtArgs():
