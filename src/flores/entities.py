@@ -254,7 +254,7 @@ class AbstractSolution:
     related_to_AbstractProblem: AbstractProblem
     matches: List[Match] = field(default_factory=list)
     max_score: int = 0
-    ordered_artworks: List[int] = field(default_factory=list)  # Nuevo atributo
+    ordered_artworks: List[int] = field(default_factory=list)  # New attribute
 
     def compute_matches(self, artworks: List[Artwork]):
         ap = self.related_to_AbstractProblem
@@ -266,15 +266,15 @@ class AbstractSolution:
         for art in artworks:
             match_score = 0
             
-            # Autor
+            # Author
             if preferred_author is None or art.created_by.author_id == preferred_author_id:
                 match_score += 1
 
-            # Tema
+            # Theme
             if len(preferred_themes) == 0 or art.artwork_theme.lower() in [t.lower() for t in preferred_themes]:
                 match_score += 1
 
-            # Período
+            # Period
             if (len(preferred_periods) == 0 or 
                 any(p.year_beginning <= art.artwork_in_period.year_beginning <= p.year_end for p in preferred_periods)):
                 match_score += 1
@@ -285,26 +285,26 @@ class AbstractSolution:
             if match_score > self.max_score:
                 self.max_score = match_score
 
-        # Una vez calculados todos los matches, ordenamos y guardamos la lista de IDs
+        # Once all matches are calculated, sort and store the list of IDs
         sorted_matches = sorted(self.matches, key=lambda m: m.match_type, reverse=True)
         self.ordered_artworks = [m.artwork.artwork_id for m in sorted_matches]
 
 @dataclass
 class SpecificSolution:
-    """Clase que toma una AbstractSolution y un contexto práctico (días, tiempo diario, movilidad),
-    distribuye las obras entre días y calcula una "ruta" a través de las salas, imitando Refinement en CLIPS."""
+    """Class that takes an AbstractSolution and a practical context (days, daily time, mobility),
+    distributes the artworks across days, and calculates a "route" through the rooms, imitating Refinement in CLIPS."""
     related_to_AbstractSolution: AbstractSolution
     reduced_mobility: bool = False
     total_days: int = 1
-    daily_minutes: int = 480  # 8h por defecto
+    daily_minutes: int = 480  # Default 8 hours
     day_assignments: Dict[int, List[Artwork]] = field(default_factory=dict)
 
     def distribute_artworks(self):
-        """Asigna las obras obtenidas en AbstractSolution a varios días, teniendo en cuenta daily_minutes."""
-        # Ordenamos por match_type descendente, similar a CLIPS
+        """Assigns the artworks obtained in AbstractSolution to several days, considering daily_minutes."""
+        # Sort by match_type in descending order, similar to CLIPS
         ordered = sorted(self.related_to_AbstractSolution.matches, key=lambda x: x.match_type, reverse=True)
 
-        # Inicializar tiempo por día
+        # Initialize time per day
         day_time = {d: 0 for d in range(1, self.total_days+1)}
 
         for m in ordered:
@@ -318,8 +318,8 @@ class SpecificSolution:
                     assigned = True
                     break
             if not assigned:
-                # No hay suficiente tiempo en los días disponibles
-                # Dependiendo de la lógica, podrías omitir o intentar ajustar
+                # Not enough time in available days
+                # Depending on the logic, you could skip or try to adjust
                 pass
 
     def find_entry_room(self, museum: Museum) -> Optional[Room]:
@@ -335,37 +335,37 @@ class SpecificSolution:
         return None
 
     def find_route_for_day(self, day: int, museum: Museum) -> List[Room]:
-        """Encuentra una ruta simplificada: start en una sala de entrada, visitar las salas de las obras, y salir.
-        Aquí se puede implementar un algoritmo de búsqueda de caminos (BFS, DFS, A*), tomando en cuenta la movilidad reducida.
-        Por simplicidad, haremos una aproximación trivial.
-        
-        NOTA: Esta es una implementación simplificada a modo de ejemplo.
+        """Finds a simplified route: start at an entry room, visit the rooms of the artworks, and exit.
+        A pathfinding algorithm (BFS, DFS, A*) could be implemented here, taking reduced mobility into account.
+        For simplicity, we will do a trivial approximation.
+
+        NOTE: This is a simplified implementation as an example.
         """
         entry = self.find_entry_room(museum)
         exit_room = self.find_exit_room(museum)
         if not entry or not exit_room:
             return []
 
-        # Salas objetivo: salas donde están las obras de ese día
+        # Target rooms: rooms where the artworks for that day are located
         target_rooms_ids = set()
         for art in self.day_assignments.get(day, []):
-            # art.artwork_in_room debe ser el nombre de la sala; necesitaremos obtener la instancia de la sala
+            # art.artwork_in_room must be the name of the room; we will need to get the room instance
             room_obj = next((r for r in museum.rooms if r.room_name == art.artwork_in_room), None)
             if room_obj:
                 target_rooms_ids.add(room_obj.room_id)
 
-        # Suponemos un recorrido simple: entry -> cada sala objetivo -> exit
-        # En un caso real, habría que implementar un algoritmo de pathfinding.
-        # Aquí, por simplicidad, devolvemos una lista ficticia, asumiendo conexión directa.
+        # Assume a simple path: entry -> each target room -> exit
+        # In a real case, a pathfinding algorithm would be implemented.
+        # Here, for simplicity, we return a fictitious list assuming direct connection.
         path = [entry]
         for rid in target_rooms_ids:
             r = next((ro for ro in museum.rooms if ro.room_id == rid), None)
             if r:
-                # Si hay movilidad reducida, evitamos salas con escaleras
-                # Aquí habría que chequear el camino. Por simplicidad,
-                # asumimos que el path es directo.
+                # If there is reduced mobility, avoid rooms with stairs
+                # Here, we would need to check the path. For simplicity,
+                # we assume the path is direct.
                 if self.reduced_mobility and r.is_stairs:
-                    # Buscar alternativa... (Omitido por simplicidad)
+                    # Find an alternative... (Omitted for simplicity)
                     pass
                 path.append(r)
 
@@ -373,7 +373,7 @@ class SpecificSolution:
         return path
 
     def find_all_routes(self, museum: Museum) -> Dict[int, List[Room]]:
-        """Genera las rutas para cada día y las devuelve en un diccionario."""
+        """Generates the routes for each day and returns them in a dictionary."""
         routes = {}
         for d in range(1, self.total_days+1):
             routes[d] = self.find_route_for_day(d, museum)
