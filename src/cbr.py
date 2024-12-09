@@ -13,9 +13,7 @@ class CBR:
         """Create indices for faster query performance."""
         with self.conn:
             self.conn.execute("CREATE INDEX IF NOT EXISTS idx_preferred_author ON abstract_problems(preferred_author);")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_preferred_periods ON abstract_problems(preferred_periods);")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_group_type ON abstract_problems(group_type);")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_group_size ON abstract_problems(group_size);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_art_knowledge ON abstract_problems(art_knowledge);")
 
 
     def calculate_similarity(self, problem: AbstractProblem, group_size, group_type, art_knowledge, preferred_periods_id, preferred_author, preferred_themes, time_coefficient) -> float:
@@ -97,8 +95,16 @@ class CBR:
 
     def retrieve_cases(self, problem: AbstractProblem, top_k=50):
         """Retrieves the most similar cases to the current problem."""
-        query = "SELECT * FROM abstract_problems"
-        rows = self.conn.execute(query).fetchall()
+        #query = "SELECT * FROM abstract_problems"
+        #rows = self.conn.execute(query).fetchall()
+
+        query = '''
+            SELECT * FROM abstract_problems
+            WHERE preferred_author = ? OR art_knowledge = ?
+        '''
+        params = (problem.preferred_author.author_id, problem.art_knowledge)
+        rows = self.conn.execute(query, params).fetchall()
+
 
         # Convert rows to AbstractProblem and calculate similarity
         cases_with_similarity = []
