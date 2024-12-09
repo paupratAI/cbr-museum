@@ -1,13 +1,13 @@
 from dataclasses import dataclass, field, asdict
 import json
 import random 
-from flores.entities import Author, Period, Style, Artwork, AbstractProblem
+from entities import Author, Period, Style, Artwork, AbstractProblem
 from periods import periods
 from themes import theme_instances
 
 from preferences_generator import PreferencesGenerator
 from utils import save_in_sqlite3, calculate_default_time
-from flores.entities import AbstractSolution
+from entities import AbstractSolution
 from utils import save_in_sqlite3
 from cbr import CBR
 
@@ -119,21 +119,14 @@ if __name__ == "__main__":
             json.dump(serializable_results, f, ensure_ascii=False, indent=4)
 
     elif gen_art_args.format == "sqlite":
-        save_in_sqlite3(results)
+        pass
+        #save_in_sqlite3(results)
     
-    '''cbr = CBRSystem()
-    ap = results[43]
-    print(ap.group_size)
-    print(ap.group_type)
-    print(ap.art_knowledge)
-    print(ap.preferred_periods)
-    print(ap.preferred_author)
-    print(ap.preferred_themes)
-    print(ap.time_coefficient)
+    cbr = CBR()
+    print(ap.group_size, ap.group_type, ap.art_knowledge, ap.preferred_periods, ap.preferred_author, ap.preferred_themes, ap.time_coefficient)
     print()
     retrieved_cases = cbr.retrieve_cases(ap)
     for case, similarity in retrieved_cases:
-        print(case)
         print(similarity)
-        print()'''
+        print()
         

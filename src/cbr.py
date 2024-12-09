@@ -13,12 +13,10 @@ class CBR:
         """Create indices for faster query performance."""
         with self.conn:
             self.conn.execute("CREATE INDEX IF NOT EXISTS idx_preferred_author ON abstract_problems(preferred_author);")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_preferred_periods ON abstract_problems(preferred_periods);")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_group_type ON abstract_problems(group_type);")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_group_size ON abstract_problems(group_size);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_art_knowledge ON abstract_problems(art_knowledge);")
 
 
-    def calculate_similarity(self, problem: AbstractProblem, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient) -> float:
+    def calculate_similarity(self, problem: AbstractProblem, group_size, group_type, art_knowledge, preferred_periods_id, preferred_author, preferred_themes, time_coefficient) -> float:
         """Calculates the similarity between the current problem and a stored problem."""
         weights = {
             "group_size": 0.05,
@@ -55,14 +53,13 @@ class CBR:
             similarity += weights["art_knowledge"] * 0.1
         
         # Preferred periods
-        matched_periods = [
-            period for period in problem.preferred_periods 
-            if any(p.year_beginning <= period.year_beginning <= p.year_end or 
-                p.year_beginning <= period.year_end <= p.year_end 
-                for p in preferred_periods)
-        ]
-        if matched_periods:
-            similarity += weights["preferred_periods"] * (len(matched_periods) / len(problem.preferred_periods))
+        matched_periods = 0
+        for period_id in preferred_periods_id:
+            for p in problem.preferred_periods:
+                if period_id == p.period_id:
+                    matched_periods += 1
+        if matched_periods > 0:
+            similarity += weights["preferred_periods"] * (1 - abs(len(preferred_periods_id) - matched_periods))
 
         # Preferred author
         if problem.preferred_author:
@@ -77,7 +74,7 @@ class CBR:
                         for p in preferred_author.main_periods)
                 ]
                 if matched_author_periods:
-                    similarity += weights["preferred_author"] * (len(matched_author_periods) / len(problem.preferred_author.main_periods))
+                    similarity += weights["preferred_author"]*0.8 * (len(matched_author_periods) / len(problem.preferred_author.main_periods))
 
         
         # Preferred themes
@@ -96,28 +93,38 @@ class CBR:
         return round(similarity, 2)
 
 
-    def retrieve_cases(self, problem: AbstractProblem, top_k=3):
+    def retrieve_cases(self, problem: AbstractProblem, top_k=50):
         """Retrieves the most similar cases to the current problem."""
-        query = "SELECT * FROM abstract_problems"
-        rows = self.conn.execute(query).fetchall()
+        #query = "SELECT * FROM abstract_problems"
+        #rows = self.conn.execute(query).fetchall()
+
+        query = '''
+            SELECT * FROM abstract_problems
+            WHERE preferred_author = ? OR art_knowledge = ?
+        '''
+        params = (problem.preferred_author.author_id, problem.art_knowledge)
+        rows = self.conn.execute(query, params).fetchall()
+
 
         # Convert rows to AbstractProblem and calculate similarity
         cases_with_similarity = []
         for row in rows:
-            # Deserialize periods
-            stored_periods = deserialize_periods(row[4]) 
+            stored_periods_id = [p['period_id'] for p in json.loads(row[5])]
+            
             # Deserialize author
-            stored_author = deserialize_author(row[5])  
+            author_data = json.loads(row[6])  
+            stored_author = Author(author_id=author_data['author_id'], main_periods=[Period(period_id=p['period_id']) for p in author_data.get('main_periods', [])])
+        
             # Calculate similarity
             similarity = self.calculate_similarity(
                 problem,
-                group_size=row[1],
-                group_type=row[2],
-                art_knowledge=row[3],
-                preferred_periods=stored_periods,
+                group_size=row[2],
+                group_type=row[3],
+                art_knowledge=row[4],
+                preferred_periods_id=stored_periods_id,
                 preferred_author=stored_author,
-                preferred_themes = ast.literal_eval(row[6]),
-                time_coefficient=row[7]
+                preferred_themes = ast.literal_eval(row[7]),
+                time_coefficient=row[8]
             )
             cases_with_similarity.append((row, similarity))
 
@@ -167,35 +174,4 @@ class CBR:
         pass
 
 
-def deserialize_periods(periods_json: str) -> List[Period]:
-    """Transform a JSON string of periods into a list of Period objects."""
-    periods = json.loads(periods_json)  
-    return [
-        Period(
-            period_id=p['period_id'],
-            year_beginning=p['year_beginning'],
-            year_end=p['year_end'],
-            themes=p.get('themes', []),
-            period_name=p.get('period_name')
-        )
-        for p in periods
-    ]
-
-def deserialize_author(author_json: str) -> Author:
-    """Deserializa un JSON de autor a un objeto Author."""
-    author_data = json.loads(author_json)  
-    return Author(
-        author_id=author_data['author_id'],
-        author_name=author_data['author_name'],
-        main_periods=[
-            Period(
-                period_id=p['period_id'],
-                year_beginning=p['year_beginning'],
-                year_end=p['year_end'],
-                themes=p.get('themes', []),
-                period_name=p.get('period_name')
-            )
-            for p in author_data.get('main_periods', [])
-        ]
-    )
 

@@ -1,4 +1,4 @@
-from flores.entities import Theme
+from entities import Theme
 
 # Theme examples
 theme_instances = [

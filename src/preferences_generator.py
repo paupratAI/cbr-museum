@@ -36,7 +36,9 @@
 
 import random
 from scipy.special import softmax
-from flores.entities import SpecificProblem
+from scipy.stats import expon
+from entities import SpecificProblem
+import numpy as np
 
 class PreferencesGenerator:
 	def __init__(self, seed: int = 42, themes: list = [], authors: list = []):
@@ -45,9 +47,22 @@ class PreferencesGenerator:
 		self.authors = authors
 
 	def sample(self) -> SpecificProblem:
+
+		def generate_exponential_integer(low=1, high=50, scale=10):
+			value = None
+			while value is None:
+				new_value = expon.rvs(scale=scale)
+				rounded_value = int(round(new_value))
+
+				if low <= rounded_value <= high:
+					value = rounded_value
+			
+			return value
+
 		true_false = [True, False]
 
-		num_people = random.randint(1, 50)
+		# Num people must be an exponential distribution
+		num_people = generate_exponential_integer()
 		minors = random.choice(true_false)
 		guided_visit = random.choice(true_false)
 		num_experts = random.randint(0, num_people)
