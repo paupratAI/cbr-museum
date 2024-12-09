@@ -36,7 +36,7 @@
 
 import random
 from scipy.special import softmax
-from flores.entities import SpecificProblem
+from entities import SpecificProblem
 
 class PreferencesGenerator:
 	def __init__(self, seed: int = 42, themes: list = [], authors: list = []):
