@@ -104,8 +104,11 @@ class CBR:
         cases_with_similarity = []
         for row in rows:
             stored_periods_id = [p['period_id'] for p in json.loads(row[5])]
+            
             # Deserialize author
-            stored_author = deserialize_author(row[6])  
+            author_data = json.loads(row[6])  
+            stored_author = Author(author_id=author_data['author_id'], main_periods=[Period(period_id=p['period_id']) for p in author_data.get('main_periods', [])])
+        
             # Calculate similarity
             similarity = self.calculate_similarity(
                 problem,
@@ -165,22 +168,4 @@ class CBR:
         pass
 
 
-
-def deserialize_author(author_json: str) -> Author:
-    """Deserializa un JSON de autor a un objeto Author."""
-    author_data = json.loads(author_json)  
-    return Author(
-        author_id=author_data['author_id'],
-        author_name=author_data['author_name'],
-        main_periods=[
-            Period(
-                period_id=p['period_id'],
-                year_beginning=p['year_beginning'],
-                year_end=p['year_end'],
-                themes=p.get('themes', []),
-                period_name=p.get('period_name')
-            )
-            for p in author_data.get('main_periods', [])
-        ]
-    )
 
