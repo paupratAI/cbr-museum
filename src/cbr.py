@@ -5,8 +5,8 @@ import json
 import ast
 
 class CBR:
-    def __init__(self):
-        self.conn = sqlite3.connect('data/database.db')
+    def __init__(self, db_path='../data/database.db'):
+        self.conn = sqlite3.connect(db_path)
         self.create_indices()
 
     def create_indices(self):
