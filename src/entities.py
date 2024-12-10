@@ -28,7 +28,7 @@ class Room:
 @dataclass
 class Author:
     author_id: int
-    author_name: str
+    author_name: str = None
     main_periods: List['Period'] = field(default_factory=list)
 
     def __hash__(self):
@@ -47,8 +47,8 @@ class Theme:
 @dataclass
 class Period:
     period_id: int
-    year_beginning: int
-    year_end: int
+    year_beginning: int = 1000
+    year_end: int = 1900
     themes: List[str] = field(default_factory=list)
     period_name: Optional[str] = None
 
