@@ -37,6 +37,7 @@ def save_in_sqlite3(results: list):
         preferred_themes TEXT,
         time_coefficient REAL,
         ordered_artworks TEXT,
+        ordered_artworks_matches TEXT,
         FOREIGN KEY(specific_problem_id) REFERENCES specific_problems(id)
     )
     """)
@@ -87,14 +88,26 @@ def save_in_sqlite3(results: list):
         preferred_author_json = json.dumps(asdict(ap.preferred_author), ensure_ascii=False) if ap.preferred_author else None
         preferred_themes_json = json.dumps(ap.preferred_themes, ensure_ascii=False)
 
-        # Convertir la lista de artworks ordenados en un string separado por comas
+        # Ya en AbstractSolution tenemos asol.ordered_artworks con las IDs ordenadas.
+        # Ahora queremos también la lista de match_type correspondiente a ese orden.
+        # Sabemos que asol.ordered_artworks se generó a partir de los matches ya ordenados por match_type.
+        # Podemos recomponer la lista de match_type a partir de los matches ordenados.
+
+        # Primero ordenamos los matches por match_type para asegurarnos que coincidan con asol.ordered_artworks
+        sorted_matches = sorted(asol.matches, key=lambda m: m.match_type, reverse=True)
+
+        # Extraer IDs ordenados (ya lo tenemos en asol.ordered_artworks) pero por claridad:
         ordered_artworks_str = ",".join(map(str, asol.ordered_artworks))
 
-        # Insertar AbstractProblem
+        # Extraer los match_type en el mismo orden
+        ordered_match_types = [m.match_type for m in sorted_matches]
+        ordered_match_types_str = ",".join(map(str, ordered_match_types))
+
+        # Insertar AbstractProblem con la nueva columna ordered_artworks_matches
         cursor.execute("""
         INSERT INTO abstract_problems
-        (specific_problem_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (specific_problem_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks, ordered_artworks_matches)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             specific_problem_id,
             ap.group_size,
@@ -104,7 +117,8 @@ def save_in_sqlite3(results: list):
             preferred_author_json,
             preferred_themes_json,
             ap.time_coefficient,
-            ordered_artworks_str
+            ordered_artworks_str,
+            ordered_match_types_str
         ))
         abstract_problem_id = cursor.lastrowid
 

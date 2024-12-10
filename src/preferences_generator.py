@@ -42,6 +42,7 @@ from scipy.special import softmax
 from scipy.stats import expon
 from entities import SpecificProblem
 import numpy as np
+from scipy.stats import truncnorm
 
 def generate_exponential_integer(low=1, high=50, scale=10):
 	value = None
@@ -121,3 +122,34 @@ def create_sample_data(num_reference_samples: int, num_total_samples: int, rando
 # data = [generate_exponential_integer(scale=50) for _ in range(10000)]
 # sns.histplot(data, kde=True)
 # plt.show()
+class TimeLimitGenerator:
+    def __init__(self, low: int, high: int):
+        """
+        Initialize the generator with a range [low, high].
+        We will use a truncated normal distribution centered around the mean (low + high) / 2.
+        """
+        assert low < high, "The value of 'low' must be smaller than 'high'."
+        self.low = low
+        self.high = high
+        self.mean = (low + high) / 2
+        
+        # Choose a standard deviation relative to the range
+        # For example, 1/6 of the range so that roughly 99.7% of values fall within [low, high]
+        # This ensures a good concentration around the mean.
+        self.sigma = (self.high - self.low) / 6
+        
+        # Calculate the normalized bounds for truncnorm
+        # truncnorm expects bounds in terms of the standard normal distribution.
+        self.a = (self.low - self.mean) / self.sigma
+        self.b = (self.high - self.mean) / self.sigma
+
+        # Create a truncnorm distribution object
+        self.dist = truncnorm(self.a, self.b, loc=self.mean, scale=self.sigma)
+
+    def generate(self) -> float:
+        """
+        Generate a random number within [low, high],
+        using a truncated normal distribution centered around the mean.
+        Most values will be concentrated near the mean.
+        """
+        return self.dist.rvs()
