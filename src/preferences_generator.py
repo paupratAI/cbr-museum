@@ -44,14 +44,6 @@ from entities import SpecificProblem
 import numpy as np
 from scipy.stats import truncnorm
 
-class PreferencesGenerator:
-	def __init__(self, seed: int = 42, themes: list = [], authors: list = []):
-		random.seed(seed)
-		self.themes = themes
-		self.authors = authors
-
-	def sample(self) -> SpecificProblem:
-
 def generate_exponential_integer(low=1, high=50, scale=10):
 	value = None
 	while value is None:
