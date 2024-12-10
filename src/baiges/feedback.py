@@ -154,7 +154,7 @@ def get_museum_route_feedback(group_size, group_type, group_description, art_kno
 
 
 # Example usage
-if __name__ == "__main__":
+"""if __name__ == "__main__":
     group_size = 4
     group_type = "family"
     group_description = "A family with two children, aged 8 and 12, interested in art and enjoy to ride bicycles."
@@ -185,4 +185,4 @@ if __name__ == "__main__":
         group_size, group_type, group_description, art_knowledge_level, preferred_periods, preferred_authors,
         preferred_themes, time_coefficient, proposed_paintings, route_score, textual_feedback='None'
     )
-    print("\nNone Feedback:\n", none_feedback)
+    print("\nNone Feedback:\n", none_feedback)"""
