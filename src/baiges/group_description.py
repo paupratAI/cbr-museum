@@ -6,7 +6,7 @@ model = SentenceTransformer("thenlper/gte-small")
 print("Model loaded successfully!")
 
 # Sentence to compare
-sentence_to_compare = "We are a group of young students"
+sentence_to_compare = "We are a group of young professionals who enjoy art and music."
 
 # List of sentences describing different groups
 sentences = [

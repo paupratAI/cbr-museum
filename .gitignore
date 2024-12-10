@@ -2,3 +2,4 @@
 __pycache__/
 pau/__pycache__/
 .vscode/
+.env/

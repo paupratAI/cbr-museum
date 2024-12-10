@@ -1,3 +1,4 @@
+# CLIPS QUESTIONS:
 
 # How many people will join the visit (1-50)
 
@@ -34,6 +35,8 @@
 
 # Is there someone with reduced mobility? (yes/no):
 
+# ----------------------------
+
 import random
 from scipy.special import softmax
 from scipy.stats import expon
@@ -49,16 +52,24 @@ class PreferencesGenerator:
 
 	def sample(self) -> SpecificProblem:
 
-		def generate_exponential_integer(low=1, high=50, scale=10):
-			value = None
-			while value is None:
-				new_value = expon.rvs(scale=scale)
-				rounded_value = int(round(new_value))
+def generate_exponential_integer(low=1, high=50, scale=10):
+	value = None
+	while value is None:
+		new_value = expon.rvs(scale=scale)
+		rounded_value = int(round(new_value))
 
-				if low <= rounded_value <= high:
-					value = rounded_value
-			
-			return value
+		if low <= rounded_value <= high:
+			value = rounded_value
+	
+	return value
+
+class PreferencesGenerator:
+	def __init__(self, seed: int = 42, themes: list = [], authors: list = []):
+		random.seed(seed)
+		self.themes = themes
+		self.authors = authors
+
+	def sample(self) -> SpecificProblem:
 
 		true_false = [True, False]
 
@@ -84,7 +95,6 @@ class PreferencesGenerator:
 		)
 
 		return sp
-
 	
 def create_sample_data(num_reference_samples: int, num_total_samples: int, random_seed: int = 42, themes: list = [], authors: list = []):
 	"""
@@ -112,6 +122,14 @@ def create_sample_data(num_reference_samples: int, num_total_samples: int, rando
 	repeated_samples = random.choices(reference_samples, weights=museum_visits_prob, k=num_samples_to_generate)
 
 	return reference_samples + repeated_samples
+
+# #Visualize the exponential distribution function
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+
+# data = [generate_exponential_integer(scale=50) for _ in range(10000)]
+# sns.histplot(data, kde=True)
+# plt.show()
 class TimeLimitGenerator:
     def __init__(self, low: int, high: int):
         """
