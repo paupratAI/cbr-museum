@@ -5,7 +5,7 @@ from dataclasses import asdict
 import math
 
 def save_in_sqlite3(results: list):
-    # results es una lista de tuplas (AbstractProblem, AbstractSolution)
+    # results es una lista de tuplas (AbstractProblem, AbstractSolution, visited_artworks_count)
 
     conn = sqlite3.connect("data/database.db")
     cursor = conn.cursor()
@@ -25,6 +25,7 @@ def save_in_sqlite3(results: list):
     )
     """)
 
+    # Añadimos visited_artworks_count a abstract_problems
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS abstract_problems (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -38,6 +39,7 @@ def save_in_sqlite3(results: list):
         time_coefficient REAL,
         ordered_artworks TEXT,
         ordered_artworks_matches TEXT,
+        visited_artworks_count INTEGER,
         FOREIGN KEY(specific_problem_id) REFERENCES specific_problems(id)
     )
     """)
@@ -64,8 +66,10 @@ def save_in_sqlite3(results: list):
     )
     """)
 
-    for ap, asol in results:
+    # Desempaquetamos las tres variables en el bucle
+    for ap, asol, visited_count in results:
         sp = ap.specific_problem
+
         # Insertar SpecificProblem
         cursor.execute("""
         INSERT INTO specific_problems
@@ -88,26 +92,17 @@ def save_in_sqlite3(results: list):
         preferred_author_json = json.dumps(asdict(ap.preferred_author), ensure_ascii=False) if ap.preferred_author else None
         preferred_themes_json = json.dumps(ap.preferred_themes, ensure_ascii=False)
 
-        # Ya en AbstractSolution tenemos asol.ordered_artworks con las IDs ordenadas.
-        # Ahora queremos también la lista de match_type correspondiente a ese orden.
-        # Sabemos que asol.ordered_artworks se generó a partir de los matches ya ordenados por match_type.
-        # Podemos recomponer la lista de match_type a partir de los matches ordenados.
-
-        # Primero ordenamos los matches por match_type para asegurarnos que coincidan con asol.ordered_artworks
+        # Ordenar matches para obtener match_types en el mismo orden que ordered_artworks
         sorted_matches = sorted(asol.matches, key=lambda m: m.match_type, reverse=True)
-
-        # Extraer IDs ordenados (ya lo tenemos en asol.ordered_artworks) pero por claridad:
         ordered_artworks_str = ",".join(map(str, asol.ordered_artworks))
-
-        # Extraer los match_type en el mismo orden
         ordered_match_types = [m.match_type for m in sorted_matches]
         ordered_match_types_str = ",".join(map(str, ordered_match_types))
 
-        # Insertar AbstractProblem con la nueva columna ordered_artworks_matches
+        # Insertar AbstractProblem, incluyendo visited_artworks_count
         cursor.execute("""
         INSERT INTO abstract_problems
-        (specific_problem_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks, ordered_artworks_matches)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (specific_problem_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks, ordered_artworks_matches, visited_artworks_count)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             specific_problem_id,
             ap.group_size,
@@ -118,7 +113,8 @@ def save_in_sqlite3(results: list):
             preferred_themes_json,
             ap.time_coefficient,
             ordered_artworks_str,
-            ordered_match_types_str
+            ordered_match_types_str,
+            visited_count
         ))
         abstract_problem_id = cursor.lastrowid
 

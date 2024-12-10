@@ -255,6 +255,7 @@ class AbstractSolution:
     matches: List[Match] = field(default_factory=list)
     max_score: int = 0
     ordered_artworks: List[int] = field(default_factory=list)  # New attribute
+    visited_artworks_count: int = 0
 
     def compute_matches(self, artworks: List[Artwork]):
         ap = self.related_to_AbstractProblem
@@ -292,19 +293,18 @@ class AbstractSolution:
 @dataclass
 class SpecificSolution:
     """Class that takes an AbstractSolution and a practical context (days, daily time, mobility),
-    distributes the artworks across days, and calculates a "route" through the rooms, imitating Refinement in CLIPS."""
+    distributes the artworks across days, and calculates a 'route' through the rooms."""
     related_to_AbstractSolution: AbstractSolution
     reduced_mobility: bool = False
     total_days: int = 1
     daily_minutes: int = 480  # Default 8 hours
     day_assignments: Dict[int, List[Artwork]] = field(default_factory=dict)
+    visited_artworks_count: int = 0  # Nuevo atributo
 
     def distribute_artworks(self):
-        """Assigns the artworks obtained in AbstractSolution to several days, considering daily_minutes."""
-        # Sort by match_type in descending order, similar to CLIPS
+        """Assigns artworks from AbstractSolution to given days and calculates how many can be visited."""
         ordered = sorted(self.related_to_AbstractSolution.matches, key=lambda x: x.match_type, reverse=True)
 
-        # Initialize time per day
         day_time = {d: 0 for d in range(1, self.total_days+1)}
 
         for m in ordered:
@@ -317,10 +317,9 @@ class SpecificSolution:
                     self.day_assignments[d].append(m.artwork)
                     assigned = True
                     break
-            if not assigned:
-                # Not enough time in available days
-                # Depending on the logic, you could skip or try to adjust
-                pass
+            # If not assigned, can't fit this artwork in the allotted time
+
+        self.visited_artworks_count = sum(len(arts) for arts in self.day_assignments.values())
 
     def find_entry_room(self, museum: Museum) -> Optional[Room]:
         for r in museum.rooms:

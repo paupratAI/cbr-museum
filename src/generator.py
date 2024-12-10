@@ -1,15 +1,16 @@
 from dataclasses import dataclass, field, asdict
 import json
 import random 
-from entities import Author, Period, Style, Artwork, AbstractProblem
+from entities import Author, Period, Style, Artwork, AbstractProblem, SpecificSolution
 from periods import periods
 from themes import theme_instances
 
-from preferences_generator import PreferencesGenerator
+from preferences_generator import PreferencesGenerator, TimeLimitGenerator
 from utils import save_in_sqlite3, calculate_default_time
 from entities import AbstractSolution
 from utils import save_in_sqlite3
 from cbr import CBR
+
 
 @dataclass
 class GenArtArgs():
@@ -94,12 +95,21 @@ if __name__ == "__main__":
             available_authors=list(authors),
             available_themes=theme_instances)
         
-        # Crear AbstractSolution y computar matches
         asol = AbstractSolution(related_to_AbstractProblem=ap)
         asol.compute_matches(artworks=artworks)
+
+        t = TimeLimitGenerator(low=20, high=120)
+        time = t.generate()
+
+        ss = SpecificSolution(
+            related_to_AbstractSolution=asol,
+            reduced_mobility=False,
+            total_days=1,      
+            daily_minutes=time,
+        )
+        ss.distribute_artworks()
         
-        # Guardamos la tupla (ap, asol) en results para luego guardarlo en DB
-        results.append((ap, asol))
+        results.append((ap, asol, ss.visited_artworks_count))
 
     if gen_art_args.format == "json":
         serializable_results = []
