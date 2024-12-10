@@ -119,9 +119,8 @@ if __name__ == "__main__":
             json.dump(serializable_results, f, ensure_ascii=False, indent=4)
 
     elif gen_art_args.format == "sqlite":
-        pass
-        #save_in_sqlite3(results)
-    
+        save_in_sqlite3(results)
+    """
     cbr = CBR()
     print(ap.group_size, ap.group_type, ap.art_knowledge, ap.preferred_periods, ap.preferred_author, ap.preferred_themes, ap.time_coefficient)
     print()
@@ -129,4 +128,5 @@ if __name__ == "__main__":
     for case, similarity in retrieved_cases:
         print(similarity)
         print()
+    """
         
