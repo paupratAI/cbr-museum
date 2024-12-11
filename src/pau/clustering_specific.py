@@ -33,9 +33,9 @@ class Clustering:
     def fetch_data(self):
         """Fetch data from the database and prepare it for clustering."""
         query = """
-        SELECT group_size, group_type, art_knowledge, time_coefficient, preferred_periods, 
-            preferred_author, preferred_themes
-        FROM abstract_problems
+        SELECT num_people, favorite_author, favorite_periods, favorite_theme, guided_visit,
+            minors, num_experts, past_museum_visits
+        FROM specific_problems
         """
         df = pd.read_sql_query(query, self.conn)
         
@@ -73,12 +73,12 @@ class Clustering:
     def ensure_cluster_column(self):
         """Ensure the 'cluster' column exists in the database."""
         # Check if the column already exists
-        cursor = self.conn.execute("PRAGMA table_info(abstract_problems)")
+        cursor = self.conn.execute("PRAGMA table_info(specific_problems)")
         columns = [col[1] for col in cursor.fetchall()]
         
         if 'cluster' not in columns:
             with self.conn:
-                self.conn.execute("ALTER TABLE abstract_problems ADD COLUMN cluster INTEGER DEFAULT -1")
+                self.conn.execute("ALTER TABLE specific_problems ADD COLUMN cluster INTEGER DEFAULT -1")
 
 
 
@@ -89,7 +89,7 @@ class Clustering:
         with self.conn:
             for index, row in self.data.iterrows():
                 self.conn.execute(
-                    "UPDATE abstract_problems SET cluster = ? WHERE rowid = ?",
+                    "UPDATE specific_problems SET cluster = ? WHERE rowid = ?",
                     (row['cluster'], index + 1)
                 )
 
