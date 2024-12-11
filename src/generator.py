@@ -46,12 +46,12 @@ if __name__ == "__main__":
                 main_periods.append(periods[initial_period_index - 1])
 
         author.main_periods = main_periods
-        # Seleccionar período válido en caso de que el año de la obra no esté en ninguno de los períodos, seleccionaremos uno aleatorio
+        # Select a valid period in case the year of the artwork does not belong to any of the periods; we will select a random one
         year = artwork["artwork_in_period"]
         random.shuffle(periods)
         period = next((p for p in periods if p.year_beginning <= year <= p.year_end), periods[0])
 
-        # Tema y estilo
+        # Theme and style
         theme = random.choice(period.themes)
 
         styles = []
@@ -59,15 +59,15 @@ if __name__ == "__main__":
             style = Style(style_name=style)
             styles.append(style)
 
-        # Otras características de la obra
+        # Other features of the artwork
         dimension = int(artwork["dimension"])
         relevance = True if artwork["relevance"] == "High" else False
         complexity = int(artwork["complexity"])
 
-        # Calcular el tiempo predeterminado
+        # Calculate the default time
         default_time = calculate_default_time(dimension, complexity, relevance)
 
-        # Crear la instancia de Artwork
+        # Create the instance of Artwork
         artwork_instance = Artwork(
             artwork_id=artwork["artwork_id"],
             artwork_name=artwork["artwork_name"],
@@ -139,4 +139,3 @@ if __name__ == "__main__":
         print(similarity)
         print()
     """
-        
