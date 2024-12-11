@@ -12,8 +12,7 @@ class CBR:
     def create_indices(self):
         """Create indices for faster query performance."""
         with self.conn:
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_preferred_author ON abstract_problems(preferred_author);")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_art_knowledge ON abstract_problems(art_knowledge);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_cluster ON abstract_problems(cluster);")
 
 
     def calculate_similarity(self, problem: AbstractProblem, group_size, group_type, art_knowledge, preferred_periods_id, preferred_author, preferred_themes, time_coefficient) -> float:
@@ -93,18 +92,15 @@ class CBR:
         return round(similarity, 2)
 
 
-    def retrieve_cases(self, problem: AbstractProblem, top_k=50):
-        """Retrieves the most similar cases to the current problem."""
-        #query = "SELECT * FROM abstract_problems"
-        #rows = self.conn.execute(query).fetchall()
+    def retrieve_cases(self, problem: AbstractProblem, top_k=3):
+        """Retrieves the most similar cases to the current case."""
 
         query = '''
             SELECT * FROM abstract_problems
-            WHERE preferred_author = ? OR art_knowledge = ?
+            WHERE cluster = ?
         '''
-        params = (problem.preferred_author.author_id, problem.art_knowledge)
+        params = (problem.cluster)
         rows = self.conn.execute(query, params).fetchall()
-
 
         # Convert rows to AbstractProblem and calculate similarity
         cases_with_similarity = []
@@ -113,7 +109,8 @@ class CBR:
             
             # Deserialize author
             author_data = json.loads(row[6])  
-            stored_author = Author(author_id=author_data['author_id'], main_periods=[Period(period_id=p['period_id']) for p in author_data.get('main_periods', [])])
+            stored_author = Author(author_id=author_data['author_id'], author_name=author_data["author_name"], 
+                                   main_periods=[Period(period_id=p['period_id']) for p in author_data.get('main_periods', [])])
         
             # Calculate similarity
             similarity = self.calculate_similarity(
@@ -134,35 +131,21 @@ class CBR:
 
 
     def store_case(self, problem: AbstractProblem, route_artworks: List[int], feedback: List[int]):
-        """Stores a new case in the database if it does not already exist."""
-        utility = sum(feedback) / len(feedback) if feedback else 0
+        """Stores a new case in the database."""
+        pass
+        """utility = sum(feedback) / len(feedback) if feedback else 0
 
-        # Verify if the case already exists
-        query = '''
-            SELECT COUNT(*) FROM abstract_problems
-            WHERE group_size = ? AND group_type = ? AND art_knowledge = ? AND
-                preferred_periods = ? AND preferred_author = ? AND preferred_themes = ? AND 
-                time_coefficient = ? AND route_artworks = ? AND feedback = ?;
-        '''
-        params = (
-            problem.group_size, problem.group_type, problem.art_knowledge,
-            problem.preferred_periods, problem.preferred_author, problem.preferred_themes,
-            problem.time_coefficient
-        )
-        result = self.conn.execute(query, params).fetchone()
-
-        if result[0] == 0:  # Case does not exist
-            with self.conn:
-                self.conn.execute('''
-                    INSERT INTO abstract_problems (
-                        group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, route_artworks, feedback, utility
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ''', (
-                    problem.group_size, problem.group_type, problem.art_knowledge,
-                    problem.preferred_periods, problem.preferred_author, problem.preferred_themes,
-                    problem.time_coefficient, ','.join(map(str, route_artworks)), 
-                    ','.join(map(str, feedback)), utility
-                ))
+        with self.conn:
+            self.conn.execute('''
+                INSERT INTO abstract_problems (
+                    group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, route_artworks, feedback, utility
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                problem.group_size, problem.group_type, problem.art_knowledge,
+                problem.preferred_periods, problem.preferred_author, problem.preferred_themes,
+                problem.time_coefficient, ','.join(map(str, route_artworks)), 
+                ','.join(map(str, feedback)), utility
+            ))"""
 
     def forget_cases(self, threshold=0.05):
         """Removes cases with low utility from the database."""

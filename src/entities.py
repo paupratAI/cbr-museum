@@ -115,6 +115,7 @@ class AbstractProblem:
         self.preferred_author = self.compute_preferred_author()
         self.preferred_themes = self.compute_preferred_themes()
         self.time_coefficient = self.compute_time_coefficient()
+        self.cluster = None
 
         # Assertions
         assert isinstance(self.preferred_periods, list) and all(isinstance(p, Period) for p in self.preferred_periods), \
