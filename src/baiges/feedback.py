@@ -1,12 +1,13 @@
 import os
+import re
 from dotenv import load_dotenv
 import openai
 
-def get_museum_route_feedback(group_size, group_type, group_description, art_knowledge_level, preferred_periods,
-                              preferred_authors, preferred_themes, time_coefficient,
-                              proposed_paintings, route_score, perfect_route_score=10, textual_feedback='full'):
+def generate_and_parse_museum_feedback(group_size, group_type, group_description, art_knowledge_level, preferred_periods,
+                                       preferred_authors, preferred_themes, time_coefficient,
+                                       proposed_paintings, route_score, perfect_route_score=10, textual_feedback='full'):
     """
-    Get a numeric and textual feedback about an art museum route using the OpenAI GPT API.
+    Generate numeric and textual feedback for a museum route and parse the result.
     
     Parameters
     ----------
@@ -33,25 +34,21 @@ def get_museum_route_feedback(group_size, group_type, group_description, art_kno
     perfect_route_score : float, optional
         The score considered as perfect. Default is 10.
     textual_feedback : str
-        Determines the level of textual feedback in addition to the numeric evaluation.
-        Options:
-        - 'None': Only numeric evaluation and empty feedback line.
-        - 'short': Numeric evaluation + very short good/bad feedback sentence.
-        - 'full': Numeric evaluation + brief but more detailed feedback (original prompt style).
-
+        Determines the level of textual feedback ('None', 'short', or 'full').
+    
     Returns
     -------
-    str
-        A string containing two lines:
-        - First line: "Evaluation: n/5"
-        - Second line: "Feedback: ..." according to the chosen textual_feedback style.
+    dict
+        A dictionary with the following keys:
+        - 'evaluation': float (numeric feedback score)
+        - 'feedback': str (textual feedback)
     """
     # Load the OpenAI API key from the .env file
     load_dotenv()
     client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+    # Create the appropriate prompt based on the textual_feedback parameter
     if textual_feedback == 'None':
-        # Only numeric evaluation, empty feedback
         prompt = f"""
         You are an expert in visitor experiences in art museums. Based on the following characteristics of the group and the proposed route, provide only a numeric evaluation on a scale of 1 to 5 (with one decimal point), and leave the feedback line empty.
 
@@ -74,10 +71,9 @@ def get_museum_route_feedback(group_size, group_type, group_description, art_kno
         The format of the response must be:
 
         Evaluation: n.n/5
-        Feedback: ''
+        Feedback:
         """
     elif textual_feedback == 'short':
-        # Numeric evaluation + very short good or bad sentence
         prompt = f"""
         You are an expert in visitor experiences in art museums. Based on the following characteristics of the group and the proposed route, provide a numeric evaluation on a scale of 1 to 5 (with one decimal point), followed by a very short (one sentence) feedback that is either positive or negative, reflecting the group's overall satisfaction. You must speak for the group meaning as if you were part of it and visited the museum.
 
@@ -103,7 +99,6 @@ def get_museum_route_feedback(group_size, group_type, group_description, art_kno
         Feedback:
         """
     else:
-        # Full detailed feedback (original prompt)
         prompt = f"""
         You are an expert in visitor experiences in art museums. Based on the following characteristics of the group and the proposed route, provide an experience evaluation on a scale of 1 to 5 (with one decimal point), followed by brief feedback reflecting the group's satisfaction as if you were part of it and visited the museum.
 
@@ -140,7 +135,18 @@ def get_museum_route_feedback(group_size, group_type, group_description, art_kno
 
     # Extract the content of the response
     feedback = response.choices[0].message.content.strip()
-    return feedback
+
+    # Regular expressions to extract evaluation and feedback
+    evaluation_match = re.search(r"Evaluation: (\d\.\d)/5", feedback)
+    textual_feedback_match = re.search(r"Feedback: (.+)", feedback)
+
+    evaluation = float(evaluation_match.group(1)) if evaluation_match else 3.0 # Default evaluation score
+    textual_feedback = textual_feedback_match.group(1).strip() if textual_feedback_match else '' # Default feedback
+
+    return {
+        "evaluation": evaluation,
+        "feedback": textual_feedback
+    }
 
 
 # Example usage
@@ -153,26 +159,26 @@ if __name__ == "__main__":
     preferred_authors = ["Van Gogh", "Magritte"]
     preferred_themes = ["nature", "dreams"]
     time_coefficient = 0.8
-    proposed_paintings = ["Starry Night", "The Persistence of Memory", "The Treachery of Images", "Water Lilies", "The Dream", "The Scream", "Guernica", "The Kiss", "The Birth of Venus", "The Last Supper", "Mona Lisa", "The Starry Night", "The Night Watch", "The Creation of Adam"]
+    proposed_paintings = ["Starry Night", "The Persistence of Memory", "Water Lilies", "The Scream"]
     route_score = 7.5
 
-    # Full feedback
-    full_feedback = get_museum_route_feedback(
+    feedback_data = generate_and_parse_museum_feedback(
         group_size, group_type, group_description, art_knowledge_level, preferred_periods, preferred_authors,
         preferred_themes, time_coefficient, proposed_paintings, route_score, textual_feedback='full'
     )
-    print("Full Feedback:\n", full_feedback)
+    
+    print("Full Feedback Data:", feedback_data)
 
-    # Short feedback
-    short_feedback = get_museum_route_feedback(
+    feedback_data_short = generate_and_parse_museum_feedback(
         group_size, group_type, group_description, art_knowledge_level, preferred_periods, preferred_authors,
         preferred_themes, time_coefficient, proposed_paintings, route_score, textual_feedback='short'
     )
-    print("\nShort Feedback:\n", short_feedback)
 
-    # None feedback
-    none_feedback = get_museum_route_feedback(
+    print("Short Feedback Data:", feedback_data_short)
+
+    feedback_data_none = generate_and_parse_museum_feedback(
         group_size, group_type, group_description, art_knowledge_level, preferred_periods, preferred_authors,
         preferred_themes, time_coefficient, proposed_paintings, route_score, textual_feedback='None'
     )
-    print("\nNone Feedback:\n", none_feedback)
+
+    print("No Textual Feedback Data:", feedback_data_none)
