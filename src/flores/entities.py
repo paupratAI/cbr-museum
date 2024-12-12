@@ -30,14 +30,15 @@ class Author:
     author_id: int
     author_name: str
     main_periods: List['Period'] = field(default_factory=list)
+    similar_authors: List[str] = field(default_factory=list)
 
     def __hash__(self):
-        return hash(self.author_id)
+        return hash(self.author_name)
 
     def __eq__(self, other):
         if not isinstance(other, Author):
             return False
-        return self.author_id == other.author_id
+        return self.author_name == other.author_name
 
 @dataclass
 class Theme:

@@ -2,8 +2,9 @@ from dataclasses import dataclass, field, asdict
 import json
 import random 
 from entities import Author, Period, Style, Artwork, AbstractProblem, SpecificSolution
-from periods import periods
-from themes import theme_instances
+from ontology.periods import periods
+from ontology.themes import theme_instances
+from ontology.authors import authors
 
 from preferences_generator import PreferencesGenerator, TimeLimitGenerator
 from utils import save_in_sqlite3, calculate_default_time
