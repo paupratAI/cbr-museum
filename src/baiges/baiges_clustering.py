@@ -1,368 +1,274 @@
-import json
+import sqlite3
 import pandas as pd
-import numpy as np
-from sklearn.preprocessing import OneHotEncoder, MultiLabelBinarizer, StandardScaler
-from sklearn.decomposition import PCA
-from sklearn.metrics import silhouette_score
 from sklearn.cluster import KMeans
-from sentence_transformers import SentenceTransformer
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.metrics import silhouette_score
 import joblib
+import os
+import json
 
-# Define file paths
-DATABASE_FILE = 'baiges/database.db'
-CENTROIDS_FILE = 'baiges/centroids.joblib'  # Using .joblib for better serialization
-PREPROCESSING_FILE = 'baiges/preprocessing.joblib'  # To store encoders and scalers
+class Clustering:
+    def __init__(self, db_path='./data/database.db', model_path='./models/kmeans_model.joblib'):
+        self.db_path = db_path
+        self.model_path = model_path
+        self.conn = sqlite3.connect(self.db_path)
+        self.scaler = StandardScaler()
+        self.label_encoder_theme = LabelEncoder()
+        self.kmeans = None
+        self.data = None
+        self.cluster_labels = None
+        self.feature_names = []
+    
+    def determine_optimal_clusters(self, X_scaled, min_clusters=3, max_clusters=10):
+        """Determine the optimal number of clusters using the silhouette score."""
+        best_score = -1
+        best_k = 2
+        for k in range(2, max_clusters + 1):
+            kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
+            labels = kmeans.fit_predict(X_scaled)
+            score = silhouette_score(X_scaled, labels)
+            print(f'Number of clusters: {k}, Silhouette Score: {score:.4f}')
+            if score > best_score:
+                best_score = score
+                best_k = k
+        self.kmeans = KMeans(n_clusters=best_k, random_state=42, n_init=10)
+        self.kmeans.fit(X_scaled)
+        self.cluster_labels = self.kmeans.predict(X_scaled)
+        silhouette_avg = silhouette_score(X_scaled, self.cluster_labels)
+        print(f'\nOptimal number of clusters determined: {best_k} with Silhouette Score: {silhouette_avg:.4f}')
+        return best_k
 
-def load_data(file_path):
-    with open(file_path, 'r') as f:
-        data = json.load(f)
-    return data
-
-def preprocess_data(data, model):
-    """
-    Flatten and preprocess the JSON data into a pandas DataFrame suitable for clustering.
-    Includes embedding textual descriptions.
-    """
-    records = []
-    descriptions = []
-    for case in data:
-        record = {}
-        # Numerical features
-        record['group_size'] = case.get('group_size', 0)
-        record['art_knowledge'] = case.get('art_knowledge', 0)
-        record['time_coefficient'] = case.get('time_coefficient', 0.0)
+    def fetch_data_from_specific_problems(self):
+        """
+        Fetch data from the specific_problems table for clustering.
+        """
+        query = """
+        SELECT id, num_people, favorite_author, favorite_period, favorite_theme, 
+               guided_visit, minors, num_experts, past_museum_visits
+        FROM specific_problems
+        ORDER BY id
+        """
+        df = pd.read_sql_query(query, self.conn)
         
-        # Categorical features
-        record['group_type'] = case.get('group_type', 'unknown')
-        preferred_author = case.get('preferred_author', {})
-        record['preferred_author_name'] = preferred_author.get('author_name', 'unknown')
+        # If favorite_theme is stored as a list in string format, adjust accordingly
+        # For now, assuming it's a single categorical value
+        # If it's a JSON list, you'd need to adjust the parsing
         
-        # Preferred periods - collect period names
-        periods = case.get('preferred_periods', [])
-        period_names = [period.get('period_name', 'unknown') for period in periods]
-        record['preferred_period_names'] = period_names
+        # Encode favorite_theme using LabelEncoder
+        df['favorite_theme_encoded'] = self.label_encoder_theme.fit_transform(df['favorite_theme'])
         
-        # Preferred author main periods
-        main_periods = preferred_author.get('main_periods', [])
-        main_period_names = [period.get('period_name', 'unknown') for period in main_periods]
-        record['preferred_author_main_period_names'] = main_period_names
+        # Select relevant features for clustering
+        features = ['num_people', 'favorite_author', 'favorite_period', 
+                   'guided_visit', 'minors', 'num_experts', 'past_museum_visits',
+                   'favorite_theme_encoded']
         
-        # Preferred themes
-        themes = case.get('preferred_themes', [])
-        record['preferred_themes'] = themes
+        self.data = df[features]
+        self.ids = df['id']
+        return df
+
+    def encode_and_scale_features(self):
+        """
+        Scale numerical features for clustering.
+        """
+        if self.data is None:
+            raise ValueError("No data available. Fetch data first.")
         
-        # Textual description (assuming it's under 'description')
-        description = case.get('description', '')
-        descriptions.append(description)
+        # Scale the features
+        X_scaled = self.scaler.fit_transform(self.data)
+        self.feature_names = list(self.data.columns)
+        return X_scaled
+
+    def perform_clustering(self, X_scaled):
+        """Perform K-Means clustering on the standardized data with an automatically determined number of clusters."""
+        if self.kmeans is None:
+            self.determine_optimal_clusters(X_scaled)
+        else:
+            # If kmeans already exists, just predict
+            self.cluster_labels = self.kmeans.predict(X_scaled)
+        print("\nCluster assignments completed.")
+        return self.cluster_labels
+
+    def ensure_cluster_column_in_abstract_problems(self):
+        """
+        Ensure the 'cluster' column exists in the abstract_problems table.
+        """
+        cursor = self.conn.execute("PRAGMA table_info(abstract_problems)")
+        columns = [col[1] for col in cursor.fetchall()]
         
-        records.append(record)
-    
-    df = pd.DataFrame(records)
-    
-    # Embed textual descriptions
-    if descriptions:
-        embeddings = model.encode(descriptions, convert_to_numpy=True, show_progress_bar=True)
-        # Add embeddings as separate columns
-        for i in range(embeddings.shape[1]):
-            df[f'desc_emb_{i}'] = embeddings[:, i]
-    
-    return df
+        if 'cluster' not in columns:
+            with self.conn:
+                self.conn.execute("ALTER TABLE abstract_problems ADD COLUMN cluster INTEGER DEFAULT -1")
+            print("Added 'cluster' column to abstract_problems table.")
+        else:
+            print("'cluster' column already exists in abstract_problems table.")
 
-def encode_features(df):
-    """
-    Encode categorical and list-based features using OneHotEncoder and MultiLabelBinarizer.
-    Apply PCA to reduce embedding dimensionality.
-    Returns the feature matrix and the fitted encoders and scaler.
-    """
-    # Define feature categories
-    numerical_features = ['group_size', 'art_knowledge', 'time_coefficient']
-    categorical_features = ['group_type', 'preferred_author_name']
-    list_features = ['preferred_period_names', 'preferred_author_main_period_names', 'preferred_themes']
-    embedding_features = [col for col in df.columns if col.startswith('desc_emb_')]
-    
-    # Initialize encoders
-    ohe = OneHotEncoder(handle_unknown='ignore', sparse=False)
-    mlb_period = MultiLabelBinarizer()
-    mlb_author_period = MultiLabelBinarizer()
-    mlb_themes = MultiLabelBinarizer()
-    
-    # Fit encoders on the data
-    ohe.fit(df[categorical_features])
-    mlb_period.fit(df['preferred_period_names'])
-    mlb_author_period.fit(df['preferred_author_main_period_names'])
-    mlb_themes.fit(df['preferred_themes'])
-    
-    # Transform features
-    ohe_features = ohe.transform(df[categorical_features])
-    period_features = mlb_period.transform(df['preferred_period_names'])
-    author_period_features = mlb_author_period.transform(df['preferred_author_main_period_names'])
-    themes_features = mlb_themes.transform(df['preferred_themes'])
-    embedding_features_data = df[embedding_features].values
-    
-    # Apply PCA to reduce embedding dimensions
-    pca = PCA(n_components=50, random_state=42)  # Adjust n_components as needed
-    embedding_reduced = pca.fit_transform(embedding_features_data)
-    
-    # Standardize numerical and PCA-reduced embedding features
-    scaler = StandardScaler()
-    numerical_scaled = scaler.fit_transform(df[numerical_features])
-    embedding_scaled = scaler.fit_transform(embedding_reduced)
-    
-    # Combine all features
-    X = np.hstack([
-        numerical_scaled,
-        ohe_features,
-        period_features,
-        author_period_features,
-        themes_features,
-        embedding_scaled
-    ])
-    
-    # Feature names for reference (optional)
-    feature_names = numerical_features + \
-                    list(ohe.get_feature_names_out(categorical_features)) + \
-                    list(mlb_period.classes_) + \
-                    list(mlb_author_period.classes_) + \
-                    list(mlb_themes.classes_) + \
-                    [f'pca_emb_{i}' for i in range(embedding_reduced.shape[1])]
-    
-    return X, ohe, mlb_period, mlb_author_period, mlb_themes, pca, scaler, feature_names
+    def save_clusters_to_abstract_problems(self):
+        """
+        Save the cluster assignments to the abstract_problems table based on id.
+        """
+        if self.cluster_labels is None:
+            raise ValueError("No clustering results to save. Perform clustering first.")
+        
+        # Ensure 'cluster' column exists
+        self.ensure_cluster_column_in_abstract_problems()
+        
+        # Fetch all IDs from specific_problems ordered by id
+        cursor = self.conn.execute("SELECT id FROM specific_problems ORDER BY id")
+        ids = [row[0] for row in cursor.fetchall()]
+        
+        if len(ids) != len(self.cluster_labels):
+            raise ValueError(f"Number of cluster labels ({len(self.cluster_labels)}) does not match number of specific_problems records ({len(ids)}).")
+        
+        # Update abstract_problems table with cluster labels based on id
+        with self.conn:
+            for id_val, label in zip(ids, self.cluster_labels):
+                self.conn.execute(
+                    "UPDATE abstract_problems SET cluster = ? WHERE id = ?",
+                    (int(label), id_val)
+                )
+        print("Cluster assignments have been saved to abstract_problems table based on 'id'.")
 
-def find_optimal_clusters(X, min_k=2, max_k=10):
-    """
-    Determine the optimal number of clusters using silhouette score.
-    """
-    best_k = min_k
-    best_score = -1
-    for k in range(min_k, max_k + 1):
-        kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
-        labels = kmeans.fit_predict(X)
-        score = silhouette_score(X, labels, metric='euclidean')
-        print(f'Number of clusters: {k}, Silhouette Score: {score:.4f}')
-        if score > best_score:
-            best_k = k
-            best_score = score
-    print(f'Optimal number of clusters: {best_k} with Silhouette Score: {best_score:.4f}')
-    return best_k
+    def save_model(self):
+        """
+        Save the trained K-Means model, scaler, and label encoder to a file using joblib.
+        """
+        model_data = {
+            'kmeans': self.kmeans,
+            'scaler': self.scaler,
+            'label_encoder_theme': self.label_encoder_theme,
+            'feature_names': self.feature_names
+        }
+        os.makedirs(os.path.dirname(self.model_path), exist_ok=True)
+        joblib.dump(model_data, self.model_path)
+        print(f"K-Means model and preprocessing objects saved to {self.model_path}")
 
-def cluster_data(X, n_clusters):
-    """
-    Apply K-Means clustering to the data.
-    """
-    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
-    labels = kmeans.fit_predict(X)
-    centroids = kmeans.cluster_centers_
-    return labels, centroids, kmeans
+    def load_model(self):
+        """
+        Load the trained K-Means model, scaler, and label encoder from a file using joblib.
+        """
+        if not os.path.exists(self.model_path):
+            raise FileNotFoundError(f"Model file not found at {self.model_path}")
+        model_data = joblib.load(self.model_path)
+        self.kmeans = model_data['kmeans']
+        self.scaler = model_data['scaler']
+        self.label_encoder_theme = model_data['label_encoder_theme']
+        self.feature_names = model_data['feature_names']
+        print(f"K-Means model and preprocessing objects loaded from {self.model_path}")
 
-def save_centroids(centroids, file_path):
-    """
-    Save the centroids to a file for future use.
-    """
-    joblib.dump({
-        'centroids': centroids
-    }, file_path)
-    print(f'Centroids saved to {file_path}')
-    return centroids
+    def classify_new_case(self, new_case):
+        """
+        Classify a new case by assigning it to an existing cluster.
+        
+        :param new_case: Dictionary with the new case attributes.
+        :return: Cluster number.
+        """
+        # Create a DataFrame from the new case
+        df_new = pd.DataFrame([{
+            'num_people': new_case['num_people'],
+            'favorite_author': new_case['favorite_author'],
+            'favorite_period': new_case['favorite_period'],
+            'guided_visit': new_case['guided_visit'],
+            'minors': new_case['minors'],
+            'num_experts': new_case['num_experts'],
+            'past_museum_visits': new_case['past_museum_visits'],
+            'favorite_theme_encoded': self.label_encoder_theme.transform([new_case['favorite_theme']])[0]
+        }])
+        
+        # Ensure feature order
+        df_new = df_new[self.feature_names]
+        
+        # Scale the features
+        X_scaled_new = self.scaler.transform(df_new)
+        
+        # Predict the cluster
+        cluster_id = self.kmeans.predict(X_scaled_new)[0]
+        return int(cluster_id)
 
-def load_centroids(file_path):
-    """
-    Load the centroids from a file.
-    """
-    data = joblib.load(file_path)
-    return data['centroids']
+    def recommend_from_cluster(self, input_case, top_k=3):
+        """
+        Recommend top-k cases from the same cluster as the input case.
+        
+        :param input_case: Dictionary with the input case attributes.
+        :param top_k: Number of cases to recommend.
+        :return: List of recommended cases.
+        """
+        # Classify the input case to find its cluster
+        cluster_id = self.classify_new_case(input_case)
+        print(f"Input case assigned to cluster: {cluster_id}")
+        
+        # Retrieve similar cases from the same cluster
+        query = """
+        SELECT *
+        FROM abstract_problems
+        WHERE cluster = ?
+        LIMIT ?
+        """
+        similar_cases_df = pd.read_sql_query(query, self.conn, params=(cluster_id, top_k))
+        return similar_cases_df.to_dict(orient='records')
 
-def save_preprocessing(ohe, mlb_period, mlb_author_period, mlb_themes, pca, scaler, feature_names, file_path):
-    """
-    Save the preprocessing objects to a file for future use.
-    """
-    joblib.dump({
-        'ohe': ohe,
-        'mlb_period': mlb_period,
-        'mlb_author_period': mlb_author_period,
-        'mlb_themes': mlb_themes,
-        'pca': pca,
-        'scaler': scaler,
-        'feature_names': feature_names
-    }, file_path)
-    print(f'Preprocessing objects saved to {file_path}')
+    def close_connection(self):
+        """
+        Close the SQLite database connection.
+        """
+        self.conn.close()
+        print("Database connection closed.")
 
-def load_preprocessing(file_path):
-    """
-    Load the preprocessing objects from a file.
-    """
-    data = joblib.load(file_path)
-    return data
-
-def assign_cluster(new_case, centroids, ohe, mlb_period, mlb_author_period, mlb_themes, pca, scaler, model):
-    """
-    Assign a new case to the nearest cluster based on Euclidean distance to centroids.
-    """
-    # Preprocess the new case
-    record = {}
-    # Numerical features
-    record['group_size'] = new_case.get('group_size', 0)
-    record['art_knowledge'] = new_case.get('art_knowledge', 0)
-    record['time_coefficient'] = new_case.get('time_coefficient', 0.0)
+# Usage Example
+if __name__ == "__main__":
+    # Initialize the clustering system
+    clustering_system = Clustering(db_path='./data/database.db', model_path='./models/kmeans_model.joblib')
     
-    # Categorical features
-    record['group_type'] = new_case.get('group_type', 'unknown')
-    preferred_author = new_case.get('preferred_author', {})
-    record['preferred_author_name'] = preferred_author.get('author_name', 'unknown')
+    # Step 1: Fetch and preprocess data from specific_problems
+    raw_data = clustering_system.fetch_data_from_specific_problems()
+    print("Fetched data from specific_problems:")
+    print(raw_data.head())
     
-    # Preferred periods
-    periods = new_case.get('preferred_periods', [])
-    period_names = [period.get('period_name', 'unknown') for period in periods]
-    record['preferred_period_names'] = period_names
+    # Step 2: Encode and scale features
+    X_scaled = clustering_system.encode_and_scale_features()
+    print("\nEncoded and scaled features:")
+    print(X_scaled[:5])
     
-    # Preferred author main periods
-    main_periods = preferred_author.get('main_periods', [])
-    main_period_names = [period.get('period_name', 'unknown') for period in main_periods]
-    record['preferred_author_main_period_names'] = main_period_names
+    # Step 3: Determine optimal number of clusters and perform clustering
+    clustering_system.determine_optimal_clusters(X_scaled, max_clusters=10)
     
-    # Preferred themes
-    themes = new_case.get('preferred_themes', [])
-    record['preferred_themes'] = themes
+    # Step 4: Assign clusters
+    clustering_system.perform_clustering(X_scaled)
     
-    # Textual description
-    description = new_case.get('description', '')
+    # Step 5: Save cluster assignments to abstract_problems table
+    clustering_system.save_clusters_to_abstract_problems()
     
-    # Create DataFrame
-    df_new = pd.DataFrame([record])
+    # Step 6: Save the trained model for future use
+    clustering_system.save_model()
     
-    # Embed textual description
-    if description:
-        embedding = model.encode([description], convert_to_numpy=True)
-        # Apply PCA
-        embedding_reduced = pca.transform(embedding)
-    else:
-        # If no description, fill with zeros
-        embedding_reduced = np.zeros((1, pca.n_components_))
+    # Step 7: Close the database connection
+    clustering_system.close_connection()
     
-    # One-hot encode categorical features
-    ohe_features = ohe.transform(df_new[['group_type', 'preferred_author_name']])
-    period_features = mlb_period.transform(df_new['preferred_period_names'])
-    author_period_features = mlb_author_period.transform(df_new['preferred_author_main_period_names'])
-    themes_features = mlb_themes.transform(df_new['preferred_themes'])
+    # ----- Assigning a New Case -----
+    # To classify a new case, you need to load the saved model
+    # and use the `classify_new_case` method
     
-    # Standardize numerical and PCA-reduced embedding features
-    numerical_scaled = scaler.transform(df_new[['group_size', 'art_knowledge', 'time_coefficient']])
-    embedding_scaled = scaler.transform(embedding_reduced)
-    
-    # Combine all features
-    X_new = np.hstack([
-        numerical_scaled,
-        ohe_features,
-        period_features,
-        author_period_features,
-        themes_features,
-        embedding_scaled
-    ])
-    
-    # Assign to nearest centroid based on Euclidean distance
-    distances = np.linalg.norm(centroids - X_new, axis=1)
-    assigned_cluster = np.argmin(distances)
-    return assigned_cluster
-
-def main():
-    # Initialize the sentence transformer model
-    model = SentenceTransformer('all-MiniLM-L6-v2')  # Efficient and effective model
-    
-    # Step 1: Load data
-    data = load_data(DATABASE_FILE)
-    
-    # Step 2: Preprocess data
-    df = preprocess_data(data, model)
-    
-    # Step 3: Encode features
-    X, ohe, mlb_period, mlb_author_period, mlb_themes, pca, scaler, feature_names = encode_features(df)
-    
-    # Step 4: Find optimal number of clusters
-    optimal_k = find_optimal_clusters(X, min_k=2, max_k=10)
-    
-    # Step 5: Cluster data
-    labels, centroids, kmeans = cluster_data(X, optimal_k)
-    
-    # Step 6: Assign cluster labels to data
-    for idx, case in enumerate(data):
-        case['cluster'] = int(labels[idx])
-    
-    # Save updated data back to database.db
-    with open(DATABASE_FILE, 'w') as f:
-        json.dump(data, f, indent=4)
-    print(f'Cluster labels assigned and saved to {DATABASE_FILE}')
-    
-    # Step 7: Save centroids and preprocessing objects
-    save_centroids(centroids, CENTROIDS_FILE)
-    save_preprocessing(ohe, mlb_period, mlb_author_period, mlb_themes, pca, scaler, feature_names, PREPROCESSING_FILE)
-    
-    # Example of assigning a new case
+    # Example of classifying a new case
     new_case = {
-        "group_size": 4,
-        "group_type": "scholar",
-        "art_knowledge": 2,
-        "preferred_periods": [
-            {
-                "period_id": 2,
-                "year_beginning": 1140,
-                "year_end": 1400,
-                "themes": [
-                    "Christianity",
-                    "Battles and Wars",
-                    "Antiquity",
-                    "Monarchies",
-                    "Greek Mythology"
-                ],
-                "period_name": "Gothic"
-            }
-        ],
-        "preferred_author": {
-            "author_id": 1,
-            "author_name": "Stuart Davis",
-            "main_periods": [
-                {
-                    "period_id": 15,
-                    "year_beginning": 1880,
-                    "year_end": 1910,
-                    "themes": [
-                        "Despair",
-                        "Nostalgia",
-                        "Mysticism",
-                        "Occult"
-                    ],
-                    "period_name": "Post-Impressionism"
-                }
-            ]
-        },
-        "preferred_themes": [
-            "Battles and Wars",
-            "Conquests",
-            "Revolutions",
-            "Antiquity",
-            "Monarchies",
-            "Colonizations"
-        ],
-        "time_coefficient": 1.5,
-        "description": "A group deeply interested in Gothic art and its influence on modern aesthetics."
+        'num_people': 4,
+        'favorite_author': 2,  # Already label encoded
+        'favorite_period': 1995,
+        'favorite_theme': 'religious',  # Must match existing categories
+        'guided_visit': 1,
+        'minors': 0,
+        'num_experts': 1,
+        'past_museum_visits': 3
     }
     
-    # Load centroids and preprocessing objects
-    centroids_loaded = load_centroids(CENTROIDS_FILE)
-    preprocessing = load_preprocessing(PREPROCESSING_FILE)
+    # Initialize the clustering system again for classification
+    clustering_system = Clustering(db_path='./data/database.db', model_path='./models/kmeans_model.joblib')
     
-    # Assign cluster to the new case
-    assigned_cluster = assign_cluster(
-        new_case,
-        centroids_loaded,
-        preprocessing['ohe'],
-        preprocessing['mlb_period'],
-        preprocessing['mlb_author_period'],
-        preprocessing['mlb_themes'],
-        preprocessing['pca'],
-        preprocessing['scaler'],
-        model
-    )
+    # Load the saved model
+    clustering_system.load_model()
     
-    print(f'The new case is assigned to cluster: {assigned_cluster}')
-
-if __name__ == "__main__":
-    main()
+    # Recommend similar cases
+    recommendations = clustering_system.recommend_from_cluster(new_case, top_k=3)
+    print("\nRecommendations for the new case:")
+    print(recommendations)
+    
+    # Close the connection
+    clustering_system.close_connection()
