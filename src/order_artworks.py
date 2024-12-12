@@ -96,6 +96,24 @@ class ArtworksOrganizer:
                 counter += 1
             else:
                 print(f"{author}")
+    
+    def print_artworks_by_author_frequency(self, top_n: int = None) -> None:
+        """
+        Print artworks sorted by their author's frequency. Each line shows the artwork_id and artwork_name.
+        
+        If top_n is provided, only print that many artworks. Otherwise, print all.
+        
+        Args:
+            top_n (int, optional): The number of top artworks to print. If None, print all artworks.
+        """
+        sorted_artworks = self.sort_by_author_representation()
+        if top_n is not None:
+            sorted_artworks = sorted_artworks[:top_n]
+
+        for art in sorted_artworks:
+            art_id = art.get("artwork_id")
+            art_name = art.get("artwork_name")
+            print(f"ID: {art_id}, Name: {art_name}")
 
 if __name__ == "__main__":
     # Example artworks JSON data (shortened for illustration)
@@ -103,7 +121,8 @@ if __name__ == "__main__":
         artworks_data = json.load(file)
 
     organizer = ArtworksOrganizer(artworks_data)
-    organizer.write_sorted_artworks_to_file("data/sorted_artworks.json")
-    print("Sorted artworks have been written to sorted_artworks.json")
+    #organizer.write_sorted_artworks_to_file("data/sorted_artworks.json")
+    #print("Sorted artworks have been written to sorted_artworks.json")
 
     organizer.print_authors_by_frequency(top_n=100)
+    organizer.print_artworks_by_author_frequency(top_n=50)
