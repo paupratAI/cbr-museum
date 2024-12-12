@@ -2,6 +2,7 @@ import sqlite3
 from typing import Dict, List
 from scipy.stats import pearsonr
 from scipy.spatial.distance import cosine
+from scipy.special import softmax
 import numpy as np
 
 class CF:
@@ -12,18 +13,43 @@ class CF:
 
     The system uses both user-based and item-based collaborative filtering to recommend items.
     """
+    VALID_METHODS = ['cosine', 'pearson']
 
-    def __init__(self, db_path='../data/database.db'):
+    def __init__(self, 
+        ratings_range: list, db_path='../data/database.db', default_alpha: float = 0.5, default_gamma: float = 0.25, default_decay_factor: float = 1, default_method: str = 'cosine'
+        ):
         """
         Initializes the collaborative filtering system by connecting to the database.
 
         Parameters
         ----------
-        db_path : str, optional
+        ratings_range : list
+            The range of ratings that can be given (both inclusive).
+        db_path : str
             Path to the SQLite database storing the ratings, default is '../data/database.db'.
+        default_alpha : float
+            Weight for combining user-based and item-based predictions, default is 0.5.
+        default_gamma : float
+            Weight for combining group ratings and individual ratings, default is 0.25.
+        default_decay_factor : float
+            A factor controlling the decay of the old rating, default is 1 (no decay).
+        default_method : str
+            The similarity method to use for both group and item similarities, default is 'cosine'.
         """
+        assert default_method in self.VALID_METHODS, f"Invalid method; use one of {self.VALID_METHODS}"
+        assert 0 <= default_alpha <= 1, "Alpha must be between 0 and 1"
+        assert 0 <= default_gamma <= 1, "Gamma must be between 0 and 1"
+        assert 0 <= default_decay_factor <= 1, "Decay factor must be between 0 and 1"
+
+        self.db_path = db_path
         self.conn = sqlite3.connect(db_path)
         self.create_tables()
+
+        self.default_alpha = default_alpha
+        self.default_gamma = default_gamma
+        self.default_decay_factor = default_decay_factor
+        self.default_method = default_method
+        self.ratings_range = ratings_range
 
     def create_tables(self):
         """
@@ -42,13 +68,69 @@ class CF:
                 );
             ''')
 
-    def store_rating(self, group_id: int, item_id: int, rating: float):
+    def store_group_ratings(self, 
+        group_id: int, 
+        ordered_items: List[int], 
+        ordered_items_matches: List[int], 
+        visited_items_count: int, 
+        global_rating: float,
+        gamma: float | None = None,
+        decay_factor: float | None = None
+        ) -> None:
         """
-        Stores or updates a group's average rating and visit count for an item.
+        Stores the ratings of a group for a list of all items in the database.
 
-        If the group has already visited the item, the stored rating is updated 
-        as a weighted average using the new rating. The visit_count is incremented 
-        by one. If it's the first time the group rates the item, a new record is inserted.
+        Parameters
+        ----------
+        group_id : int
+            Unique identifier for the group.
+        ordered_items : List[int]
+            List of all items sorted by the number of matches (descending).
+        ordered_items_matches : List[int]
+            List of the number of matches for each item in ordered_items.
+        visited_items_count : int
+            Number of items visited by the group. Therefore, the first visited_items_count items from ordered_items are the visited items.
+        global_rating : float
+            The global rating given by the group for all items.
+        gamma : float
+            Parameter that controls
+        """
+        assert len(ordered_items) == len(ordered_items_matches), "Length of ordered_items and ordered_items_matches must match"
+        assert visited_items_count <= len(ordered_items), "Visited items count must be less than or equal to the total number of items"
+        assert (gamma is None) or (0 <= gamma <= 1), "Gamma must be between 0 and 1"
+        assert (decay_factor is None) or (0 <= decay_factor <= 1), "Decay factor must be between 0 and 1"
+        
+        min_rating, max_rating = self.ratings_range
+        assert min_rating <= global_rating <= max_rating, "Global rating must be within the specified ratings range"
+
+        if gamma is None:
+            gamma = self.default_gamma
+
+        if decay_factor is None:
+            decay_factor = self.default_decay_factor
+
+        ordered_visited_items = ordered_items[:visited_items_count]
+        ordered_visited_items_matches = ordered_items_matches[:visited_items_count]
+
+        items_count = len(ordered_items)
+        total_matches = sum(ordered_items_matches)
+        average_matches = total_matches / items_count if items_count > 0 else 0.0 # How many matches an item has on average
+
+        total_visited_matches = sum(ordered_visited_items_matches)
+        average_visited_matches = total_visited_matches / visited_items_count if visited_items_count > 0 else 0.0 # How many matches a visited item has on average
+
+        exploitation = (total_visited_matches / total_matches) if total_matches > 0 else 1 # How much of the total matches are visited
+
+        for item_id, item_matches in zip(ordered_visited_items, ordered_visited_items_matches):
+            # TODO: Implement a more sophisticated rating system to realistically estimate individual ratings from a global rating
+
+            self.__store_rating(group_id=group_id, item_id=item_id, item_rating=item_rating, decay_factor=decay_factor)
+
+    def __store_rating(self, group_id: int, item_id: int, item_rating: float, decay_factor: float | None = None) -> None:
+        """
+        Stores or updates a group's average rating and visit count for an item, 
+        adjusting the weight of the old mean and giving slightly more importance 
+        to the new rating.
 
         Parameters
         ----------
@@ -56,9 +138,19 @@ class CF:
             Unique identifier for the group.
         item_id : int
             Unique identifier for the item.
-        rating : float
+        item_rating : float
             The rating given to the item by the group on this visit.
+        decay_factor : float
+            A factor (0 <= decay_factor <= 1) controlling the decay of the old rating.
+            - If decay_factor = 0, the old rating is completely replaced by the new rating.
+            - If decay_factor = 1, the old rating is kept as it is to compute the new average rating, and the new added rating has no additional weight
+            in the new average.
         """
+        assert (decay_factor is None) or (0 <= decay_factor <= 1), "Decay factor must be between 0 and 1"
+
+        if decay_factor is None:
+            decay_factor = self.default_decay_factor
+
         # Check if there's an existing record
         existing = self.conn.execute('''
             SELECT rating, visit_count FROM ratings 
@@ -67,15 +159,21 @@ class CF:
 
         if existing is None:
             # No existing record, insert a new one
-            new_rating = rating
+            new_rating = item_rating
             new_visit_count = 1
         else:
             old_rating, old_visit_count = existing
-            # Compute the new average rating
-            total_score = old_rating * old_visit_count + rating
-            new_visit_count = old_visit_count + 1
-            new_rating = total_score / new_visit_count
 
+            # Compute the old and new weights
+            old_weight = old_visit_count * decay_factor
+            new_weight = 1 + (1 - decay_factor)  # Slightly more weight to the new rating
+
+            # Compute the new weighted average
+            total_weight = old_weight + new_weight
+            new_rating = (old_rating * old_weight + item_rating * new_weight) / total_weight
+            new_visit_count = old_visit_count + 1  # Keep the real visit count for record
+
+        # Update or insert the record in the database
         with self.conn:
             self.conn.execute('''
                 INSERT INTO ratings (group_id, item_id, rating, visit_count)
@@ -84,6 +182,7 @@ class CF:
                     rating=excluded.rating,
                     visit_count=excluded.visit_count;
             ''', (group_id, item_id, new_rating, new_visit_count))
+
 
     def get_group_ratings(self, group_id: int) -> Dict[int, tuple[float, int]]:
         """
@@ -147,7 +246,7 @@ class CF:
         rows = self.conn.execute(query).fetchall()
         return [r[0] for r in rows]
 
-    def group_ratings_similarity(self, group_id_a: int, group_id_b: int, method: str = 'cosine') -> float:
+    def group_similarity(self, group_id_a: int, group_id_b: int, method: str | None = None) -> float:
         """
         Computes the similarity between two groups based on their ratings of items.
 
@@ -157,15 +256,18 @@ class CF:
             Identifier of the first group.
         group_id_b : int
             Identifier of the second group.
-        method : str, optional
-            The similarity method to use ('cosine' or 'pearson'), default is 'cosine'.
+        method : str
+            The similarity method to use.
 
         Returns
         -------
         float
             Similarity score between the groups based on their ratings.
         """
-        assert method in ['cosine', 'pearson'], "Invalid method; use 'cosine' or 'pearson'"
+        assert method in self.VALID_METHODS, f"Invalid method; use one of {self.VALID_METHODS}"
+
+        if method is None:
+            method = self.default_method
 
         ratings_a = self.get_group_ratings(group_id_a)
         ratings_b = self.get_group_ratings(group_id_b)
@@ -187,7 +289,7 @@ class CF:
                 return 0
             return pearsonr(ratings_a_vec, ratings_b_vec).correlation
 
-    def item_similarity(self, item_id_a: int, item_id_b: int, method: str = 'cosine') -> float:
+    def item_similarity(self, item_id_a: int, item_id_b: int, method: str | None = None) -> float:
         """
         Computes the similarity between two items based on user ratings.
 
@@ -197,7 +299,7 @@ class CF:
             Identifier of the first item.
         item_id_b : int
             Identifier of the second item.
-        method : str, optional
+        method : str
             The similarity method to use, default is 'cosine'.
 
         Returns
@@ -205,6 +307,11 @@ class CF:
         float
             Similarity score between the items.
         """
+        assert method in self.VALID_METHODS, f"Invalid method; use one of {self.VALID_METHODS}"
+
+        if method is None:
+            method = self.default_method
+
         ratings_a = self.get_item_ratings(item_id_a)
         ratings_b = self.get_item_ratings(item_id_b)
 
@@ -223,7 +330,7 @@ class CF:
             raise ValueError("Invalid method; use 'cosine' or 'pearson'")
     
     def recommend_items(
-        self, target_group_id: int, alpha: float, similarity: str = 'cosine',
+        self, target_group_id: int, method: str | None = None, alpha: float | None = None,
         top_k_users: int | None = None, top_k_items: int | None = None
     ) -> List[int]:
         """
@@ -235,8 +342,8 @@ class CF:
             Identifier of the target group.
         alpha : float
             Weight for combining user-based and item-based predictions.
-        similarity : str
-            The similarity method to use for both group and item similarities ('cosine', 'pearson').
+        method : str
+            The similarity method to use for both group and item similarities.
         top_k_users : int, optional
             Number of most similar users to consider for user-based filtering. If None, all users are considered.
         top_k_items : int, optional
@@ -247,8 +354,14 @@ class CF:
         List[int]
             Sorted list of item IDs by predicted relevance.
         """
-        assert 0 <= alpha <= 1, "Alpha must be between 0 and 1"
-        assert similarity in ['cosine', 'pearson'], "Invalid similarity method; use 'cosine', 'pearson'"
+        assert method in self.VALID_METHODS, f"Invalid method; use one of {self.VALID_METHODS}"
+        assert (alpha is None) or (0 <= alpha <= 1), "Alpha must be between 0 and 1"
+
+        if method is None:
+            method = self.default_method
+
+        if alpha is None:
+            alpha = self.default_alpha
 
         # Retrieve all items and the target group's ratings
         all_items = self.get_all_items()
@@ -270,14 +383,14 @@ class CF:
             if top_k_users is not None:
                 # Compute similarities and take top-k
                 similarities = [
-                    (group, self.group_ratings_similarity(target_group_id, group, method=similarity))
+                    (group, self.group_similarity(target_group_id, group, method=method))
                     for group in all_groups
                 ]
                 top_k_user_groups = sorted(similarities, key=lambda x: x[1], reverse=True)[:top_k_users]
             else:
                 # Use all groups
                 top_k_user_groups = [
-                    (group, self.group_ratings_similarity(target_group_id, group, method=similarity))
+                    (group, self.group_similarity(target_group_id, group, method=method))
                     for group in all_groups
                 ]
 
@@ -297,14 +410,14 @@ class CF:
             if top_k_items is not None:
                 # Compute similarities and take top-k
                 similarities = [
-                    (rated_item, self.item_similarity(item, rated_item, method=similarity))
+                    (rated_item, self.item_similarity(item, rated_item, method=method))
                     for rated_item in target_ratings.keys()
                 ]
                 top_k_similar_items = sorted(similarities, key=lambda x: x[1], reverse=True)[:top_k_items]
             else:
                 # Use all rated items
                 top_k_similar_items = [
-                    (rated_item, self.item_similarity(item, rated_item, method=similarity))
+                    (rated_item, self.item_similarity(item, rated_item, method=method))
                     for rated_item in target_ratings.keys()
                 ]
 
