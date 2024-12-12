@@ -23,7 +23,7 @@ class Clustering:
         """Determine the optimal number of clusters using the silhouette score."""
         best_score = -1
         best_k = 2
-        for k in range(2, max_clusters + 1):
+        for k in range(min_clusters, max_clusters + 1):
             kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
             labels = kmeans.fit_predict(X_scaled)
             score = silhouette_score(X_scaled, labels)
@@ -68,18 +68,19 @@ class Clustering:
 
     def encode_and_scale_features(self):
         """
-        Scale numerical features for clustering.
+        Encode categorical features and scale numerical features for clustering.
         """
         if self.data is None:
             raise ValueError("No data available. Fetch data first.")
         
+        # All features are already numerical after label encoding
         # Scale the features
         X_scaled = self.scaler.fit_transform(self.data)
         self.feature_names = list(self.data.columns)
         return X_scaled
 
     def perform_clustering(self, X_scaled):
-        """Perform K-Means clustering on the standardized data with an automatically determined number of clusters."""
+        """Perform K-Means clustering on the standardized data."""
         if self.kmeans is None:
             self.determine_optimal_clusters(X_scaled)
         else:
@@ -128,6 +129,49 @@ class Clustering:
                 )
         print("Cluster assignments have been saved to abstract_problems table based on 'id'.")
 
+    def print_cluster_statistics(self):
+        """
+        Print the number of cases in each cluster along with their percentages.
+        """
+        if self.cluster_labels is None:
+            raise ValueError("No clustering results available. Perform clustering first.")
+        
+        cluster_counts = pd.Series(self.cluster_labels).value_counts().sort_index()
+        total = len(self.cluster_labels)
+        cluster_percentages = (cluster_counts / total) * 100
+        
+        print("\nCluster Statistics:")
+        for cluster_id in cluster_counts.index:
+            count = cluster_counts[cluster_id]
+            percentage = cluster_percentages[cluster_id]
+            print(f"Cluster {cluster_id}: {count} cases ({percentage:.2f}%)")
+    
+    def print_centroids_readable(self):
+        """
+        Print the centroids in a readable format by inverse transforming the scaled features
+        and decoding the encoded categorical features.
+        """
+        if self.kmeans is None:
+            raise ValueError("K-Means model is not trained yet.")
+        
+        # Get the centroids from the K-Means model
+        centroids_scaled = self.kmeans.cluster_centers_
+        
+        # Inverse scale the centroids
+        centroids_original = self.scaler.inverse_transform(centroids_scaled)
+        
+        # Create a DataFrame for readability
+        centroids_df = pd.DataFrame(centroids_original, columns=self.feature_names)
+        
+        # Decode the 'favorite_theme_encoded' back to original labels
+        centroids_df['favorite_theme'] = self.label_encoder_theme.inverse_transform(centroids_df['favorite_theme_encoded'].round().astype(int))
+        
+        # Drop the encoded column
+        centroids_df = centroids_df.drop(columns=['favorite_theme_encoded'])
+        
+        print("\nCluster Centroids (Readable Format):")
+        print(centroids_df)
+
     def save_model(self):
         """
         Save the trained K-Means model, scaler, and label encoder to a file using joblib.
@@ -162,6 +206,10 @@ class Clustering:
         :param new_case: Dictionary with the new case attributes.
         :return: Cluster number.
         """
+        # Handle unseen favorite_theme
+        if new_case['favorite_theme'] not in self.label_encoder_theme.classes_:
+            raise ValueError(f"Unknown favorite_theme: {new_case['favorite_theme']}. Please retrain the model with this new category.")
+        
         # Create a DataFrame from the new case
         df_new = pd.DataFrame([{
             'num_people': new_case['num_people'],
@@ -183,28 +231,20 @@ class Clustering:
         # Predict the cluster
         cluster_id = self.kmeans.predict(X_scaled_new)[0]
         return int(cluster_id)
-
-    def recommend_from_cluster(self, input_case, top_k=3):
+    
+    def recommend_from_cluster(self, input_case):
         """
-        Recommend top-k cases from the same cluster as the input case.
+        Recommend similar cases from the same cluster as the input case.
+        This function has been modified to remove top_k=3 retrieval.
+        Instead, it only assigns the input case to a cluster.
         
         :param input_case: Dictionary with the input case attributes.
-        :param top_k: Number of cases to recommend.
-        :return: List of recommended cases.
+        :return: Cluster number.
         """
         # Classify the input case to find its cluster
         cluster_id = self.classify_new_case(input_case)
         print(f"Input case assigned to cluster: {cluster_id}")
-        
-        # Retrieve similar cases from the same cluster
-        query = """
-        SELECT *
-        FROM abstract_problems
-        WHERE cluster = ?
-        LIMIT ?
-        """
-        similar_cases_df = pd.read_sql_query(query, self.conn, params=(cluster_id, top_k))
-        return similar_cases_df.to_dict(orient='records')
+        return cluster_id
 
     def close_connection(self):
         """
@@ -213,7 +253,7 @@ class Clustering:
         self.conn.close()
         print("Database connection closed.")
 
-# Usage Example
+    # Usage Example
 if __name__ == "__main__":
     # Initialize the clustering system
     clustering_system = Clustering(db_path='./data/database.db', model_path='./models/kmeans_model.joblib')
@@ -229,7 +269,7 @@ if __name__ == "__main__":
     print(X_scaled[:5])
     
     # Step 3: Determine optimal number of clusters and perform clustering
-    clustering_system.determine_optimal_clusters(X_scaled, max_clusters=10)
+    clustering_system.determine_optimal_clusters(X_scaled, min_clusters=3, max_clusters=10)
     
     # Step 4: Assign clusters
     clustering_system.perform_clustering(X_scaled)
@@ -237,17 +277,24 @@ if __name__ == "__main__":
     # Step 5: Save cluster assignments to abstract_problems table
     clustering_system.save_clusters_to_abstract_problems()
     
-    # Step 6: Save the trained model for future use
+    # Step 6: Print cluster statistics
+    clustering_system.print_cluster_statistics()
+    
+    # Step 7: Print readable centroids
+    clustering_system.print_centroids_readable()
+    
+    # Step 8: Save the trained model for future use
     clustering_system.save_model()
     
-    # Step 7: Close the database connection
+    # Step 9: Close the database connection
     clustering_system.close_connection()
     
     # ----- Assigning a New Case -----
-    # To classify a new case, you need to load the saved model
-    # and use the `classify_new_case` method
+    # The user requested to remove the top 3 retrieval, so the recommendation part has been removed.
+    # However, if you wish to classify a new case without recommendations, you can use the following code:
+
     
-    # Example of classifying a new case
+    # Example of classifying a new case without retrieving recommendations
     new_case = {
         'num_people': 4,
         'favorite_author': 2,  # Already label encoded
@@ -265,10 +312,10 @@ if __name__ == "__main__":
     # Load the saved model
     clustering_system.load_model()
     
-    # Recommend similar cases
-    recommendations = clustering_system.recommend_from_cluster(new_case, top_k=3)
-    print("\nRecommendations for the new case:")
-    print(recommendations)
+    # Classify the new case
+    cluster_id = clustering_system.classify_new_case(new_case)
+    print(f"\nThe new case is assigned to cluster: {cluster_id}")
     
     # Close the connection
     clustering_system.close_connection()
+    
