@@ -18,12 +18,13 @@ from cbr import CBR
 class GenArtArgs():
 
     data: list = field(default_factory=list)
+    reference_preferences_proportion: float = 0.25
     num_artworks: int = 10
     num_cases: int = 100
     format: str = "sqlite"
 
     def __post_init__(self):
-        with open("data/sorted_artworks.json", "r", encoding="utf-8") as file:
+        with open("../data/sorted_artworks.json", "r", encoding="utf-8") as file:
             self.data = json.load(file)
 
 if __name__ == "__main__":
@@ -78,47 +79,50 @@ if __name__ == "__main__":
     
     # Create a preferences generator
     results = []
-    preferences_generator = PreferencesGenerator(themes=theme_instances,authors=list(authors_s))
-    for _ in range(gen_art_args.num_cases):
-        sp = preferences_generator.sample()
+    pg = PreferencesGenerator(themes=theme_instances, authors=list(authors_s))
+    num_reference_samples = int(gen_art_args.num_cases * gen_art_args.reference_preferences_proportion)
+    data_sample = pg.generate_sample_data(num_reference_samples=num_reference_samples, num_total_samples=gen_art_args.num_cases)
 
-        ap = AbstractProblem(
+    for sp in data_sample:
+        abs_prob = AbstractProblem(
             specific_problem=sp,
             available_periods=periods,
             available_authors=list(authors_s),
-            available_themes=theme_instances)
-        
-        asol = AbstractSolution(related_to_AbstractProblem=ap)
-        asol.compute_matches(artworks=artworks)
+            available_themes=theme_instances
+        )
+
+        abs_sol = AbstractSolution(related_to_AbstractProblem=abs_prob)
+        abs_sol.compute_matches(artworks=artworks)
 
         t = TimeLimitGenerator(low=20, high=120)
         time = t.generate()
 
-        ss = SpecificSolution(
-            related_to_AbstractSolution=asol,
+        spec_sol = SpecificSolution(
+            related_to_AbstractSolution=abs_sol,
             reduced_mobility=False,
             total_days=1,      
             daily_minutes=time,
         )
-        ss.distribute_artworks()
-        
-        results.append((ap, asol, ss.visited_artworks_count))
+        spec_sol.distribute_artworks()
+
+        results.append((abs_prob, abs_sol, spec_sol.visited_artworks_count))
 
     if gen_art_args.format == "json":
         serializable_results = []
-        for ap in results:
-            ap_dict = {
-                "group_size": ap.group_size,
-                "group_type": ap.group_type,
-                "art_knowledge": ap.art_knowledge,
-                "preferred_periods": [asdict(p) for p in ap.preferred_periods],
-                "preferred_author": asdict(ap.preferred_author) if ap.preferred_author else None,
-                "preferred_themes": ap.preferred_themes,
-                "time_coefficient": ap.time_coefficient
+        for abs_prob in results:
+            abs_prob_dict = {
+                "group_id": abs_prob.group_id,
+                "group_size": abs_prob.group_size,
+                "group_type": abs_prob.group_type,
+                "art_knowledge": abs_prob.art_knowledge,
+                "preferred_periods": [asdict(p) for p in abs_prob.preferred_periods],
+                "preferred_author": asdict(abs_prob.preferred_author) if abs_prob.preferred_author else None,
+                "preferred_themes": abs_prob.preferred_themes,
+                "time_coefficient": abs_prob.time_coefficient
             }
-            serializable_results.append(ap_dict)
+            serializable_results.append(abs_prob_dict)
 
-        with open("data/database.json", "w", encoding="utf-8") as f:
+        with open("../data/database.json", "w", encoding="utf-8") as f:
             json.dump(serializable_results, f, ensure_ascii=False, indent=4)
 
     elif gen_art_args.format == "sqlite":

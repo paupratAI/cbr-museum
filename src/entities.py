@@ -938,6 +938,7 @@ authors = {
 
 @dataclass
 class SpecificProblem:
+    group_id: int
     num_people: int
     favorite_author: Optional[int]  # Author ID
     favorite_period: Optional[int]  # Year
@@ -948,6 +949,7 @@ class SpecificProblem:
     past_museum_visits: int
 
     def __post_init__(self):
+        assert isinstance(self.group_id, int) and self.group_id >= 0, "group_id must be a positive integer"
         assert isinstance(self.num_people, int) and 1 <= self.num_people <= 50, "num_people must be between 1 and 50"
         assert isinstance(self.favorite_author, (str, type(None))), "favorite_author must be a string or None"
         assert isinstance(self.favorite_period, (int, type(None))), "favorite_period must be an integer or None"
@@ -970,6 +972,7 @@ class AbstractProblem:
         self.available_authors = available_authors
         self.available_themes = available_themes
 
+        self.group_id = self.specific_problem.group_id
         self.group_size = self.compute_group_size()
         self.group_type = self.compute_group_type()
         self.art_knowledge = self.compute_art_knowledge()

@@ -7,13 +7,14 @@ import math
 def save_in_sqlite3(results: list):
     # results es una lista de tuplas (AbstractProblem, AbstractSolution, visited_artworks_count)
 
-    conn = sqlite3.connect("data/database.db")
+    conn = sqlite3.connect("../data/database.db")
     cursor = conn.cursor()
 
     # Crear tablas si no existen
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS specific_problems (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        group_id INTEGER,
         num_people INTEGER,
         favorite_author INTEGER,
         favorite_period INTEGER,
@@ -29,6 +30,7 @@ def save_in_sqlite3(results: list):
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS abstract_problems (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        group_id INTEGER,
         specific_problem_id INTEGER,
         group_size INTEGER,
         group_type TEXT,
@@ -73,9 +75,10 @@ def save_in_sqlite3(results: list):
         # Insertar SpecificProblem
         cursor.execute("""
         INSERT INTO specific_problems
-        (num_people, favorite_author, favorite_period, favorite_theme, guided_visit, minors, num_experts, past_museum_visits)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        (group_id, num_people, favorite_author, favorite_period, favorite_theme, guided_visit, minors, num_experts, past_museum_visits)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
+            sp.group_id,
             sp.num_people,
             sp.favorite_author,
             sp.favorite_period,
@@ -101,10 +104,11 @@ def save_in_sqlite3(results: list):
         # Insertar AbstractProblem, incluyendo visited_artworks_count
         cursor.execute("""
         INSERT INTO abstract_problems
-        (specific_problem_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks, ordered_artworks_matches, visited_artworks_count)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (specific_problem_id, group_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks, ordered_artworks_matches, visited_artworks_count)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             specific_problem_id,
+            ap.group_id,
             ap.group_size,
             ap.group_type,
             ap.art_knowledge,

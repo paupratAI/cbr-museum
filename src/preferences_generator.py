@@ -61,7 +61,8 @@ class PreferencesGenerator:
 		self.themes = themes
 		self.authors = authors
 
-	def sample(self) -> SpecificProblem:
+	def sample(self, group_id: int) -> SpecificProblem:
+		assert group_id >= 0, "The group_id must be a non-negative integer."
 
 		true_false = [True, False]
 
@@ -76,6 +77,7 @@ class PreferencesGenerator:
 		favorite_author = random.choice(self.authors).author_name
 
 		sp = SpecificProblem(
+			group_id=group_id,
 			num_people=num_people,
 			favorite_author=favorite_author,
 			favorite_period=favorite_period,
@@ -88,23 +90,18 @@ class PreferencesGenerator:
 
 		return sp
 	
-def create_sample_data(num_reference_samples: int, num_total_samples: int, random_seed: int = 42, themes: list = [], authors: list = []):
-	"""
-	Create a list of preferences for a given number of samples.
+	def generate_sample_data(self, num_reference_samples: int, num_total_samples: int, temperature: float = 1.0) -> list[SpecificProblem]:
+		"""
+		Create a list of preferences for a given number of samples.
 
-	Args:
-		num_reference_samples (int): The number of random samples to generate and use as reference.
-		num_total_samples (int): The total number of samples to generate (including the reference samples).
-		random_seed (int): The random seed to use.
-		themes (list): A list of themes to choose from.
-		authors (list): A list of authors to choose from.
-	Returns:
-		list[dict]: A list of preferences for each sample.
-	"""
-	random.seed(random_seed)
-	pg = PreferencesGenerator(random_seed, themes, authors)
-
-	reference_samples = [pg.sample() for _ in range(num_reference_samples)]
+		Args:
+			num_reference_samples (int): The number of random samples to generate and use as reference.
+			num_total_samples (int): The total number of samples to generate (including the reference samples).
+			temperature (float): The temperature parameter for the softmax function, default is 2.0 to handle the exponential distribution.
+		Returns:
+			list[dict]: A list of preferences for each sample.
+		"""
+		reference_samples = [self.sample(group_id) for group_id in range(1, num_reference_samples + 1)]
 
 	num_samples_to_generate = num_total_samples - num_reference_samples
 
