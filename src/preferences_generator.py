@@ -73,7 +73,7 @@ class PreferencesGenerator:
 		past_museums_visits = random.randint(0, 50)
 		favorite_period = random.randint(1000, 1900)
 		favorite_theme = random.choice(self.themes).theme_name
-		favorite_author = random.choice(self.authors).author_id
+		favorite_author = random.choice(self.authors).author_name
 
 		sp = SpecificProblem(
 			num_people=num_people,

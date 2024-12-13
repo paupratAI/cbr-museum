@@ -4,7 +4,7 @@ import random
 from entities import Author, Period, Style, Artwork, AbstractProblem, SpecificSolution
 from ontology.periods import periods
 from ontology.themes import theme_instances
-from ontology.authors import authors
+from authors import authors
 from ontology.art_theme_pairs import art_theme_pairs
 
 from preferences_generator import PreferencesGenerator, TimeLimitGenerator
@@ -29,12 +29,14 @@ class GenArtArgs():
 if __name__ == "__main__":
     gen_art_args = GenArtArgs()
     artworks_data = gen_art_args.data[:gen_art_args.num_artworks]
-    authors = set()
+    authors_s = set()
     artworks = []
     for artwork in artworks_data:
         author_name = artwork["created_by"]
         author = authors[author_name] 
-        authors.add(author)
+        authors_s.add(author)
+
+        name = artwork["artwork_name"]
 
         # Select a valid period in case the year of the artwork does not belong to any of the periods; we will select a random one
         year = artwork["artwork_in_period"]
@@ -61,7 +63,7 @@ if __name__ == "__main__":
         # Create the instance of Artwork
         artwork_instance = Artwork(
             artwork_id=id,
-            artwork_name=artwork["artwork_name"],
+            artwork_name=name,
             artwork_in_room=None,
             created_by=author,
             artwork_in_period=period,
@@ -76,14 +78,14 @@ if __name__ == "__main__":
     
     # Create a preferences generator
     results = []
-    preferences_generator = PreferencesGenerator(themes=theme_instances,authors=list(authors))
+    preferences_generator = PreferencesGenerator(themes=theme_instances,authors=list(authors_s))
     for _ in range(gen_art_args.num_cases):
         sp = preferences_generator.sample()
 
         ap = AbstractProblem(
             specific_problem=sp,
             available_periods=periods,
-            available_authors=list(authors),
+            available_authors=list(authors_s),
             available_themes=theme_instances)
         
         asol = AbstractSolution(related_to_AbstractProblem=ap)
