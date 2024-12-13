@@ -99,7 +99,7 @@ class CBR:
             SELECT * FROM abstract_problems
             WHERE cluster = ?
         '''
-        params = (problem.cluster)
+        params = (problem.cluster,)
         rows = self.conn.execute(query, params).fetchall()
 
         # Convert rows to AbstractProblem and calculate similarity
