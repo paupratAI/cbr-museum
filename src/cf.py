@@ -16,7 +16,7 @@ class CF:
     VALID_METHODS = ['cosine', 'pearson']
 
     def __init__(self, 
-        ratings_range: list, db_path='../data/database.db', default_alpha: float = 0.5, default_gamma: float = 0.25, default_decay_factor: float = 1, default_method: str = 'cosine'
+        ratings_range: list, db_path='../data/database.db', default_alpha: float = 0.5, default_gamma: float = 1, default_decay_factor: float = 1, default_method: str = 'cosine'
         ):
         """
         Initializes the collaborative filtering system by connecting to the database.
@@ -30,7 +30,7 @@ class CF:
         default_alpha : float
             Weight for combining user-based and item-based predictions, default is 0.5.
         default_gamma : float
-            Weight for combining group ratings and individual ratings, default is 0.25.
+            Weight for the sensitivity of individual item ratings to deviations in item matches when computing individual item ratings from a group's global rating, default is 1.
         default_decay_factor : float
             A factor controlling the decay of the old rating, default is 1 (no decay).
         default_method : str
@@ -93,7 +93,9 @@ class CF:
         global_rating : float
             The global rating given by the group for all items.
         gamma : float
-            Parameter that controls
+            Controls how sensitive the individual item ratings are to deviations in item matches.
+            - Lower values of gamma make the ratings more uniform (similar to the global rating).
+            - Higher values of gamma make the ratings more sensitive to deviations, there fore more extreme compared to the global rating.
         """
         assert len(ordered_items) == len(ordered_items_matches), "Length of ordered_items and ordered_items_matches must match"
         assert visited_items_count <= len(ordered_items), "Visited items count must be less than or equal to the total number of items"
@@ -111,18 +113,11 @@ class CF:
 
         ordered_visited_items = ordered_items[:visited_items_count]
         ordered_visited_items_matches = ordered_items_matches[:visited_items_count]
-
-        items_count = len(ordered_items)
-        total_matches = sum(ordered_items_matches)
-        average_matches = total_matches / items_count if items_count > 0 else 0.0 # How many matches an item has on average
-
         total_visited_matches = sum(ordered_visited_items_matches)
-        average_visited_matches = total_visited_matches / visited_items_count if visited_items_count > 0 else 0.0 # How many matches a visited item has on average
-
-        exploitation = (total_visited_matches / total_matches) if total_matches > 0 else 1 # How much of the total matches are visited
 
         for item_id, item_matches in zip(ordered_visited_items, ordered_visited_items_matches):
-            # TODO: Implement a more sophisticated rating system to realistically estimate individual ratings from a global rating
+            item_ratio = item_matches / total_visited_matches if total_visited_matches > 0 else 0
+            item_rating = global_rating + gamma * (item_ratio - 1/visited_items_count) #
 
             self.__store_rating(group_id=group_id, item_id=item_id, item_rating=item_rating, decay_factor=decay_factor)
 
