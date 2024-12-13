@@ -1,6 +1,6 @@
 import sqlite3
 from entities import AbstractProblem, SpecificProblem, Author, Period, Theme
-from typing import List, Dict
+from typing import List
 import json
 import ast
 
@@ -108,42 +108,38 @@ class CBR:
     def retrieve_cases(self, problem: AbstractProblem, top_k=3):
         """Retrieves the most similar cases to the current case, updates usage_count."""
         query = '''
-            SELECT rowid, * FROM abstract_problems
+            SELECT * FROM abstract_problems
             WHERE cluster = ?
         '''
         params = (problem.cluster,)
         rows = self.conn.execute(query, params).fetchall()
-
         cases_with_similarity = []
         for row in rows:
-            # row structure with rowid: (rowid, cluster, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, route_artworks, feedback, utility, usage_count, redundancy)
-            # Adjust indexing if needed based on your schema. Assuming columns as:
-            # 0: rowid (from SELECT rowid,*)
-            # 1: cluster
+            # Según el nuevo orden:
+            # 0: id
+            # 1: specific_problem_id
             # 2: group_size
             # 3: group_type
             # 4: art_knowledge
-            # 5: preferred_periods
+            # 5: preferred_periods 
             # 6: preferred_author
-            # 7: preferred_themes
+            # 7: preferred_themes 
             # 8: time_coefficient
-            # 9: route_artworks
-            # 10: feedback
-            # 11: utility
-            # 12: usage_count
-            # 13: redundancy
+            # 9: ordered_artworks
+            # 10: ordered_artworks_matches
+            # 11: visited_artworks_count
+            # 12: cluster
+            # 13: utility
+            # 14: usage_count
+            # 15: redundancy
 
-            stored_periods = json.loads(row[5]) if row[5] else []
-            stored_periods_id = [p['period_id'] for p in stored_periods]
+            stored_periods_id = [p['period_id'] for p in json.loads(row[5])]
 
-            author_data = json.loads(row[6]) if row[6] else {}
-            stored_author = Author(
-                author_id=author_data.get('author_id', None),
-                author_name=author_data.get("author_name", ""),
-                main_periods=[Period(period_id=p['period_id']) for p in author_data.get('main_periods', [])]
-            )
+            author_data = json.loads(row[6])
+            stored_author = Author(author_id=author_data['author_id'], author_name=author_data["author_name"],
+                                   main_periods=[Period(period_id=p['period_id']) for p in author_data.get('main_periods', [])])
 
-            preferred_themes = ast.literal_eval(row[7]) if row[7] else []
+            preferred_themes = ast.literal_eval(row[7])
 
             # Calculate similarity
             similarity = self.calculate_similarity(
@@ -164,20 +160,23 @@ class CBR:
 
         # Update usage_count for the selected cases
         for case, sim in selected_cases:
-            self.increment_usage_count(case[0])  # case[0] is rowid
+            self.increment_usage_count(case[0])  # case[0] is id
 
         return selected_cases
 
-    def increment_usage_count(self, rowid):
+    def increment_usage_count(self, case_id):
         """Increment usage_count each time a case is retrieved for recommendation."""
-        cursor = self.conn.execute("SELECT usage_count FROM abstract_problems WHERE rowid = ?", (rowid,))
-        usage_count = cursor.fetchone()[0] if cursor.fetchone() else 0
-        # Need to re-fetch because fetchone was consumed
-        if usage_count is None:
+        cursor = self.conn.execute("SELECT usage_count FROM abstract_problems WHERE id = ?", (case_id,))
+        result = cursor.fetchone()
+        if result is not None and result[0] is not None:
+            usage_count = result[0]
+        else:
             usage_count = 0
+
         usage_count += 1
-        self.conn.execute("UPDATE abstract_problems SET usage_count = ? WHERE rowid = ?", (usage_count, rowid))
+        self.conn.execute("UPDATE abstract_problems SET usage_count = ? WHERE id = ?", (usage_count, case_id))
         self.conn.commit()
+
 
     def store_case(self, problem: AbstractProblem, route_artworks: List[int], feedback: List[int]):
         """Stores a new case in the database."""
@@ -196,11 +195,13 @@ class CBR:
         
         self.conn.execute('''
             INSERT INTO abstract_problems (
-                cluster, group_size, group_type, art_knowledge, preferred_periods, preferred_author, 
-                preferred_themes, time_coefficient, route_artworks, feedback, utility, usage_count, redundancy
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                group_size, group_type, art_knowledge,
+                preferred_periods, preferred_author,
+                preferred_themes, time_coefficient,
+                ordered_artworks, ordered_artworks_matches,
+                visited_artworks_count, cluster, utility, usage_count, redundancy
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
-            problem.cluster,
             problem.group_size,
             problem.group_type,
             problem.art_knowledge,
@@ -209,10 +210,12 @@ class CBR:
             str(problem.preferred_themes),
             problem.time_coefficient,
             ','.join(map(str, route_artworks)),
-            ','.join(map(str, feedback)),
+            '',  # ordered_artworks_matches 
+            0,   # visited_artworks_count inicial
+            problem.cluster,
             utility,
-            0,
-            0.0
+            0,  # usage_count
+            0.0 # redundancy
         ))
         self.conn.commit()
         """
@@ -228,50 +231,66 @@ class CBR:
 
     def calculate_redundancy(self):
         """
-        Calculate redundancy for each case. 
-        Redundancy can be defined as the fraction of other cases that are very similar to this one.
-        For example, we consider cases with similarity > 0.9 as 'redundant'.
+        Calculate redundancy for each case.
+        Redundancy is the fraction of other cases that are very similar to this one.
+        Consider cases with similarity > 0.9 as 'redundant'.
         """
-        # Retrieve all cases
-        cursor = self.conn.execute("SELECT rowid, cluster, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient FROM abstract_problems")
+        # Recuperamos todos los casos con el orden de columnas ya definido
+        cursor = self.conn.execute("SELECT * FROM abstract_problems")
         all_cases = cursor.fetchall()
 
-        # Convert to a structure we can use easily
         cases = []
         for c in all_cases:
+            # c[0]: id
+            # c[1]: specific_problem_id
+            # c[2]: group_size
+            # c[3]: group_type
+            # c[4]: art_knowledge
+            # c[5]: preferred_periods (JSON)
+            # c[6]: preferred_author (JSON)
+            # c[7]: preferred_themes
+            # c[8]: time_coefficient
+            # c[9]: ordered_artworks
+            # c[10]: ordered_artworks_matches
+            # c[11]: visited_artworks_count
+            # c[12]: cluster
+            # c[13]: utility
+            # c[14]: usage_count
+            # c[15]: redundancy
+
             author_data = json.loads(c[6]) if c[6] else {}
             stored_author = Author(
                 author_id=author_data.get('author_id', None),
-                author_name=author_data.get("author_name", ""),
+                author_name=author_data.get('author_name', ""),
                 main_periods=[Period(period_id=p['period_id']) for p in author_data.get('main_periods', [])]
             )
+
             stored_periods = json.loads(c[5]) if c[5] else []
             periods_list = [Period(period_id=p['period_id']) for p in stored_periods]
+
             themes = ast.literal_eval(c[7]) if c[7] else []
 
-            # We need a pseudo-problem object for similarity calculation
-            pseudo_problem = AbstractProblem(
-                cluster=c[1],
-                group_size=c[2],
-                group_type=c[3],
-                art_knowledge=c[4],
-                preferred_periods=periods_list,
-                preferred_author=stored_author,
-                preferred_themes=themes,
-                time_coefficient=c[8]
-            )
-            cases.append((c[0], pseudo_problem))  # (rowid, AbstractProblem-like)
+            # Crear el pseudo_problem respetando el orden de columnas
+            pseudo_problem = AbstractProblem(specific_problem=None, available_periods=None, available_authors=None, available_themes=None)
 
-        # For redundancy, for each case compare with all others
-        # Count how many have similarity > 0.9
-        # Redundancy = (count_of_highly_similar_cases / (total_cases - 1)) if total_cases > 1 else 0
+            pseudo_problem.group_size=c[2]
+            pseudo_problem.group_type=c[3]
+            pseudo_problem.art_knowledge=c[4]
+            pseudo_problem.preferred_periods=periods_list
+            pseudo_problem.preferred_author=stored_author
+            pseudo_problem.preferred_themes=themes
+            pseudo_problem.time_coefficient=c[8]
+            pseudo_problem.cluster=c[12]
+
+            cases.append((c[0], pseudo_problem))  # c[0] es el id del caso
+
         total_cases = len(cases)
-        for i, (rowid, case_problem) in enumerate(cases):
+        for i, (case_id, case_problem) in enumerate(cases):
             if total_cases <= 1:
                 redundancy = 0
             else:
                 count_similar = 0
-                for j, (other_rowid, other_problem) in enumerate(cases):
+                for j, (other_id, other_problem) in enumerate(cases):
                     if i == j:
                         continue
                     sim = self.calculate_similarity(
@@ -287,18 +306,19 @@ class CBR:
                     if sim > 0.9:
                         count_similar += 1
                 redundancy = count_similar / (total_cases - 1)
-            self.conn.execute("UPDATE abstract_problems SET redundancy = ? WHERE rowid = ?", (redundancy, rowid))
+
+            self.conn.execute("UPDATE abstract_problems SET redundancy = ? WHERE id = ?", (redundancy, case_id))
         self.conn.commit()
 
-    def ensure_utility_column(self):
+
+    def calculate_utility(self):
         """
         Recalculate utility considering feedback, usage_count, and redundancy.
         Utility formula (example):
         - normalized_feedback = avg_feedback/5.0 (feedback from 1 to 5)
         - normalize usage_count by dividing by max usage_count found
         - redundancy reduces utility, so use (1 - redundancy) as a factor
-        - Combine them:
-          utility = 0.5 * normalized_feedback + 0.3 * normalized_usage + 0.2 * (1 - redundancy)
+        - utility = 0.5 * normalized_feedback + 0.3 * normalized_usage + 0.2 * (1 - redundancy)
         """
         # Ensure columns and recalculate redundancy first
         self.ensure_columns()
@@ -311,11 +331,10 @@ class CBR:
             max_usage = 1  # Avoid division by zero
 
         # Retrieve all cases
-        cursor = self.conn.execute("SELECT rowid, feedback, usage_count, redundancy FROM abstract_problems")
+        cursor = self.conn.execute("SELECT id, feedback, usage_count, redundancy FROM abstract_problems")
         rows = cursor.fetchall()
 
-        for rowid, feedback_str, usage_count, redundancy in rows:
-            # Calculate normalized_feedback
+        for case_id, feedback_str, usage_count, redundancy in rows:
             if feedback_str:
                 feedback_values = list(map(int, feedback_str.split(',')))
                 avg_feedback = sum(feedback_values)/len(feedback_values) if feedback_values else 0
@@ -333,7 +352,6 @@ class CBR:
 
             # Weighted combination
             utility = (0.5 * normalized_feedback) + (0.3 * normalized_usage) + (0.2 * non_redundancy_factor)
+            self.conn.execute("UPDATE abstract_problems SET utility = ? WHERE id = ?", (utility, case_id))
 
-            self.conn.execute("UPDATE abstract_problems SET utility = ? WHERE rowid = ?", (utility, rowid))
-        
         self.conn.commit()

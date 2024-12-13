@@ -1222,6 +1222,7 @@ class SpecificSolution:
     total_days: int = 1
     daily_minutes: int = 480  # Default 8 hours
     day_assignments: Dict[int, List[Artwork]] = field(default_factory=dict)
+    visited_artworks_count: int = 0
 
     def distribute_artworks(self):
         """Assigns the artworks obtained in AbstractSolution to several days, considering daily_minutes."""
@@ -1245,6 +1246,7 @@ class SpecificSolution:
                 # Not enough time in available days
                 # Depending on the logic, you could skip or try to adjust
                 pass
+        self.visited_artworks_count = sum(len(arts) for arts in self.day_assignments.values())
 
     def find_entry_room(self, museum: Museum) -> Optional[Room]:
         for r in museum.rooms:
