@@ -38,7 +38,6 @@
 # ----------------------------
 
 import random
-from scipy.special import softmax
 from scipy.stats import expon
 from entities import SpecificProblem
 import numpy as np
@@ -90,27 +89,27 @@ class PreferencesGenerator:
 
 		return sp
 	
-	def generate_sample_data(self, num_reference_samples: int, num_total_samples: int, temperature: float = 1.0) -> list[SpecificProblem]:
+	def generate_sample_data(self, num_reference_samples: int, num_total_samples: int) -> list[SpecificProblem]:
 		"""
 		Create a list of preferences for a given number of samples.
 
 		Args:
 			num_reference_samples (int): The number of random samples to generate and use as reference.
 			num_total_samples (int): The total number of samples to generate (including the reference samples).
-			temperature (float): The temperature parameter for the softmax function, default is 2.0 to handle the exponential distribution.
 		Returns:
 			list[dict]: A list of preferences for each sample.
 		"""
 		reference_samples = [self.sample(group_id) for group_id in range(1, num_reference_samples + 1)]
 
-	num_samples_to_generate = num_total_samples - num_reference_samples
+		num_samples_to_generate = num_total_samples - num_reference_samples
 
-	museum_visits = [sample.past_museum_visits for sample in reference_samples]
-	museum_visits_prob = softmax(museum_visits)
+		museum_visits = np.array([sample.past_museum_visits for sample in reference_samples])
+		total_visits = np.sum(museum_visits)
+		museum_visits_probs = museum_visits / total_visits
 
-	repeated_samples = random.choices(reference_samples, weights=museum_visits_prob, k=num_samples_to_generate)
+		repeated_samples = random.choices(reference_samples, weights=museum_visits_probs, k=num_samples_to_generate)
 
-	return reference_samples + repeated_samples
+		return reference_samples + repeated_samples
 
 # #Visualize the exponential distribution function
 # import matplotlib.pyplot as plt
