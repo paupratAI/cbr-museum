@@ -106,8 +106,6 @@ authors = {
         # Key figure in modern art, associated with Post-Impressionism, Impressionism influence, and Expressionism elements
         main_periods=[periods[14], periods[13], periods[15]],  
         # Impressionism(14)->index13, Realism(13)->index12 (for influence), Post-Impressionism(15)->index14, Expressionism(16)->index15
-        # Let's choose Impressionism(14), Post-Impressionism(15), Expressionism(16)
-        main_periods=[periods[13], periods[14], periods[15]],
         # Similar modernists: Pablo Picasso (Cubism) and Marc Chagall (Expressionism/Surrealism)
         similar_authors=["Pablo Picasso", "Marc Chagall"]
     ),
@@ -399,7 +397,6 @@ authors = {
         # American sculptor of the mid-19th century, active during the Romantic and Realist transition.
         main_periods=[periods[11], periods[12]], # Neoclassicism(11)=index10 or Romanticism(12)=index11, Realism(13)=index12
         # Actually let's pick Romanticism(12) and Realism(13) due to the 19th century timeframe.
-        main_periods=[periods[11], periods[12]], # Romanticism=12(index11), Realism=13(index12)
         # Similar authors (19th century, American/European): "Winslow Homer" (American), "George Inness" (American), "Frederic Remington" (American)
         similar_authors=["Winslow Homer", "George Inness", "Frederic Remington"]
     ),
@@ -425,7 +422,6 @@ authors = {
         # An American modernist painter influenced by Cubism and early American abstraction.
         main_periods=[periods[16], periods[18]], # Cubism(17)=index16, Surrealism(18)=index17 or Abstract Expressionism(19)=index18
         # Let's choose Cubism and Abstract Expressionism for a modernist link.
-        main_periods=[periods[16], periods[18]], # Cubism and Abstract Expressionism
         # Similar authors: "Jasper Johns" (American modern), "Georgia O'Keeffe" (American modernist), "Robert Delaunay" (European abstract/cubist)
         similar_authors=["Jasper Johns", "Georgia O'Keeffe", "Robert Delaunay"]
     ),
@@ -435,7 +431,6 @@ authors = {
         # Leader of the Realist movement in 19th century France.
         main_periods=[periods[12]], # Realism(13)=index12 (We can include just Realism)
         # Actually Romanticism(12)=index11 preceded Realism, Courbet was strongly Realist, let's add Realism only to emphasize.
-        main_periods=[periods[12]], # Realism
         # Similar authors: "Édouard Manet" (transition from Realism to Impressionism), "Edgar Degas" (Impressionist with Realist roots),
         # "Jean-Honoré Fragonard" doesn't fit well timeframe-wise. Let's pick "Édouard Manet", "Edgar Degas", "Francisco José" (Goya, a precursor)
         similar_authors=["Édouard Manet", "Edgar Degas", "Francisco José"]
@@ -465,7 +460,6 @@ authors = {
         # Associated with Neoclassicism(11) and Romanticism(12).
         main_periods=[periods[10], periods[11]], # Rococo(10)=index9 or Neoclassicism(11)=index10 actually 0-based: Neoclassicism(11)=index10, Romanticism(12)=index11
         # Let's pick Neoclassicism and Romanticism.
-        main_periods=[periods[10], periods[11]],
         # Similar authors: "Thomas Eakins" (19th century portrait), "Pierre-Auguste Renoir" (19th century European), "Jacques-Louis David" (Neoclassical)
         similar_authors=["Thomas Eakins", "Jacques-Louis David", "Pierre-Auguste Renoir"]
     ),
@@ -525,7 +519,6 @@ authors = {
         main_periods=[periods[15], periods[19]], 
         # Expressionism(16)=index15, also Abstract Expressionism(19)=index18 could fit, or Surrealism(18)=index17 for abstraction.
         # Let's choose Expressionism(16)=index15 and Abstract Expressionism(19)=index18 for a nod to abstract progression.
-        main_periods=[periods[15], periods[18]], # Expressionism and Abstract Expressionism
         # Similar authors: "Robert Delaunay" (abstraction), "Marc Chagall" (modern, somewhat expressionistic), "Piet Mondrian" (not in list, choose "Pablo Picasso")
         similar_authors=["Robert Delaunay", "Marc Chagall", "Pablo Picasso"]
     ),
@@ -551,7 +544,6 @@ authors = {
         # French sculptor, late 19th to early 20th century, bridging Realism and Impressionism in sculpture.
         main_periods=[periods[12], periods[13], periods[14]], # Romanticism(12)=index11, Realism(13)=index12, Impressionism(14)=index13
         # Actually Rodin is mainly considered Realist with Symbolist influence. Let's choose Realism and Impressionism.
-        main_periods=[periods[12], periods[13]], # Realism and Impressionism
         # Similar authors: "Claude Monet" (Impressionist), "Édouard Manet" (Realist/Impressionist), "Edgar Degas" (Impressionist)
         similar_authors=["Claude Monet", "Édouard Manet", "Edgar Degas"]
     ),
@@ -604,7 +596,6 @@ authors = {
         # An American realist/impressionist painter of the Ashcan School, early 20th century.
         main_periods=[periods[12], periods[13], periods[14]], 
         # Romanticism(12)=index11 (a bit early), Realism(13)=index12, Impressionism(14)=index13. Let's focus on Realism and Impressionism:
-        main_periods=[periods[12], periods[13]], # Realism and Impressionism
         # Similar authors: "Winslow Homer" (American realism), "John Constable" (landscapes), "Robert Delaunay" (modern art influence)
         # Let's pick more consistent: "George Inness" (American landscapes), "Thomas Eakins" (American realism), "Grant Wood" (American)
         similar_authors=["George Inness", "Thomas Eakins", "Grant Wood"]
@@ -615,7 +606,6 @@ authors = {
         # A Catalan painter from the Gothic/early Renaissance period.
         main_periods=[periods[1], periods[4]], # Gothic(2)=index1, Proto-Renaissance(4)=index3 or Early Renaissance(5)=index4
         # Let's choose Gothic and Early Renaissance.
-        main_periods=[periods[1], periods[4]],
         # Similar authors: "Giovanni di" (Early Italian?), "Lorenzo Monaco" (Early Renaissance), "Rogier van" (Early Netherlandish)
         similar_authors=["Giovanni di", "Lorenzo Monaco", "Rogier van"]
     ),
@@ -668,7 +658,6 @@ authors = {
         # Pre-Raphaelites took inspiration from medieval/early Renaissance but stylistically closer to Romanticism.
         # Let's pick Romanticism(12)=index11 and Realism(13)=index12, but Romanticism is key. We'll keep Romanticism alone or add Realism.
         # Actually, let's do Romanticism only for clarity.
-        main_periods=[periods[11], periods[12]], # Neoclassicism & Romanticism
         # Similar authors: "Eugène Delacroix" (Romantic), "Gustave Moreau" (Symbolist with Romantic streak), "Edvard Munch" (emotional intensity)
         similar_authors=["Eugène Delacroix", "Gustave Moreau", "Edvard Munch"]
     ),
@@ -758,7 +747,6 @@ authors = {
         # Italian painter and sculptor associated with Modernism, influenced by Post-Impressionism and Expressionism.
         main_periods=[periods[14], periods[15]], # Impressionism(14)=index13, Post-Impressionism(15)=index14, Expressionism(16)=index15
         # Let's pick Post-Impressionism and Expressionism to capture his style.
-        main_periods=[periods[14], periods[15]],
         # Similar authors: "Pablo Picasso", "Henri Matisse", "Marc Chagall" (all modern masters)
         similar_authors=["Pablo Picasso", "Henri Matisse", "Marc Chagall"]
     ),
@@ -783,7 +771,6 @@ authors = {
         # Possibly William Sidney Mount, American genre painter of the 19th century, linked to Realism, with some Romantic undertones.
         main_periods=[periods[11], periods[12]], # Neoclassicism(11)=index10, Romanticism(12)=index11, Realism(13)=index12
         # More appropriate would be Romanticism and Realism. Let's pick Romanticism(12)=index11 and Realism(13)=index12.
-        main_periods=[periods[11], periods[12]], # Romanticism & Realism
         similar_authors=["Winslow Homer", "George Inness", "Grant Wood"]
     ),
     "Giorgio de": Author(
@@ -838,7 +825,6 @@ authors = {
         # American artist, Chicago Imagist (mid/late 20th century), influenced by Pop Art and Expressionistic tendencies.
         main_periods=[periods[15], periods[19], periods[20]], 
         # Expressionism(16)=index15, Abstract Expressionism(19)=index18, Pop Art(20)=index19. Let's pick two: Expressionism and Pop Art.
-        main_periods=[periods[15], periods[19], periods[20]],
         # Similar authors: "Andy Warhol", "Roy Lichtenstein", "Jasper Johns" (Pop/modern American)
         similar_authors=["Andy Warhol", "Roy Lichtenstein", "Jasper Johns"]
     )
