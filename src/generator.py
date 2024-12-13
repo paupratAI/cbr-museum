@@ -126,9 +126,12 @@ if __name__ == "__main__":
     """
     cbr = CBR()
     print(ap.group_size, ap.group_type, ap.art_knowledge, ap.preferred_periods, ap.preferred_author, ap.preferred_themes, ap.time_coefficient)
+    ap.cluster = 5
     print()
     retrieved_cases = cbr.retrieve_cases(ap)
     for case, similarity in retrieved_cases:
         print(similarity)
         print()
+    cbr.calculate_redundancy()
+    cbr.ensure_utility_column()
     """

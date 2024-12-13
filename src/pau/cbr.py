@@ -108,12 +108,11 @@ class CBR:
     def retrieve_cases(self, problem: AbstractProblem, top_k=3):
         """Retrieves the most similar cases to the current case, updates usage_count."""
         query = '''
-            SELECT rowid, * FROM abstract_problems
+            SELECT * FROM abstract_problems
             WHERE cluster = ?
         '''
         params = (problem.cluster,)
         rows = self.conn.execute(query, params).fetchall()
-
         cases_with_similarity = []
         for row in rows:
             # row structure with rowid: (rowid, cluster, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, route_artworks, feedback, utility, usage_count, redundancy)
@@ -133,17 +132,13 @@ class CBR:
             # 12: usage_count
             # 13: redundancy
 
-            stored_periods = json.loads(row[5]) if row[5] else []
-            stored_periods_id = [p['period_id'] for p in stored_periods]
+            stored_periods_id = [p['period_id'] for p in json.loads(row[5]) ]
 
-            author_data = json.loads(row[6]) if row[6] else {}
-            stored_author = Author(
-                author_id=author_data.get('author_id', None),
-                author_name=author_data.get("author_name", ""),
-                main_periods=[Period(period_id=p['period_id']) for p in author_data.get('main_periods', [])]
-            )
+            author_data = json.loads(row[6]) 
+            stored_author = Author(author_id=author_data['author_id'], author_name=author_data["author_name"], 
+                                   main_periods=[Period(period_id=p['period_id']) for p in author_data.get('main_periods', [])])
 
-            preferred_themes = ast.literal_eval(row[7]) if row[7] else []
+            preferred_themes = ast.literal_eval(row[7])
 
             # Calculate similarity
             similarity = self.calculate_similarity(
@@ -171,13 +166,16 @@ class CBR:
     def increment_usage_count(self, rowid):
         """Increment usage_count each time a case is retrieved for recommendation."""
         cursor = self.conn.execute("SELECT usage_count FROM abstract_problems WHERE rowid = ?", (rowid,))
-        usage_count = cursor.fetchone()[0] if cursor.fetchone() else 0
-        # Need to re-fetch because fetchone was consumed
-        if usage_count is None:
+        result = cursor.fetchone()
+        if result is not None and result[0] is not None:
+            usage_count = result[0]
+        else:
             usage_count = 0
+
         usage_count += 1
         self.conn.execute("UPDATE abstract_problems SET usage_count = ? WHERE rowid = ?", (usage_count, rowid))
         self.conn.commit()
+
 
     def store_case(self, problem: AbstractProblem, route_artworks: List[int], feedback: List[int]):
         """Stores a new case in the database."""
@@ -249,18 +247,6 @@ class CBR:
             periods_list = [Period(period_id=p['period_id']) for p in stored_periods]
             themes = ast.literal_eval(c[7]) if c[7] else []
 
-            # We need a pseudo-problem object for similarity calculation
-            pseudo_problem = AbstractProblem(
-                cluster=c[1],
-                group_size=c[2],
-                group_type=c[3],
-                art_knowledge=c[4],
-                preferred_periods=periods_list,
-                preferred_author=stored_author,
-                preferred_themes=themes,
-                time_coefficient=c[8]
-            )
-            cases.append((c[0], pseudo_problem))  # (rowid, AbstractProblem-like)
 
         # For redundancy, for each case compare with all others
         # Count how many have similarity > 0.9
