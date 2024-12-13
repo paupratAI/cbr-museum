@@ -8,7 +8,7 @@ class Recommender:
 	def __init__(self, 
 			db_path='../data/database.db', 
 			cf_alpha: float = 0.5, 
-			cf_gamma: float = 0.25,
+			cf_gamma: float = 1,
 			cf_decay_factor: float = 0.9,
 			cf_method: str = 'cosine',
 			ratings_range: list = [0, 5],
