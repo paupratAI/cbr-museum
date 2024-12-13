@@ -5,7 +5,6 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.metrics import silhouette_score
 import joblib
 import os
-import json
 
 class Clustering:
     def __init__(self, db_path='./data/database.db', model_path='./models/kmeans_model.joblib'):
@@ -14,6 +13,7 @@ class Clustering:
         self.conn = sqlite3.connect(self.db_path)
         self.scaler = StandardScaler()
         self.label_encoder_theme = LabelEncoder()
+        self.label_encoder_author = LabelEncoder()  # New LabelEncoder for favorite_author
         self.kmeans = None
         self.data = None
         self.cluster_labels = None
@@ -50,15 +50,18 @@ class Clustering:
         """
         df = pd.read_sql_query(query, self.conn)
         
-        # If favorite_theme is stored as a list in string format, adjust accordingly
-        # For now, assuming it's a single categorical value
-        # If it's a JSON list, you'd need to adjust the parsing
+        # Cast 'guided_visit' and 'minors' to integer
+        df['guided_visit'] = df['guided_visit'].astype(int)
+        df['minors'] = df['minors'].astype(int)
         
         # Encode favorite_theme using LabelEncoder
         df['favorite_theme_encoded'] = self.label_encoder_theme.fit_transform(df['favorite_theme'])
         
-        # Select relevant features for clustering
-        features = ['num_people', 'favorite_author', 'favorite_period', 
+        # Encode favorite_author using LabelEncoder
+        df['favorite_author_encoded'] = self.label_encoder_author.fit_transform(df['favorite_author'])
+        
+        # Select relevant features for clustering in the specified order
+        features = ['num_people', 'favorite_author_encoded', 'favorite_period', 
                    'guided_visit', 'minors', 'num_experts', 'past_museum_visits',
                    'favorite_theme_encoded']
         
@@ -73,7 +76,6 @@ class Clustering:
         if self.data is None:
             raise ValueError("No data available. Fetch data first.")
         
-        # All features are already numerical after label encoding
         # Scale the features
         X_scaled = self.scaler.fit_transform(self.data)
         self.feature_names = list(self.data.columns)
@@ -145,7 +147,7 @@ class Clustering:
             count = cluster_counts[cluster_id]
             percentage = cluster_percentages[cluster_id]
             print(f"Cluster {cluster_id}: {count} cases ({percentage:.2f}%)")
-    
+
     def print_centroids_readable(self):
         """
         Print the centroids in a readable format by inverse transforming the scaled features
@@ -166,20 +168,33 @@ class Clustering:
         # Decode the 'favorite_theme_encoded' back to original labels
         centroids_df['favorite_theme'] = self.label_encoder_theme.inverse_transform(centroids_df['favorite_theme_encoded'].round().astype(int))
         
-        # Drop the encoded column
-        centroids_df = centroids_df.drop(columns=['favorite_theme_encoded'])
+        # Decode the 'favorite_author_encoded' back to original labels
+        centroids_df['favorite_author'] = self.label_encoder_author.inverse_transform(centroids_df['favorite_author_encoded'].round().astype(int))
+        
+        # Drop the encoded columns
+        centroids_df = centroids_df.drop(columns=['favorite_theme_encoded', 'favorite_author_encoded'])
+        
+        # Round 'guided_visit' and 'minors' to nearest integer to reflect binary nature
+        centroids_df['guided_visit'] = centroids_df['guided_visit'].round().astype(int)
+        centroids_df['minors'] = centroids_df['minors'].round().astype(int)
+        
+        # Reorder columns as specified
+        ordered_columns = ['num_people', 'favorite_author', 'favorite_period', 
+                           'guided_visit', 'minors', 'num_experts', 'past_museum_visits', 'favorite_theme']
+        centroids_df = centroids_df[ordered_columns]
         
         print("\nCluster Centroids (Readable Format):")
         print(centroids_df)
 
     def save_model(self):
         """
-        Save the trained K-Means model, scaler, and label encoder to a file using joblib.
+        Save the trained K-Means model, scaler, and label encoders to a file using joblib.
         """
         model_data = {
             'kmeans': self.kmeans,
             'scaler': self.scaler,
             'label_encoder_theme': self.label_encoder_theme,
+            'label_encoder_author': self.label_encoder_author,  # Save the author encoder
             'feature_names': self.feature_names
         }
         os.makedirs(os.path.dirname(self.model_path), exist_ok=True)
@@ -188,7 +203,7 @@ class Clustering:
 
     def load_model(self):
         """
-        Load the trained K-Means model, scaler, and label encoder from a file using joblib.
+        Load the trained K-Means model, scaler, and label encoders from a file using joblib.
         """
         if not os.path.exists(self.model_path):
             raise FileNotFoundError(f"Model file not found at {self.model_path}")
@@ -196,6 +211,7 @@ class Clustering:
         self.kmeans = model_data['kmeans']
         self.scaler = model_data['scaler']
         self.label_encoder_theme = model_data['label_encoder_theme']
+        self.label_encoder_author = model_data['label_encoder_author']  # Load the author encoder
         self.feature_names = model_data['feature_names']
         print(f"K-Means model and preprocessing objects loaded from {self.model_path}")
 
@@ -210,16 +226,24 @@ class Clustering:
         if new_case['favorite_theme'] not in self.label_encoder_theme.classes_:
             raise ValueError(f"Unknown favorite_theme: {new_case['favorite_theme']}. Please retrain the model with this new category.")
         
-        # Create a DataFrame from the new case
+        # Handle unseen favorite_author
+        if new_case['favorite_author'] not in self.label_encoder_author.classes_:
+            raise ValueError(f"Unknown favorite_author: {new_case['favorite_author']}. Please retrain the model with this new category.")
+        
+        # Encode favorite_theme and favorite_author
+        favorite_theme_encoded = self.label_encoder_theme.transform([new_case['favorite_theme']])[0]
+        favorite_author_encoded = self.label_encoder_author.transform([new_case['favorite_author']])[0]
+        
+        # Create a DataFrame from the new case in the specified order
         df_new = pd.DataFrame([{
             'num_people': new_case['num_people'],
-            'favorite_author': new_case['favorite_author'],
+            'favorite_author_encoded': favorite_author_encoded,
             'favorite_period': new_case['favorite_period'],
             'guided_visit': new_case['guided_visit'],
             'minors': new_case['minors'],
             'num_experts': new_case['num_experts'],
             'past_museum_visits': new_case['past_museum_visits'],
-            'favorite_theme_encoded': self.label_encoder_theme.transform([new_case['favorite_theme']])[0]
+            'favorite_theme_encoded': favorite_theme_encoded
         }])
         
         # Ensure feature order
@@ -253,7 +277,7 @@ class Clustering:
         self.conn.close()
         print("Database connection closed.")
 
-    # Usage Example
+# Usage Example
 if __name__ == "__main__":
     # Initialize the clustering system
     clustering_system = Clustering(db_path='./data/database.db', model_path='./models/kmeans_model.joblib')
@@ -290,16 +314,13 @@ if __name__ == "__main__":
     clustering_system.close_connection()
     
     # ----- Assigning a New Case -----
-    # The user requested to remove the top 3 retrieval, so the recommendation part has been removed.
-    # However, if you wish to classify a new case without recommendations, you can use the following code:
-
     
     # Example of classifying a new case without retrieving recommendations
     new_case = {
         'num_people': 4,
-        'favorite_author': 2,  # Already label encoded
+        'favorite_author': 3,  # Must match existing categories
         'favorite_period': 1995,
-        'favorite_theme': 'religious',  # Must match existing categories
+        'favorite_theme': 'religious',    # Must match existing categories
         'guided_visit': 1,
         'minors': 0,
         'num_experts': 1,
@@ -313,9 +334,11 @@ if __name__ == "__main__":
     clustering_system.load_model()
     
     # Classify the new case
-    cluster_id = clustering_system.classify_new_case(new_case)
-    print(f"\nThe new case is assigned to cluster: {cluster_id}")
+    try:
+        cluster_id = clustering_system.classify_new_case(new_case)
+        print(f"\nThe new case is assigned to cluster: {cluster_id}")
+    except ValueError as e:
+        print(f"\nError: {e}")
     
     # Close the connection
     clustering_system.close_connection()
-    
