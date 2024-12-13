@@ -50,6 +50,10 @@ class Clustering:
         """
         df = pd.read_sql_query(query, self.conn)
         
+        # Cast 'guided_visit' and 'minors' to integer
+        df['guided_visit'] = df['guided_visit'].astype(int)
+        df['minors'] = df['minors'].astype(int)
+        
         # Encode favorite_theme using LabelEncoder
         df['favorite_theme_encoded'] = self.label_encoder_theme.fit_transform(df['favorite_theme'])
         
@@ -143,7 +147,7 @@ class Clustering:
             count = cluster_counts[cluster_id]
             percentage = cluster_percentages[cluster_id]
             print(f"Cluster {cluster_id}: {count} cases ({percentage:.2f}%)")
-    
+
     def print_centroids_readable(self):
         """
         Print the centroids in a readable format by inverse transforming the scaled features
@@ -170,6 +174,10 @@ class Clustering:
         # Drop the encoded columns
         centroids_df = centroids_df.drop(columns=['favorite_theme_encoded', 'favorite_author_encoded'])
         
+        # Round 'guided_visit' and 'minors' to nearest integer to reflect binary nature
+        centroids_df['guided_visit'] = centroids_df['guided_visit'].round().astype(int)
+        centroids_df['minors'] = centroids_df['minors'].round().astype(int)
+        
         # Reorder columns as specified
         ordered_columns = ['num_people', 'favorite_author', 'favorite_period', 
                            'guided_visit', 'minors', 'num_experts', 'past_museum_visits', 'favorite_theme']
@@ -177,7 +185,7 @@ class Clustering:
         
         print("\nCluster Centroids (Readable Format):")
         print(centroids_df)
-    
+
     def save_model(self):
         """
         Save the trained K-Means model, scaler, and label encoders to a file using joblib.
@@ -312,7 +320,7 @@ if __name__ == "__main__":
         'num_people': 4,
         'favorite_author': 3,  # Must match existing categories
         'favorite_period': 1995,
-        'favorite_theme': 'religious',  # Must match existing categories
+        'favorite_theme': 'religious',    # Must match existing categories
         'guided_visit': 1,
         'minors': 0,
         'num_experts': 1,
