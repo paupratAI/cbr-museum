@@ -37,7 +37,8 @@ def generate_group_description(num_people: int,
                                past_museums_visits: int,
                                favorite_period: int,
                                favorite_theme: str,
-                               favorite_author: str
+                               favorite_author: str,
+                               reduced_mobility: bool,
                                ) -> str:
     
     """
@@ -62,8 +63,10 @@ def generate_group_description(num_people: int,
         How many group members are expert-level in art.
     past_museum_visits : int
         How many museums the group has visited before.
+    reduced_mobility : bool
+        Whether a member of a group has reduced mobility.
     model : str, optional
-        The LLM model to use (default: "gpt-3.5-turbo").
+        The LLM model to use (default: "gpt-4o-mini").
 
     Returns
     -------
@@ -92,6 +95,7 @@ Do not mention the exact artist or year just use the vibes to create the hobbies
 - Favorite artistic period (represented by year): {favorite_period}
 - Favorite author/artist: {favorite_author}
 - Favorite theme: {favorite_theme}
+- Reduced mobility in a group member: {"Yes" if reduced_mobility else "No"}
 
 Write a very short invented description of what this group could look like, invent hobbies or interests that could be related to the characteristics given not related to the museums.
 Do not mention all the information just the vibes of the group as it must be very very short.

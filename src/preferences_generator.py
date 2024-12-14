@@ -84,7 +84,8 @@ class PreferencesGenerator:
                                              high=2000)))
 		favorite_theme = random.choice(self.themes).theme_name
 		favorite_author = random.choice(self.authors).author_name
-		group_description = generate_group_description(num_people, minors, guided_visit, num_experts, past_museums_visits, favorite_period, favorite_theme, favorite_author)
+		reduced_mobility = random.choice(true_false)
+		group_description = generate_group_description(num_people, minors, guided_visit, num_experts, past_museums_visits, favorite_period, favorite_theme, favorite_author, reduced_mobility)
 
 		sp = SpecificProblem(
 			group_id=group_id,
@@ -96,6 +97,7 @@ class PreferencesGenerator:
 			minors=minors,
 			num_experts=num_experts,
 			past_museum_visits=past_museums_visits,
+			reduced_mobility=reduced_mobility,
 			group_description=group_description
 		)
 
