@@ -1,4 +1,4 @@
-lear<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
@@ -120,7 +120,7 @@ lear<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- Question 8 -->
+    <!-- Question 8 (Finish) -->
     <div class="screen" id="screen-question-8">
         <div class="form-container">
             <h1 class="title">Question 8</h1>
@@ -130,11 +130,18 @@ lear<!DOCTYPE html>
                     <input type="text" class="input-field question-input" placeholder="e.g., Pablo Picasso">
                 </div>
                 <div class="buttons-row">
-                    <!-- This is the last question, so we show Finish -->
                     <button type="button" class="finish-button" id="finish-questions">Finish</button>
                 </div>
             </form>
         </div>
+    </div>
+</div>
+
+<!-- Loading popup -->
+<div class="loading-popup" id="loading-popup">
+    <div class="loading-content">
+        <div class="spinner"></div>
+        <p>Processing...</p>
     </div>
 </div>
 
@@ -144,13 +151,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const screens = document.querySelectorAll('.screen');
     const nextButtons = document.querySelectorAll('.next-button');
     const finishButton = document.getElementById('finish-questions');
-    let currentScreenIndex = 0;
+    const loadingPopup = document.getElementById('loading-popup');
 
+    let currentScreenIndex = 0;
     let answers = [];
 
     function slideToScreen(index) {
         const offset = index * -100; 
         screenContainer.style.transform = `translateY(${offset}vh)`;
+    }
+
+    function showLoading() {
+        loadingPopup.classList.add('show');
+    }
+
+    function hideLoading(callback) {
+        // Fade out after a few seconds
+        setTimeout(() => {
+            loadingPopup.classList.remove('show');
+            // Wait for CSS transition to end before callback
+            loadingPopup.addEventListener('transitionend', function handler() {
+                loadingPopup.removeEventListener('transitionend', handler);
+                if (callback) callback();
+            });
+        }, 1000); // e.g. 2 seconds before hiding
     }
 
     nextButtons.forEach(button => {
@@ -160,13 +184,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const answer = inputField.value.trim();
             answers.push(answer);
 
-            const targetId = button.getAttribute('data-next');
-            const targetScreen = document.querySelector(targetId);
-            const targetIndex = Array.from(screens).indexOf(targetScreen);
-            if (targetIndex !== -1) {
-                currentScreenIndex = targetIndex;
-                slideToScreen(currentScreenIndex);
-            }
+            // Show loading popup
+            showLoading();
+            // After some time hide loading and move to next screen
+            hideLoading(() => {
+                const targetId = button.getAttribute('data-next');
+                const targetScreen = document.querySelector(targetId);
+                const targetIndex = Array.from(screens).indexOf(targetScreen);
+                if (targetIndex !== -1) {
+                    currentScreenIndex = targetIndex;
+                    slideToScreen(currentScreenIndex);
+                }
+            });
         });
     });
 
@@ -176,18 +205,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const answer = inputField.value.trim();
         answers.push(answer);
 
-        fetch("{{ url_for('process_answers') }}", {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({answers: answers})
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'ok') {
-                alert('LLM result: ' + data.result);
-            } else {
-                alert('Error processing answers.');
-            }
+        showLoading();
+        // After some time hide loading and then send answers
+        hideLoading(() => {
+            fetch("{{ url_for('process_answers') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({answers: answers})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    alert('LLM result: ' + data.result);
+                } else {
+                    alert('Error processing answers.');
+                }
+            });
         });
     });
 });
