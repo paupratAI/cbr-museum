@@ -22,7 +22,8 @@ def save_in_sqlite3(results: list):
         guided_visit BOOLEAN,
         minors BOOLEAN,
         num_experts INTEGER,
-        past_museum_visits INTEGER
+        past_museum_visits INTEGER,
+        group_description TEXT
     )
     """)
 
@@ -42,6 +43,7 @@ def save_in_sqlite3(results: list):
         ordered_artworks TEXT,
         ordered_artworks_matches TEXT,
         visited_artworks_count INTEGER,
+        group_description TEXT,
         FOREIGN KEY(specific_problem_id) REFERENCES specific_problems(id)
     )
     """)
@@ -75,8 +77,8 @@ def save_in_sqlite3(results: list):
         # Insertar SpecificProblem
         cursor.execute("""
         INSERT INTO specific_problems
-        (group_id, num_people, favorite_author, favorite_period, favorite_theme, guided_visit, minors, num_experts, past_museum_visits)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (group_id, num_people, favorite_author, favorite_period, favorite_theme, guided_visit, minors, num_experts, past_museum_visits, group_description)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             sp.group_id,
             sp.num_people,
@@ -86,7 +88,8 @@ def save_in_sqlite3(results: list):
             1 if sp.guided_visit else 0,
             1 if sp.minors else 0,
             sp.num_experts,
-            sp.past_museum_visits
+            sp.past_museum_visits,
+            sp.group_description
         ))
         specific_problem_id = cursor.lastrowid
 
@@ -104,8 +107,8 @@ def save_in_sqlite3(results: list):
         # Insertar AbstractProblem, incluyendo visited_artworks_count
         cursor.execute("""
         INSERT INTO abstract_problems
-        (specific_problem_id, group_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks, ordered_artworks_matches, visited_artworks_count)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (specific_problem_id, group_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks, ordered_artworks_matches, visited_artworks_count, group_description)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             specific_problem_id,
             ap.group_id,
@@ -118,7 +121,8 @@ def save_in_sqlite3(results: list):
             ap.time_coefficient,
             ordered_artworks_str,
             ordered_match_types_str,
-            visited_count
+            visited_count,
+            ap.group_description
         ))
         abstract_problem_id = cursor.lastrowid
 
