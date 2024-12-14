@@ -6,6 +6,7 @@ html, body {
     min-height: 100vh;
     background-color: #000; /* black background */
     color: #B8860B; /* darker gold */
+    overflow: hidden; /* Prevent scroll, we'll navigate by sliding screens */
 }
 
 body {
@@ -14,6 +15,27 @@ body {
     /* Ensures body expands full height */
 }
 
+/* Container for all screens, with transition for sliding animation */
+.screen-container {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s ease;
+    transform: translateY(0);
+    position: relative;
+}
+
+/* Each screen fills the entire viewport */
+.screen {
+    width: 100%;
+    height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+/* The .container class wraps content (e.g., for initial screen) and uses flex to center */
 .container {
     display: flex;
     flex-direction: column;
@@ -23,7 +45,7 @@ body {
     padding: 40px;
 }
 
-/* Make form-container also take full available space and center contents */
+/* form-container: acts like a card, no forced height so it adapts to content */
 .form-container {
     background-color: #111; /* slightly lighter black */
     padding: 40px;
@@ -35,9 +57,9 @@ body {
 
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Vertically center content inside form-container */
-    align-items: center; /* Horizontally center content inside form-container */
-    height: 100%; /* Take full vertical space available */
+    justify-content: center;
+    align-items: center; 
+    /* Removed height: 100%; so the card fits content naturally */
 }
 
 .title {
@@ -71,7 +93,8 @@ body {
 
 /* Buttons */
 .start-button,
-.get-id-button {
+.get-id-button,
+.next-button {
     background-color: #B8860B;
     color: #000;
     text-decoration: none;
@@ -86,7 +109,8 @@ body {
 }
 
 .start-button:hover,
-.get-id-button:hover {
+.get-id-button:hover,
+.next-button:hover {
     background-color: #A6760A;
     color: #000;
     transform: translateY(-2px);
