@@ -97,9 +97,8 @@ def save_in_sqlite3(results: list):
 
         # Ordenar matches para obtener match_types en el mismo orden que ordered_artworks
         sorted_matches = sorted(asol.matches, key=lambda m: m.match_type, reverse=True)
-        ordered_artworks_str = ",".join(map(str, asol.ordered_artworks))
-        ordered_match_types = [m.match_type for m in sorted_matches]
-        ordered_match_types_str = ",".join(map(str, ordered_match_types))
+        ordered_artworks_json = json.dumps(asol.ordered_artworks, ensure_ascii=False)
+        ordered_match_types_json = json.dumps([m.match_type for m in sorted_matches], ensure_ascii=False)
 
         # Insertar AbstractProblem, incluyendo visited_artworks_count
         cursor.execute("""
@@ -116,8 +115,8 @@ def save_in_sqlite3(results: list):
             preferred_author_json,
             preferred_themes_json,
             ap.time_coefficient,
-            ordered_artworks_str,
-            ordered_match_types_str,
+            ordered_artworks_json,            # now saved as JSON
+            ordered_match_types_json,         # now saved as JSON
             visited_count
         ))
         abstract_problem_id = cursor.lastrowid
