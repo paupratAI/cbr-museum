@@ -121,14 +121,11 @@ def save_in_sqlite3(results: list):
             preferred_author_json,
             preferred_themes_json,
             ap.time_coefficient,
-            ordered_artworks_json,            # now saved as JSON
-            ordered_match_types_json,         # now saved as JSON
-            visited_count
-            ordered_artworks_str,
-            ordered_match_types_str,
-            visited_count,
+            ordered_artworks_json,          # JSON list of artworks
+            ordered_match_types_json,       # JSON list of matches
+            visited_count,                  # Make sure there's a comma after this
             ap.group_description,
-            float(round(random.uniform(0, 5), 1)) # Random rating
+            float(round(random.uniform(0, 5), 1))  # Random rating
         ))
         abstract_problem_id = cursor.lastrowid
 
