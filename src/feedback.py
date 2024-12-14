@@ -51,8 +51,13 @@ def generate_and_parse_museum_feedback(group_size, group_type, group_description
     if textual_feedback == 'None':
         prompt = f"""
         You are an expert in visitor experiences in art museums. Based on the following characteristics of the group and the proposed route, provide only a numeric evaluation on a scale of 1 to 5 (with one decimal point), and leave the feedback line empty.
+        After completing the evaluation, answer these questions:
+        Elevator Usage: Would the group prefer only elevators? (True / False).
+        Time Coefficient: Should the visit pace change? (faster, equal, slower).
+        Artwork Removal: Is there one artwork to remove? Provide the exact name or None.
+        Guide Preference: Would you like a guided visit? (True / False).
 
-        Now, using the following group and route details, generate your evaluation and feedback:
+        Now, using the following group and route details, generate your evaluation, textual feedback and answer the questions:
 
         **Group characteristics:**
         - Group size: {group_size}
@@ -72,12 +77,21 @@ def generate_and_parse_museum_feedback(group_size, group_type, group_description
 
         Evaluation: n.n/5
         Feedback:
+        Only Elevator: Yes/No
+        Time Coefficient: Shorter/Equal/Longer
+        Artwork to Remove: Artwork Name
+        Guided visit: Yes/No
         """
     elif textual_feedback == 'short':
         prompt = f"""
         You are an expert in visitor experiences in art museums. Based on the following characteristics of the group and the proposed route, provide a numeric evaluation on a scale of 1 to 5 (with one decimal point), followed by a very short (one sentence) feedback that is either positive or negative, reflecting the group's overall satisfaction. You must speak for the group meaning as if you were part of it and visited the museum.
+        After completing the evaluation, answer these questions:
+        Elevator Usage: Would the group prefer only elevators? (True / False).
+        Time Coefficient: Should the visit pace change? (faster, equal, slower).
+        Artwork Removal: Is there one artwork to remove? Provide the exact name or None.
+        Guide Preference: Would you like a guided visit? (True / False).
 
-        Now, using the following group and route details, generate your evaluation and feedback:
+        Now, using the following group and route details, generate your evaluation, textual feedback and answer the questions:
 
         **Group characteristics:**
         - Group size: {group_size}
@@ -97,12 +111,21 @@ def generate_and_parse_museum_feedback(group_size, group_type, group_description
 
         Evaluation: n.n/5
         Feedback:
+        Only Elevator: Yes/No
+        Time Coefficient: Shorter/Equal/Longer
+        Artwork to Remove: Artwork Name
+        Guided visit: Yes/No
         """
     else:
         prompt = f"""
         You are an expert in visitor experiences in art museums. Based on the following characteristics of the group and the proposed route, provide an experience evaluation on a scale of 1 to 5 (with one decimal point), followed by brief feedback reflecting the group's satisfaction as if you were part of it and visited the museum.
+        After completing the evaluation, answer these questions:
+        Elevator Usage: Would the group prefer only elevators? (True / False).
+        Time Coefficient: Should the visit pace change? (faster, equal, slower).
+        Artwork Removal: Is there one artwork to remove? Provide the exact name or None.
+        Guide Preference: Would you like a guided visit? (True / False).
 
-        Now, using the following group and route details, generate your evaluation and feedback:
+        Now, using the following group and route details, generate your evaluation, textual feedback and answer the questions:
 
         **Group characteristics:**
         - Group size: {group_size}
@@ -124,6 +147,10 @@ def generate_and_parse_museum_feedback(group_size, group_type, group_description
 
         Evaluation: n.n/5
         Feedback:
+        Only Elevator: Yes/No
+        Time Coefficient: Shorter/Equal/Longer
+        Artwork to Remove: Artwork Name
+        Guided visit: Yes/No
         """
 
     # Call to GPT model
@@ -139,18 +166,30 @@ def generate_and_parse_museum_feedback(group_size, group_type, group_description
     # Regular expressions to extract evaluation and feedback
     evaluation_match = re.search(r"Evaluation: (\d\.\d)/5", feedback)
     textual_feedback_match = re.search(r"Feedback: (.+)", feedback)
+    only_elevator_match = re.search(r"Only Elevator: (Yes|No)", feedback)
+    time_coefficient_match = re.search(r"Time Coefficient: (Shorter|Equal|Longer)", feedback)
+    artwork_to_remove_match = re.search(r"Artwork to Remove: (.+)", feedback)
+    guided_visit_match = re.search(r"Guided visit: (Yes|No)", feedback)
 
     evaluation = float(evaluation_match.group(1)) if evaluation_match else 3.0 # Default evaluation score
     textual_feedback = textual_feedback_match.group(1).strip() if textual_feedback_match else '' # Default feedback
+    only_elevator_match = True if only_elevator_match and only_elevator_match.group(1) == 'Yes' else False
+    time_coefficient = time_coefficient_match.group(1).strip() if time_coefficient_match else 'equal'
+    artwork_to_remove = artwork_to_remove_match.group(1).strip() if artwork_to_remove_match else 'None'
+    guided_visit = True if guided_visit_match and guided_visit_match.group(1) == 'Yes' else False
 
     return {
         "evaluation": evaluation,
-        "feedback": textual_feedback
+        "feedback": textual_feedback,
+        "only_elevator": only_elevator_match,
+        "time_coefficient": time_coefficient,
+        "artwork_to_remove": artwork_to_remove,
+        "guided_visit": guided_visit
     }
 
 
-# Example usage
-"""if __name__ == "__main__":
+"""# Example usage
+if __name__ == "__main__":
     group_size = 4
     group_type = "family"
     group_description = "A family with two children, aged 8 and 12, interested in art and enjoy to ride bicycles."
