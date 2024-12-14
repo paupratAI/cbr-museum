@@ -20,12 +20,12 @@ class CBR:
         cursor = self.conn.execute("PRAGMA table_info(abstract_problems)")
         columns = [col[1] for col in cursor.fetchall()]
 
-        if 'utility' not in columns:
-            self.conn.execute("ALTER TABLE abstract_problems ADD COLUMN utility REAL DEFAULT 0.0")
         if 'usage_count' not in columns:
             self.conn.execute("ALTER TABLE abstract_problems ADD COLUMN usage_count INTEGER DEFAULT 0")
         if 'redundancy' not in columns:
             self.conn.execute("ALTER TABLE abstract_problems ADD COLUMN redundancy REAL DEFAULT 0.0")
+        if 'utility' not in columns:
+            self.conn.execute("ALTER TABLE abstract_problems ADD COLUMN utility REAL DEFAULT 0.0")
         self.conn.commit()
 
     def calculate_similarity(self, problem: AbstractProblem, group_size, group_type, art_knowledge,
@@ -416,11 +416,12 @@ class CBR:
         The logic:
         - Parse ordered_artworks_matches to get a list of numeric match values.
         - Find the maximum match value.
-        - For each match value, the feedback is scaled based on (match / max_match) * rating.
-          The highest match gets feedback equal to rating, lower matches get proportionally smaller feedback.
+        - For each match value, the feedback is scaled based on (match / max_match) * rating,
+        but we also enforce a minimum threshold so that feedback values remain closer to the original rating.
         
         If ordered_artworks_matches_str is empty or rating is 0, returns an empty list.
         """
+
         if not ordered_artworks_matches_str or rating is None or rating == 0:
             return []
 
@@ -436,7 +437,25 @@ class CBR:
         max_match = max(matches)
         if max_match == 0:
             # Avoid division by zero
-            return [0.0 for _ in matches]
+            return [rating for _ in matches]
 
-        feedback_list = [(m / max_match) * rating for m in matches]
+        # Define a minimum fraction of the rating that no feedback should fall below (70% of the rating)
+        min_fraction = 0.7
+        min_feedback = rating * min_fraction
+
+        feedback_list = []
+        for m in matches:
+            scaled_value = (m / max_match) * rating
+            # Enforce the minimum feedback threshold
+            if scaled_value < min_feedback:
+                scaled_value = min_feedback
+            feedback_list.append(scaled_value)
+
         return feedback_list
+
+
+
+'''if __name__ == '__main__':
+    cbr = CBR()
+    feedback_list = cbr.get_feedback_list("9.4,7.9,7.8,7.6,7.5,2.8,2.8,2.7,2.7,2.7", 4.5)
+    print(feedback_list)'''
