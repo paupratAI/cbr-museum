@@ -1201,13 +1201,13 @@ class AbstractSolution:
 
             period_sim = get_period_similarity(art.artwork_in_period, preferred_periods)
 
-            print(f"Artwork: {art.artwork_id} - Author: {author_sim} - Theme: {theme_sim} - Period: {period_sim}")
+            # print(f"Artwork: {art.artwork_id} - Author: {author_sim} - Theme: {theme_sim} - Period: {period_sim}")
 
             # We round the sum with two decimals
 
             match_score = round((author_sim * weights["author"] + theme_sim * weights["theme"] + period_sim * weights["period"]), 2)
 
-            print(f"Match score: {match_score}")
+            # print(f"Match score: {match_score}")
 
             time_coef = ap.get_time_coefficient()
             final_time = art.default_time * time_coef

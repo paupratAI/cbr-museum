@@ -3,10 +3,17 @@ from entities import AbstractProblem, SpecificProblem, Author, Period, Theme
 from typing import List
 import json
 import ast
+from dataclasses import asdict
+
+from clustering import Clustering
+from ontology.periods import periods
+from ontology.themes import theme_instances
+from authors import authors
 
 class CBR:
     def __init__(self, db_path='./data/database.db'):
         self.conn = sqlite3.connect(db_path)
+        self.conn.row_factory = sqlite3.Row 
         self.create_indices()
         self.ensure_columns()
 
@@ -14,6 +21,10 @@ class CBR:
         """Create indices for faster query performance."""
         with self.conn:
             self.conn.execute("CREATE INDEX IF NOT EXISTS idx_cluster ON abstract_problems(cluster);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_usage_count ON abstract_problems(usage_count);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_utility ON abstract_problems(utility);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_redundancy ON abstract_problems(redundancy);")
+
 
     def ensure_columns(self):
         """Ensure necessary columns (utility, usage_count, redundancy) exist in the table."""
@@ -129,45 +140,27 @@ class CBR:
     def retrieve_cases(self, problem: AbstractProblem, top_k=3):
         """
         Retrieves the most similar cases to the given problem and updates their usage_count.
-        
-        Column order:
-        0: id
-        1: group_id
-        2: specific_problem_id
-        3: group_size
-        4: group_type
-        5: art_knowledge
-        6: preferred_periods (JSON)
-        7: preferred_author (JSON)
-        8: preferred_themes (string)
-        9: time_coefficient
-        10: ordered_artworks
-        11: ordered_artworks_matches
-        12: visited_artworks_count
-        13: group_description
-        14: rating (single numeric value)
-        15: (not used)
-        16: (not used)
-        17: cluster
-        18: usage_count
-        19: redundancy
-        20: utility
+        Only retrieves cases with a rating greater than 2.
         """
-        query = "SELECT * FROM abstract_problems WHERE cluster = ?"
+        query = """
+            SELECT * 
+            FROM abstract_problems 
+            WHERE cluster = ? 
+        """
         params = (problem.cluster,)
         rows = self.conn.execute(query, params).fetchall()
         cases_with_similarity = []
         for row in rows:
-            stored_periods_id = [p['period_id'] for p in json.loads(row[6])]
+            stored_periods_id = [p['period_id'] for p in json.loads(row['preferred_periods'])]
 
-            author_data = json.loads(row[7])
+            author_data = json.loads(row['preferred_author'])
             stored_author = Author(
                 author_id=author_data['author_id'],
                 author_name=author_data["author_name"],
                 main_periods=[Period(period_id=p['period_id']) for p in author_data.get('main_periods', [])]
             )
 
-            preferred_themes = ast.literal_eval(row[8])
+            preferred_themes = ast.literal_eval(row['preferred_themes'])
 
             similarity = self.calculate_similarity(
                 problem_group_size=problem.group_size,
@@ -177,26 +170,29 @@ class CBR:
                 problem_preferred_author=problem.preferred_author,
                 problem_preferred_themes=problem.preferred_themes,
                 problem_time_coefficient=problem.time_coefficient,
-                stored_group_size=row[3],
-                stored_group_type=row[4],
-                stored_art_knowledge=row[5],
+                stored_group_size=row['group_size'],
+                stored_group_type=row['group_type'],
+                stored_art_knowledge=row['art_knowledge'],
                 stored_preferred_periods_id=stored_periods_id,
                 stored_preferred_author=stored_author,
                 stored_preferred_themes=preferred_themes,
-                stored_time_coefficient=row[9]
+                stored_time_coefficient=row['time_coefficient']
             )
 
-            cases_with_similarity.append((row, similarity))
+            feedback = row['feedback']
+            distance = similarity * feedback
 
-        # Sort by similarity and return top_k
-        ranked_cases = sorted(cases_with_similarity, key=lambda x: x[1], reverse=True)
-        selected_cases = ranked_cases[:top_k]
+            cases_with_similarity.append((row, distance))
 
-        # Update usage_count
-        for case, sim in selected_cases:
-            self.increment_usage_count(case[0])  # case[0] is id
+            # Sort by distance and return top_k
+            ranked_cases = sorted(cases_with_similarity, key=lambda x: x[1], reverse=True)
+            selected_cases = ranked_cases[:top_k]
 
-        return selected_cases
+            # Update usage_count
+            for case, dist in selected_cases:
+                self.increment_usage_count(case['id']) 
+
+            return selected_cases
 
     def increment_usage_count(self, case_id):
         """Increments usage_count each time a case is retrieved."""
@@ -211,95 +207,88 @@ class CBR:
         self.conn.execute("UPDATE abstract_problems SET usage_count = ? WHERE id = ?", (usage_count, case_id))
         self.conn.commit()
 
-    def store_case(self, problem: AbstractProblem, route_artworks: List[int], rating: int):
+    def store_case(self, specific_problem: SpecificProblem, user_feedback: int, visited_count: int, clustering: 'Clustering'):
         """
-        Stores a new case in the database. 
-        Note: rating is a single numeric value. Feedback list is derived from rating and ordered_artworks_matches.
+        Stores a SpecificProblem and its corresponding AbstractProblem in the database.
+
+        :param specific_problem: SpecificProblem instance containing user-defined details.
+        :param user_feedback: User feedback on the recommended route (1-5).
+        :param visited_count: Number of artworks visited in the recommended route.
+        :param clustering: An instance of the Clustering class used for assigning clusters.
+        """
         
-        0: id
-        1: group_id
-        2: specific_problem_id
-        3: group_size
-        4: group_type
-        5: art_knowledge
-        6: preferred_periods 
-        7: preferred_author
-        8: preferred_themes
-        9: time_coefficient
-        10: ordered_artworks
-        11: ordered_artworks_matches
-        12: visited_artworks_count
-        13: group_description
-        14: rating
-        15: 
-        16: 
-        17: cluster
-        18: usage_count
-        19: redundancy
-        20: utility
-        """
-        # Convert periods and author to JSON
-        periods_json = json.dumps([{'period_id': p.period_id} for p in problem.preferred_periods])
-        author_json = json.dumps({
-            'author_id': problem.preferred_author.author_id,
-            'author_name': problem.preferred_author.author_name,
-            'main_periods': [{'period_id': p.period_id} for p in problem.preferred_author.main_periods]
-        }) if problem.preferred_author else json.dumps({})
+        abstract_problem = AbstractProblem(specific_problem, periods, authors, theme_instances)
 
-        # Initially, ordered_artworks_matches and visited_artworks_count are empty or zero
-        ordered_artworks =  None
-        ordered_artworks_matches = []  # To be updated later if needed
-        visited_artworks_count = 0
-        group_description = ''  # If needed
-        cluster = problem.cluster
-        usage_count = 0
-        redundancy = 0.0
-        utility = 0.0
+        cursor = self.conn.cursor()
 
-        self.conn.execute('''
-            INSERT INTO abstract_problems (
-                group_id,
-                specific_problem_id,
-                group_size,
-                group_type,
-                art_knowledge,
-                preferred_periods,
-                preferred_author,
-                preferred_themes,
-                time_coefficient,
-                ordered_artworks,
-                ordered_artworks_matches,
-                visited_artworks_count,
-                group_description,
-                rating,
-                cluster,
-                usage_count,
-                redundancy,
-                utility
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (
-            None,  # group_id if needed
-            problem.specific_problem_id if hasattr(problem, 'specific_problem_id') else None,
-            problem.group_size,
-            problem.group_type,
-            problem.art_knowledge,
-            periods_json,
-            author_json,
-            str(problem.preferred_themes),
-            problem.time_coefficient,
-            ordered_artworks,
-            ordered_artworks_matches,
-            visited_artworks_count,
-            group_description,
-            rating,
-            cluster,
-            usage_count,
-            redundancy,
-            utility
+        # Insert SpecificProblem into the specific_problems table
+        cursor.execute("""
+            INSERT INTO specific_problems
+            (group_id, num_people, favorite_author, favorite_period, favorite_theme, guided_visit, minors, num_experts, past_museum_visits, group_description)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            specific_problem.group_id,
+            specific_problem.num_people,
+            specific_problem.favorite_author,
+            specific_problem.favorite_period,
+            specific_problem.favorite_theme,
+            1 if specific_problem.guided_visit else 0,
+            1 if specific_problem.minors else 0,
+            specific_problem.num_experts,
+            specific_problem.past_museum_visits,
+            specific_problem.group_description
+        ))
+        specific_problem_id = specific_problem.group_id
+
+        # Prepare JSON-serialized fields for AbstractProblem
+        preferred_periods_json = json.dumps(
+            [asdict(p) for p in abstract_problem.preferred_periods],
+            ensure_ascii=False
+        )
+        preferred_author_json = json.dumps(
+            asdict(abstract_problem.preferred_author),
+            ensure_ascii=False
+        ) if abstract_problem.preferred_author else None
+        preferred_themes_json = json.dumps(abstract_problem.preferred_themes, ensure_ascii=False)
+
+        # Assign the cluster using the Clustering system
+        new_case = {
+            'num_people': specific_problem.num_people,
+            'favorite_author': specific_problem.favorite_author,
+            'favorite_period': specific_problem.favorite_period,
+            'favorite_theme': specific_problem.favorite_theme,
+            'guided_visit': 1 if specific_problem.guided_visit else 0,
+            'minors': 1 if specific_problem.minors else 0,
+            'num_experts': specific_problem.num_experts,
+            'past_museum_visits': specific_problem.past_museum_visits
+        }
+        cluster = clustering.classify_new_case(new_case)
+
+        # Insert AbstractProblem into the abstract_problems table
+        cursor.execute("""
+            INSERT INTO abstract_problems
+            (specific_problem_id, group_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks, ordered_artworks_matches, visited_artworks_count, group_description, rating, cluster)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            specific_problem_id,
+            abstract_problem.group_id,
+            abstract_problem.group_size,
+            abstract_problem.group_type,
+            abstract_problem.art_knowledge,
+            preferred_periods_json,
+            preferred_author_json,
+            preferred_themes_json,
+            abstract_problem.time_coefficient,
+            json.dumps([], ensure_ascii=False),  
+            json.dumps([], ensure_ascii=False),  
+            visited_count,
+            abstract_problem.group_description,
+            user_feedback,  
+            cluster
         ))
         self.conn.commit()
 
-    def forget_cases(self, threshold=0.05):
+    def forget_cases(self, threshold=0.15):
         """Removes cases with low utility from the database."""
         with self.conn:
             self.conn.execute("DELETE FROM abstract_problems WHERE utility <= ?", (threshold,))
@@ -317,55 +306,28 @@ class CBR:
         all_cases = cursor.fetchall()
 
         cases = []
-        for c in all_cases:
-            # 0: id
-            # 1: group_id
-            # 2: specific_problem_id
-            # 3: group_size
-            # 4: group_type
-            # 5: art_knowledge
-            # 6: preferred_periods (JSON)
-            # 7: preferred_author (JSON)
-            # 8: preferred_themes (string)
-            # 9: time_coefficient
-            # 10: ordered_artworks
-            # 11: ordered_artworks_matches
-            # 12: visited_artworks_count
-            # 13: group_description
-            # 14: rating
-            # 15: 
-            # 16:
-            # 17: cluster
-            # 18: usage_count
-            # 19: redundancy
-            # 20: utility
+        for row in all_cases:
+            author_data = json.loads(row['preferred_author']) if row['preferred_author'] else {}
+            stored_author = Author(
+                author_id=author_data.get('author_id', None),
+                author_name=author_data.get('author_name', ""),
+                main_periods=[Period(period_id=p['period_id']) for p in author_data.get('main_periods', [])]
+            )
 
-            cases = []
-            for c in all_cases:
-                author_data = json.loads(c[7]) if c[7] else {}
-                stored_author = Author(
-                    author_id=author_data.get('author_id', None),
-                    author_name=author_data.get('author_name', ""),
-                    main_periods=[Period(period_id=p['period_id']) for p in author_data.get('main_periods', [])]
-                )
+            stored_periods = json.loads(row['preferred_periods']) if row['preferred_periods'] else []
+            periods_list = [Period(period_id=p['period_id']) for p in stored_periods]
+            themes = ast.literal_eval(row['preferred_themes']) if row['preferred_themes'] else []
 
-                stored_periods = json.loads(c[6]) if c[6] else []
-                periods_list = [Period(period_id=p['period_id']) for p in stored_periods]
-                themes = ast.literal_eval(c[8]) if c[8] else []
-
-                # Extraer las características del caso
-                case_params = {
-                    "group_size": c[3],
-                    "group_type": c[4],
-                    "art_knowledge": c[5],
-                    "preferred_periods": periods_list,
-                    "preferred_author": stored_author,
-                    "preferred_themes": themes,
-                    "time_coefficient": c[9]
-                }
-
-                cases.append((c[0], case_params))
-
+            case_params = {
+                "group_size": row['group_size'],
+                "group_type": row['group_type'],
+                "art_knowledge": row['art_knowledge'],
+                "preferred_periods": periods_list,
+                "preferred_author": stored_author,
+                "preferred_themes": themes,
+                "time_coefficient": row['time_coefficient']
+            }
+            cases.append((row['id'], case_params))
 
         total_cases = len(cases)
         for i, (case_id, case_params) in enumerate(cases):
@@ -376,9 +338,6 @@ class CBR:
                 for j, (other_id, other_params) in enumerate(cases):
                     if i == j:
                         continue
-
-                    # problem = cases[i]
-                    # stored = cases[j]
 
                     sim = self.calculate_similarity(
                         problem_group_size=case_params["group_size"],

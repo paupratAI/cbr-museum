@@ -63,7 +63,7 @@ def generate_group_description(num_people: int,
     past_museum_visits : int
         How many museums the group has visited before.
     model : str, optional
-        The LLM model to use (default: "gpt-3.5-turbo").
+        The LLM model to use (default: "gpt-4o-mini").
 
     Returns
     -------

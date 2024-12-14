@@ -2,7 +2,6 @@ import sqlite3
 from typing import Dict, List
 from scipy.stats import pearsonr
 from scipy.spatial.distance import cosine
-from scipy.special import softmax
 import numpy as np
 
 class CF:
@@ -159,14 +158,14 @@ class CF:
         else:
             old_rating, old_visit_count = existing
 
-            # Compute the old and new weights
-            old_weight = old_visit_count * decay_factor
-            new_weight = 1 + (1 - decay_factor)  # Slightly more weight to the new rating
-
             # Compute the new weighted average
-            total_weight = old_weight + new_weight
-            new_rating = (old_rating * old_weight + item_rating * new_weight) / total_weight
             new_visit_count = old_visit_count + 1  # Keep the real visit count for record
+
+            old_weight = (old_visit_count / new_visit_count) * decay_factor
+
+            new_weight = 1 - old_weight
+            
+            new_rating = old_weight * old_rating + new_weight * item_rating
 
         # Update or insert the record in the database
         with self.conn:
@@ -283,12 +282,12 @@ class CF:
 
         if method == 'cosine':
             # Cosine similarity
-            return 1 - cosine(ratings_a_vec, ratings_b_vec)
+            return (1 - cosine(ratings_a_vec, ratings_b_vec) + 1) / 2 # Cosine similarity scaled to [0, 1]
         elif method == 'pearson':
             # Pearson correlation
             if len(ratings_a_vec) < 2:  # Pearson requires at least 2 data points
                 return 0
-            return pearsonr(ratings_a_vec, ratings_b_vec).correlation
+            return (pearsonr(ratings_a_vec, ratings_b_vec).correlation + 1) / 2  # Pearson correlation scaled to [0, 1]
 
     def item_similarity(self, item_id_a: int, item_id_b: int, method: str | None = None) -> float:
         """
@@ -324,11 +323,9 @@ class CF:
         ratings_b_vec = np.array([ratings_b[g][0] for g in common_groups])
 
         if method == 'cosine':
-            return 1 - cosine(ratings_a_vec, ratings_b_vec)
+            return (1 - cosine(ratings_a_vec, ratings_b_vec) + 1) / 2 # Cosine similarity scaled to [0, 1]
         elif method == 'pearson':
-            return pearsonr(ratings_a_vec, ratings_b_vec).correlation
-        else:
-            raise ValueError("Invalid method; use 'cosine' or 'pearson'")
+            return (pearsonr(ratings_a_vec, ratings_b_vec).correlation + 1) / 2  # Pearson correlation scaled to [0, 1]
     
     def recommend_items(
         self, target_group_id: int, method: str | None = None, alpha: float | None = None,
@@ -371,73 +368,82 @@ class CF:
         # Retrieve all groups except the target group
         all_groups = [g for g in self.get_all_groups() if g != target_group_id]
 
-        predicted_ratings = {}
-
+        user_based_predictions, item_based_predictions = {}, {}
         for item in all_items:
-            # Skip items already rated by the target group
-            if item in target_ratings:
-                continue
-
-            # USER-BASED COLLABORATIVE FILTERING
+            # USER-BASED COLLABORATIVE FILTERING --------------------------------
             user_based_score = 0
             user_similarity_sum = 0
-            if top_k_users is not None:
-                # Compute similarities and take top-k
-                similarities = [
-                    (group, self.group_similarity(target_group_id, group, method=method))
-                    for group in all_groups
-                ]
-                top_k_user_groups = sorted(similarities, key=lambda x: x[1], reverse=True)[:top_k_users]
-            else:
-                # Use all groups
-                top_k_user_groups = [
-                    (group, self.group_similarity(target_group_id, group, method=method))
-                    for group in all_groups
-                ]
 
-            for group, similarity_value in top_k_user_groups:
-                group_ratings = self.get_group_ratings(group)
+            group_similarities = sorted([
+                (group, self.group_similarity(target_group_id, group, method=method))
+                for group in all_groups
+            ], key=lambda x: x[1], reverse=True)
+
+            # Only consider the top-k most similar users
+            if top_k_users is not None:
+                group_similarities = group_similarities[:top_k_users]
+
+            for similar_group, similar_item_similarity in group_similarities:
+                group_ratings = self.get_group_ratings(similar_group)
+
                 if item in group_ratings:
-                    user_based_score += similarity_value * group_ratings[item][0]
-                    user_similarity_sum += similarity_value
+                    group_item_rating = group_ratings[item][0]
+
+                    user_based_score += similar_item_similarity * group_item_rating
+                    user_similarity_sum += similar_item_similarity
 
             user_based_prediction = (
                 user_based_score / user_similarity_sum if user_similarity_sum > 0 else 0
             )
 
-            # ITEM-BASED COLLABORATIVE FILTERING
+            user_based_predictions[item] = user_based_prediction
+
+            # ITEM-BASED COLLABORATIVE FILTERING --------------------------------
             item_based_score = 0
             item_similarity_sum = 0
-            if top_k_items is not None:
-                # Compute similarities and take top-k
-                similarities = [
-                    (rated_item, self.item_similarity(item, rated_item, method=method))
-                    for rated_item in target_ratings.keys()
-                ]
-                top_k_similar_items = sorted(similarities, key=lambda x: x[1], reverse=True)[:top_k_items]
-            else:
-                # Use all rated items
-                top_k_similar_items = [
-                    (rated_item, self.item_similarity(item, rated_item, method=method))
-                    for rated_item in target_ratings.keys()
-                ]
 
-            for rated_item, similarity_value in top_k_similar_items:
-                rating = target_ratings[rated_item][0]
-                item_based_score += similarity_value * rating
-                item_similarity_sum += similarity_value
+            item_similarities = sorted([
+                (similar_item, self.item_similarity(item, similar_item, method=method))
+                for similar_item in target_ratings.keys()
+            ], key=lambda x: x[1], reverse=True)
+
+            # Only consider the top-k most similar items
+            if top_k_items is not None:
+                item_similarities = item_similarities[:top_k_items]
+
+            for similar_item, similar_item_similarity in item_similarities:
+                target_rated_item_rating = target_ratings[similar_item][0]
+                item_based_score += similar_item_similarity * target_rated_item_rating
+                item_similarity_sum += similar_item_similarity
 
             item_based_prediction = (
                 item_based_score / item_similarity_sum if item_similarity_sum > 0 else 0
             )
 
-            # Combine user-based and item-based predictions
-            predicted_rating = (
-                alpha * user_based_prediction + (1 - alpha) * item_based_prediction
-            )
-            predicted_ratings[item] = predicted_rating
+            item_based_predictions[item] = item_based_prediction
+
+        # Scale to give the same importance to both predictions
+        min_user_based_prediction, max_user_based_prediction = min(user_based_predictions.values()), max(user_based_predictions.values())
+        scaled_user_based_predictions = {
+            item: (user_based_predictions[item] - min_user_based_prediction) / (max_user_based_prediction - min_user_based_prediction)
+            for item in all_items
+        }
+
+        min_item_based_prediction, max_item_based_prediction = min(item_based_predictions.values()), max(item_based_predictions.values())
+        scaled_item_based_predictions = {
+            item: (item_based_predictions[item] - min_item_based_prediction) / (max_item_based_prediction - min_item_based_prediction)
+            for item in all_items
+        }
+
+        # Combine user-based and item-based predictions using alpha
+        predicted_ratings = {
+            item: alpha * scaled_user_based_predictions[item] + (1 - alpha) * scaled_item_based_predictions[item]
+            for item in all_items
+        }
 
         # Sort items by predicted ratings in descending order
         sorted_items = sorted(predicted_ratings.keys(), key=lambda x: predicted_ratings[x], reverse=True)
+
+        print([round(float(predicted_ratings[item]), 4) for item in sorted_items])
 
         return sorted_items

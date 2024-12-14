@@ -3,7 +3,7 @@ import re
 from dotenv import load_dotenv
 import openai
 
-def generate_and_parse_museum_feedback(group_size, group_type, group_description, art_knowledge_level, preferred_periods,
+def generate_and_parse_museum_feedback(group_size, group_type, group_description, reduced_mobility, art_knowledge_level, preferred_periods,
                                        preferred_authors, preferred_themes, time_coefficient,
                                        proposed_paintings, route_score, perfect_route_score=10, textual_feedback='full'):
     """
@@ -17,6 +17,8 @@ def generate_and_parse_museum_feedback(group_size, group_type, group_description
         The type of group (e.g., 'school', 'family', 'casual').
     group_description : str
         A description of the group composition and interests.
+    reduced_mobility : bool
+        A boolean indicating if a member of the group has reduced mobility.
     art_knowledge_level : int
         An integer from 1 to 4 indicating the level of artistic knowledge of the group (1=low, 4=high).
     preferred_periods : list of str
@@ -60,9 +62,10 @@ def generate_and_parse_museum_feedback(group_size, group_type, group_description
         Now, using the following group and route details, generate your evaluation, textual feedback and answer the questions:
 
         **Group characteristics:**
-        - Group size: {group_size}
+        - Group size: {group_size} where 1 is few members and 4 is a large group.
         - Group type: {group_type}
         - Group description: {group_description}
+        - Reduced mobility: {reduced_mobility} (if someone has reduced mobility).
         - Artistic knowledge level: {art_knowledge_level} (1-4) where 1 is low and 4 is high.
         - Preferred periods: {preferred_periods}
         - Preferred authors: {preferred_authors}
@@ -94,9 +97,10 @@ def generate_and_parse_museum_feedback(group_size, group_type, group_description
         Now, using the following group and route details, generate your evaluation, textual feedback and answer the questions:
 
         **Group characteristics:**
-        - Group size: {group_size}
+        - Group size: {group_size} where 1 is few members and 4 is a large group.
         - Group type: {group_type}
         - Group description: {group_description}
+        - Reduced mobility: {reduced_mobility} (if someone has reduced mobility).        
         - Artistic knowledge level: {art_knowledge_level} (1-4) where 1 is low and 4 is high.
         - Preferred periods: {preferred_periods}
         - Preferred authors: {preferred_authors}
@@ -128,9 +132,10 @@ def generate_and_parse_museum_feedback(group_size, group_type, group_description
         Now, using the following group and route details, generate your evaluation, textual feedback and answer the questions:
 
         **Group characteristics:**
-        - Group size: {group_size}
+        - Group size: {group_size} where 1 is few members and 4 is a large group.
         - Group type: {group_type}
         - Group description: {group_description}
+        - Reduced mobility: {reduced_mobility} (if someone has reduced mobility).
         - Artistic knowledge level: {art_knowledge_level} (1-4) where 1 is low and 4 is high.
         - Preferred periods: {preferred_periods}
         - Preferred authors: {preferred_authors}
@@ -193,6 +198,7 @@ if __name__ == "__main__":
     group_size = 4
     group_type = "family"
     group_description = "A family with two children, aged 8 and 12, interested in art and enjoy to ride bicycles."
+    reduced_mobility = False
     art_knowledge_level = 2
     preferred_periods = ["Impressionism", "Surrealism"]
     preferred_authors = ["Van Gogh", "Magritte"]
@@ -202,21 +208,21 @@ if __name__ == "__main__":
     route_score = 7.5
 
     feedback_data = generate_and_parse_museum_feedback(
-        group_size, group_type, group_description, art_knowledge_level, preferred_periods, preferred_authors,
+        group_size, group_type, group_description, reduced_mobility, art_knowledge_level, preferred_periods, preferred_authors,
         preferred_themes, time_coefficient, proposed_paintings, route_score, textual_feedback='full'
     )
     
     print("Full Feedback Data:", feedback_data)
 
     feedback_data_short = generate_and_parse_museum_feedback(
-        group_size, group_type, group_description, art_knowledge_level, preferred_periods, preferred_authors,
+        group_size, group_type, group_description, reduced_mobility, art_knowledge_level, preferred_periods, preferred_authors,
         preferred_themes, time_coefficient, proposed_paintings, route_score, textual_feedback='short'
     )
 
     print("Short Feedback Data:", feedback_data_short)
 
     feedback_data_none = generate_and_parse_museum_feedback(
-        group_size, group_type, group_description, art_knowledge_level, preferred_periods, preferred_authors,
+        group_size, group_type, group_description, reduced_mobility, art_knowledge_level, preferred_periods, preferred_authors,
         preferred_themes, time_coefficient, proposed_paintings, route_score, textual_feedback='None'
     )
 
