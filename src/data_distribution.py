@@ -49,6 +49,16 @@ plt.ylabel('Frequency')
 plt.grid(axis='y')
 plt.show()
 
+# Bar plot for artists
+artist_counts = df['created_by'].value_counts()
+plt.figure()
+artist_counts.plot(kind='bar', color='red')
+plt.title('Frequency of Artists')
+plt.xlabel('Artist')
+plt.ylabel('Frequency')
+plt.grid(axis='y')
+plt.show()
+
 # Scatter plot: Complexity vs. Dimension
 plt.figure()
 sns.scatterplot(data=df, x='dimension', y='complexity', hue='relevance', palette='viridis')

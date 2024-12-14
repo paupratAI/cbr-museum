@@ -278,7 +278,7 @@ class Clustering:
         print("Database connection closed.")
 
 # Usage Example
-if __name__ == "__main__":
+"""if __name__ == "__main__":
     # Initialize the clustering system
     clustering_system = Clustering(db_path='./data/database.db', model_path='./models/kmeans_model.joblib')
     
@@ -341,4 +341,4 @@ if __name__ == "__main__":
         print(f"\nError: {e}")
     
     # Close the connection
-    clustering_system.close_connection()
+    clustering_system.close_connection()"""
