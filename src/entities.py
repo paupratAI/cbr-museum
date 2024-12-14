@@ -1179,6 +1179,7 @@ class AbstractSolution:
     related_to_AbstractProblem: AbstractProblem
     matches: List[Match] = field(default_factory=list)
     max_score: int = 0
+    avg_score: float = 0.0
     ordered_artworks: List[int] = field(default_factory=list)  # New attribute
 
     def compute_matches(self, artworks: List[Artwork]):
@@ -1213,6 +1214,9 @@ class AbstractSolution:
             self.matches.append(Match(art, match_score, final_time))
             if match_score > self.max_score:
                 self.max_score = match_score
+
+        if len(self.matches) > 0:
+            self.avg_score = sum(m.match_type for m in self.matches) / len(self.matches)
 
         # Once all matches are calculated, sort and store the list of IDs
         sorted_matches = sorted(self.matches, key=lambda m: m.match_type, reverse=True)

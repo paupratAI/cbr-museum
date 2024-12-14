@@ -55,6 +55,7 @@ def save_in_sqlite3(results: list):
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         abstract_problem_id INTEGER,
         max_score INTEGER,
+        average_visited_matching INTEGER,
         FOREIGN KEY(abstract_problem_id) REFERENCES abstract_problems(id)
     )
     """)
@@ -132,11 +133,12 @@ def save_in_sqlite3(results: list):
         # Insertar AbstractSolution
         cursor.execute("""
         INSERT INTO abstract_solutions
-        (abstract_problem_id, max_score)
-        VALUES (?, ?)
+        (abstract_problem_id, max_score, average_visited_matching)
+        VALUES (?, ?, ?)
         """, (
             abstract_problem_id,
-            asol.max_score
+            asol.max_score,
+            round(asol.avg_score,2)
         ))
         abstract_solution_id = cursor.lastrowid
 
