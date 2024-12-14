@@ -50,6 +50,16 @@ art_theme_pairs = {
     56905: "Meteorological Phenomena", # "Nocturne: Blue and Gold—Southampton Water" - atmospheric, sky/water interplay
     59426: "Christianity",           # "White Crucifixion" - explicitly Christian imagery
     61603: "Hope",                   # "Ballet at the Paris Opéra" - performance art, uplifting cultural scene suggests hope or joy; choose hope for balance
-    62371: "Nostalgia"               # "Madame Cezanne in a Yellow Chair" - a quiet, intimate portrait, evoking personal nostalgia
+    62371: "Nostalgia",               # "Madame Cezanne in a Yellow Chair" - a quiet, intimate portrait, evoking personal nostalgia
+    79307: "Landscapes",            # "Bathers by a River"
+    87045: "Flora",                 # "Still Life with Geranium"
+    90300: "Despair",               # "Perilous Night"
+    105203: "Flora",                # "Triptych Window from the Coonley Playhouse"
+    109439: "Hope",                 # "America Windows"
+    111164: "Joy",                  # "Green and Blue: The Dancer"
+    111380: "Buddhism",             # "Seated Bodhisattva"
+    111436: "Flora",                # "The Basket of Apples"
+    122054: "Nostalgia",            # "Alka Seltzer"
+    144272: "Landscapes"            # "Mr. and Mrs. Herbert A. Jacobs House"
 
 }

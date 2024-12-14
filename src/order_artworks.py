@@ -125,4 +125,4 @@ if __name__ == "__main__":
     #print("Sorted artworks have been written to sorted_artworks.json")
 
     organizer.print_authors_by_frequency(top_n=100)
-    organizer.print_artworks_by_author_frequency(top_n=50)
+    organizer.print_artworks_by_author_frequency(top_n=60)
