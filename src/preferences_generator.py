@@ -62,6 +62,7 @@ def truncated_normal(mean, sd, low, high):
 
 class PreferencesGenerator:
 	def __init__(self, seed: int = 42, themes: list = [], authors: list = []):
+		self.seed = seed
 		random.seed(seed)
 		self.themes = themes
 		self.authors = authors
@@ -110,6 +111,8 @@ class PreferencesGenerator:
 		Returns:
 			list[dict]: A list of preferences for each sample.
 		"""
+		random.seed(self.seed)
+		
 		reference_samples = [self.sample(group_id) for group_id in range(1, num_reference_samples + 1)]
 
 		num_samples_to_generate = num_total_samples - num_reference_samples

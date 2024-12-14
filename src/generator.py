@@ -18,7 +18,7 @@ from cbr import CBR
 class GenArtArgs():
 
     data: list = field(default_factory=list)
-    reference_preferences_proportion: float = 0.25
+    reference_preferences_proportion: float = 0.75
     num_artworks: int = 10
     num_cases: int = 100
     format: str = "sqlite"
@@ -118,7 +118,8 @@ if __name__ == "__main__":
                 "preferred_periods": [asdict(p) for p in abs_prob.preferred_periods],
                 "preferred_author": asdict(abs_prob.preferred_author) if abs_prob.preferred_author else None,
                 "preferred_themes": abs_prob.preferred_themes,
-                "time_coefficient": abs_prob.time_coefficient
+                "time_coefficient": abs_prob.time_coefficient,
+                "group_description": abs_prob.group_description
             }
             serializable_results.append(abs_prob_dict)
 
