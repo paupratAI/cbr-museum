@@ -62,7 +62,7 @@ def generate_and_parse_museum_feedback(group_size, group_type, group_description
         Now, using the following group and route details, generate your evaluation, textual feedback and answer the questions:
 
         **Group characteristics:**
-        - Group size: {group_size}
+        - Group size: {group_size} where 1 is few members and 4 is a large group.
         - Group type: {group_type}
         - Group description: {group_description}
         - Reduced mobility: {reduced_mobility} (if someone has reduced mobility).
@@ -97,7 +97,7 @@ def generate_and_parse_museum_feedback(group_size, group_type, group_description
         Now, using the following group and route details, generate your evaluation, textual feedback and answer the questions:
 
         **Group characteristics:**
-        - Group size: {group_size}
+        - Group size: {group_size} where 1 is few members and 4 is a large group.
         - Group type: {group_type}
         - Group description: {group_description}
         - Reduced mobility: {reduced_mobility} (if someone has reduced mobility).        
@@ -132,7 +132,7 @@ def generate_and_parse_museum_feedback(group_size, group_type, group_description
         Now, using the following group and route details, generate your evaluation, textual feedback and answer the questions:
 
         **Group characteristics:**
-        - Group size: {group_size}
+        - Group size: {group_size} where 1 is few members and 4 is a large group.
         - Group type: {group_type}
         - Group description: {group_description}
         - Reduced mobility: {reduced_mobility} (if someone has reduced mobility).
