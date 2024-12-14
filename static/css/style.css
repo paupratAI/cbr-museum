@@ -126,6 +126,57 @@ body {
     transform: translateY(-2px);
 }
 
+.loading-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.loading-popup.show {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.loading-content {
+    background-color: #222;
+    padding: 20px 40px;
+    border-radius: 10px;
+    text-align: center;
+    color: #B8860B;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loading-content p {
+    margin-top: 10px;
+    font-size: 1.2em;
+}
+
+/* Spinner styling */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #FFD700;
+    border-top: 4px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 .start-button:hover,
 .get-id-button:hover,
 .next-button:hover {
