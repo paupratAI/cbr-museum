@@ -40,7 +40,6 @@ def save_in_sqlite3(results: list):
         preferred_periods TEXT,
         preferred_author TEXT,
         preferred_themes TEXT,
-        time_coefficient TEXT,  -- Shorter/Equal/Longer
         ordered_artworks TEXT,
         ordered_artworks_matches TEXT,
         visited_artworks_count INTEGER,
@@ -48,6 +47,7 @@ def save_in_sqlite3(results: list):
         rating REAL,  -- Float for n.n/5
         feedback TEXT,
         only_elevator BOOLEAN,  -- Binary from Yes/No
+        time_coefficient TEXT,  -- Shorter/Equal/Longer
         artwork_to_remove TEXT,
         guided_visit BOOLEAN,  -- Binary from Yes/No
         FOREIGN KEY(specific_problem_id) REFERENCES specific_problems(id)
@@ -84,10 +84,10 @@ def save_in_sqlite3(results: list):
         # Process full_feedback variables
         rating_value = float(full_feedback["evaluation"])  # Use the actual rating
         feedback_text = full_feedback["feedback"]  # Feedback as text
-        only_elevator_binary = 1 if full_feedback["only_elevator"].strip().lower() == "yes" else 0
+        only_elevator_binary = 1 if full_feedback["only_elevator"] else 0
         time_coefficient_text = full_feedback["time_coefficient"]  # Shorter/Equal/Longer
         artwork_to_remove_text = full_feedback["artwork_to_remove"]  # Artwork name
-        guided_visit_binary = 1 if full_feedback["guided_visit"].strip().lower() == "yes" else 0
+        guided_visit_binary = 1 if full_feedback["guided_visit"] else 0
 
         # Insert into specific_problems
         cursor.execute("""
@@ -121,7 +121,7 @@ def save_in_sqlite3(results: list):
         # Insert into abstract_problems
         cursor.execute("""
         INSERT INTO abstract_problems
-        (specific_problem_id, group_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks, ordered_artworks_matches, visited_artworks_count, group_description, rating, feedback, only_elevator, artwork_to_remove, guided_visit)
+        (specific_problem_id, group_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, ordered_artworks, ordered_artworks_matches, visited_artworks_count, group_description, rating, feedback, only_elevator, time_coefficient, artwork_to_remove, guided_visit)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             specific_problem_id,
@@ -132,7 +132,6 @@ def save_in_sqlite3(results: list):
             preferred_periods_json,
             preferred_author_json,
             preferred_themes_json,
-            time_coefficient_text,  # Shorter/Equal/Longer
             ordered_artworks_json,
             ordered_match_types_json,
             visited_count,
@@ -140,6 +139,7 @@ def save_in_sqlite3(results: list):
             rating_value,  # Actual evaluation value
             feedback_text,
             only_elevator_binary,  # 1 or 0 for Yes/No
+            time_coefficient_text,  # Shorter/Equal/Longer
             artwork_to_remove_text,  # Text of the artwork
             guided_visit_binary  # 1 or 0 for Yes/No
         ))

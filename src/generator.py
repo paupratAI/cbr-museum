@@ -20,8 +20,8 @@ class GenArtArgs():
 
     data: list = field(default_factory=list)
     reference_preferences_proportion: float = 0.75
-    num_artworks: int = 10
-    num_cases: int = 100
+    num_artworks: int = 50
+    num_cases: int = 5
     format: str = "sqlite"
 
     def __post_init__(self):
@@ -84,7 +84,8 @@ if __name__ == "__main__":
     num_reference_samples = int(gen_art_args.num_cases * gen_art_args.reference_preferences_proportion)
     data_sample = pg.generate_sample_data(num_reference_samples=num_reference_samples, num_total_samples=gen_art_args.num_cases)
 
-    for sp in data_sample:
+    for i, sp in enumerate(data_sample):
+        print(f"Generating case {i+1}/{gen_art_args.num_cases} ({((i+1)/gen_art_args.num_cases)*100:.2f}%)", end="\r")
         abs_prob = AbstractProblem(
             specific_problem=sp,
             available_periods=periods,
@@ -111,9 +112,21 @@ if __name__ == "__main__":
 
         textual_feedback = random.choice(["full", "short", "None"])
 
-        full_feedback = generate_and_parse_museum_feedback(abs_sol.group_size, abs_sol.group_type, abs_sol.group_description,
-                                                           abs_sol.reduced_mobility, abs_sol.art_knowledge, abs_sol.preferred_periods,
-                                                           abs_sol.preferred_author, abs_sol.preferred_themes, abs_sol.time_coefficient, textual_feedback)
+        full_feedback = generate_and_parse_museum_feedback(
+            group_size=abs_prob.group_size, 
+            group_type=abs_prob.group_type, 
+            group_description=abs_prob.group_description,
+            reduced_mobility=reduced_mobility, 
+            art_knowledge_level=abs_prob.art_knowledge, 
+            preferred_periods=abs_prob.preferred_periods,
+            preferred_authors=abs_prob.preferred_author, 
+            preferred_themes=abs_prob.preferred_themes, 
+            time_coefficient=abs_prob.time_coefficient, 
+            proposed_paintings=spec_sol.day_assignments,
+            route_score=abs_sol.avg_score,
+            perfect_route_score=10,
+            textual_feedback=textual_feedback
+            )
 
         results.append((abs_prob, abs_sol, spec_sol.visited_artworks_count, full_feedback))
 
