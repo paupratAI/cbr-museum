@@ -6,12 +6,12 @@ import math
 import random
 
 def save_in_sqlite3(results: list):
-    # results es una lista de tuplas (AbstractProblem, AbstractSolution, visited_artworks_count)
+    # results is a list of tuples (AbstractProblem, AbstractSolution, visited_artworks_count, full_feedback)
 
     conn = sqlite3.connect("../data/database.db")
     cursor = conn.cursor()
 
-    # Crear tablas si no existen
+    # Create tables if they do not exist
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS specific_problems (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,7 +28,7 @@ def save_in_sqlite3(results: list):
     )
     """)
 
-    # Añadimos visited_artworks_count a abstract_problems
+    # Create the abstract_problems table with the new variables
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS abstract_problems (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -40,12 +40,16 @@ def save_in_sqlite3(results: list):
         preferred_periods TEXT,
         preferred_author TEXT,
         preferred_themes TEXT,
-        time_coefficient REAL,
+        time_coefficient TEXT,  -- Shorter/Equal/Longer
         ordered_artworks TEXT,
         ordered_artworks_matches TEXT,
         visited_artworks_count INTEGER,
         group_description TEXT,
-        rating REAL,
+        rating REAL,  -- Float for n.n/5
+        feedback TEXT,
+        only_elevator BOOLEAN,  -- Binary from Yes/No
+        artwork_to_remove TEXT,
+        guided_visit BOOLEAN,  -- Binary from Yes/No
         FOREIGN KEY(specific_problem_id) REFERENCES specific_problems(id)
     )
     """)
@@ -73,11 +77,19 @@ def save_in_sqlite3(results: list):
     )
     """)
 
-    # Desempaquetamos las tres variables en el bucle
-    for ap, asol, visited_count in results:
+    # Unpack the variables in the loop
+    for ap, asol, visited_count, full_feedback in results:
         sp = ap.specific_problem
 
-        # Insertar SpecificProblem
+        # Process full_feedback variables
+        rating_value = float(full_feedback["evaluation"])  # Use the actual rating
+        feedback_text = full_feedback["feedback"]  # Feedback as text
+        only_elevator_binary = 1 if full_feedback["only_elevator"].strip().lower() == "yes" else 0
+        time_coefficient_text = full_feedback["time_coefficient"]  # Shorter/Equal/Longer
+        artwork_to_remove_text = full_feedback["artwork_to_remove"]  # Artwork name
+        guided_visit_binary = 1 if full_feedback["guided_visit"].strip().lower() == "yes" else 0
+
+        # Insert into specific_problems
         cursor.execute("""
         INSERT INTO specific_problems
         (group_id, num_people, favorite_author, favorite_period, favorite_theme, guided_visit, minors, num_experts, past_museum_visits, group_description)
@@ -96,21 +108,21 @@ def save_in_sqlite3(results: list):
         ))
         specific_problem_id = cursor.lastrowid
 
-        # Serializar campos complejos de AbstractProblem a JSON
+        # Serialize complex fields of AbstractProblem to JSON
         preferred_periods_json = json.dumps([asdict(p) for p in ap.preferred_periods], ensure_ascii=False)
         preferred_author_json = json.dumps(asdict(ap.preferred_author), ensure_ascii=False) if ap.preferred_author else None
         preferred_themes_json = json.dumps(ap.preferred_themes, ensure_ascii=False)
 
-        # Ordenar matches para obtener match_types en el mismo orden que ordered_artworks
+        # Order matches by match_type to match the order of ordered_artworks
         sorted_matches = sorted(asol.matches, key=lambda m: m.match_type, reverse=True)
         ordered_artworks_json = json.dumps(asol.ordered_artworks, ensure_ascii=False)
         ordered_match_types_json = json.dumps([m.match_type for m in sorted_matches], ensure_ascii=False)
 
-        # Insertar AbstractProblem, incluyendo visited_artworks_count
+        # Insert into abstract_problems
         cursor.execute("""
         INSERT INTO abstract_problems
-        (specific_problem_id, group_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks, ordered_artworks_matches, visited_artworks_count, group_description, rating)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (specific_problem_id, group_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks, ordered_artworks_matches, visited_artworks_count, group_description, rating, feedback, only_elevator, artwork_to_remove, guided_visit)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             specific_problem_id,
             ap.group_id,
@@ -120,16 +132,20 @@ def save_in_sqlite3(results: list):
             preferred_periods_json,
             preferred_author_json,
             preferred_themes_json,
-            ap.time_coefficient,
-            ordered_artworks_json,          # JSON list of artworks
-            ordered_match_types_json,       # JSON list of matches
-            visited_count,                  # Make sure there's a comma after this
+            time_coefficient_text,  # Shorter/Equal/Longer
+            ordered_artworks_json,
+            ordered_match_types_json,
+            visited_count,
             ap.group_description,
-            float(round(random.uniform(0, 5), 1))  # Random rating
+            rating_value,  # Actual evaluation value
+            feedback_text,
+            only_elevator_binary,  # 1 or 0 for Yes/No
+            artwork_to_remove_text,  # Text of the artwork
+            guided_visit_binary  # 1 or 0 for Yes/No
         ))
         abstract_problem_id = cursor.lastrowid
 
-        # Insertar AbstractSolution
+        # Insert into abstract_solutions
         cursor.execute("""
         INSERT INTO abstract_solutions
         (abstract_problem_id, max_score, average_visited_matching)
@@ -137,11 +153,11 @@ def save_in_sqlite3(results: list):
         """, (
             abstract_problem_id,
             asol.max_score,
-            round(asol.avg_score,2)
+            round(asol.avg_score, 2)
         ))
         abstract_solution_id = cursor.lastrowid
 
-        # Insertar Matches
+        # Insert into matches
         for m in asol.matches:
             cursor.execute("""
             INSERT INTO matches
@@ -160,7 +176,7 @@ def save_in_sqlite3(results: list):
     conn.close()
 
 def calculate_default_time(dimension: int, complexity: int, relevance: str) -> int:
-    """Calcula el tiempo predeterminado basado en la dimensión, complejidad y relevancia."""
+    """Calculate default time based on dimension, complexity, and relevance."""
     relevance_multiplier = 1 if relevance == "High" else 0.5
     default_time = ((math.pow(dimension, 0.25) + math.log(complexity, 10)) / 2) + relevance_multiplier
     return int(default_time)

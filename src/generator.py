@@ -12,6 +12,7 @@ from utils import save_in_sqlite3, calculate_default_time
 from entities import AbstractSolution
 from utils import save_in_sqlite3
 from cbr import CBR
+from feedback import generate_and_parse_museum_feedback
 
 
 @dataclass
@@ -97,15 +98,24 @@ if __name__ == "__main__":
         t = TimeLimitGenerator(low=20, high=120)
         time = t.generate()
 
+        # Generate reduce_mobility with weights of 0.85 False and 0.15 True
+        reduced_mobility = random.choices([True, False], weights=[0.15, 0.85], k=1)[0]
+
         spec_sol = SpecificSolution(
             related_to_AbstractSolution=abs_sol,
-            reduced_mobility=False,
+            reduced_mobility=reduced_mobility,
             total_days=1,      
             daily_minutes=time,
         )
         spec_sol.distribute_artworks()
 
-        results.append((abs_prob, abs_sol, spec_sol.visited_artworks_count))
+        textual_feedback = random.choice(["full", "short", "None"])
+
+        full_feedback = generate_and_parse_museum_feedback(abs_sol.group_size, abs_sol.group_type, abs_sol.group_description,
+                                                           abs_sol.reduced_mobility, abs_sol.art_knowledge, abs_sol.preferred_periods,
+                                                           abs_sol.preferred_author, abs_sol.preferred_themes, abs_sol.time_coefficient, textual_feedback)
+
+        results.append((abs_prob, abs_sol, spec_sol.visited_artworks_count, full_feedback))
 
     if gen_art_args.format == "json":
         serializable_results = []
