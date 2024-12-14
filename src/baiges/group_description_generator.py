@@ -92,7 +92,7 @@ Finally the description must be as short as the ones provided as examples, not l
     return description
 
 # Example usage:
-if __name__ == "__main__":
+"""if __name__ == "__main__":
     desc = generate_group_description(
         num_people=4,
         favorite_author="Van Gogh",
@@ -104,4 +104,4 @@ if __name__ == "__main__":
         past_museum_visits=2
     )
 
-    print("Generated Description:\n", desc)
+    print("Generated Description:\n", desc)"""

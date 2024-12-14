@@ -150,7 +150,7 @@ def generate_and_parse_museum_feedback(group_size, group_type, group_description
 
 
 # Example usage
-if __name__ == "__main__":
+"""if __name__ == "__main__":
     group_size = 4
     group_type = "family"
     group_description = "A family with two children, aged 8 and 12, interested in art and enjoy to ride bicycles."
@@ -181,4 +181,4 @@ if __name__ == "__main__":
         preferred_themes, time_coefficient, proposed_paintings, route_score, textual_feedback='None'
     )
 
-    print("No Textual Feedback Data:", feedback_data_none)
+    print("No Textual Feedback Data:", feedback_data_none)"""
