@@ -21,6 +21,10 @@ class CBR:
         """Create indices for faster query performance."""
         with self.conn:
             self.conn.execute("CREATE INDEX IF NOT EXISTS idx_cluster ON abstract_problems(cluster);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_usage_count ON abstract_problems(usage_count);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_utility ON abstract_problems(utility);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_redundancy ON abstract_problems(redundancy);")
+
 
     def ensure_columns(self):
         """Ensure necessary columns (utility, usage_count, redundancy) exist in the table."""
@@ -136,8 +140,13 @@ class CBR:
     def retrieve_cases(self, problem: AbstractProblem, top_k=3):
         """
         Retrieves the most similar cases to the given problem and updates their usage_count.
+        Only retrieves cases with a rating greater than 2.
         """
-        query = "SELECT * FROM abstract_problems WHERE cluster = ?"
+        query = """
+            SELECT * 
+            FROM abstract_problems 
+            WHERE cluster = ? 
+        """
         params = (problem.cluster,)
         rows = self.conn.execute(query, params).fetchall()
         cases_with_similarity = []
@@ -170,17 +179,20 @@ class CBR:
                 stored_time_coefficient=row['time_coefficient']
             )
 
-            cases_with_similarity.append((row, similarity))
+            feedback = row['feedback']
+            distance = similarity * feedback
 
-        # Sort by similarity and return top_k
-        ranked_cases = sorted(cases_with_similarity, key=lambda x: x[1], reverse=True)
-        selected_cases = ranked_cases[:top_k]
+            cases_with_similarity.append((row, distance))
 
-        # Update usage_count
-        for case, sim in selected_cases:
-            self.increment_usage_count(case['id']) 
+            # Sort by distance and return top_k
+            ranked_cases = sorted(cases_with_similarity, key=lambda x: x[1], reverse=True)
+            selected_cases = ranked_cases[:top_k]
 
-        return selected_cases
+            # Update usage_count
+            for case, dist in selected_cases:
+                self.increment_usage_count(case['id']) 
+
+            return selected_cases
 
     def increment_usage_count(self, case_id):
         """Increments usage_count each time a case is retrieved."""
@@ -441,11 +453,11 @@ class CBR:
 
 
 
-if __name__ == '__main__':
+'''if __name__ == '__main__':
     cbr = CBR()
     
     cbr.calculate_redundancy()
     print("Redundancy calculated.")
 
     cbr.calculate_utility()
-    print("Utility calculated.")
+    print("Utility calculated.")'''
