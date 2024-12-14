@@ -3,6 +3,7 @@ import sqlite3
 import json
 from dataclasses import asdict
 import math
+import random
 
 def save_in_sqlite3(results: list):
     # results es una lista de tuplas (AbstractProblem, AbstractSolution, visited_artworks_count)
@@ -44,6 +45,7 @@ def save_in_sqlite3(results: list):
         ordered_artworks_matches TEXT,
         visited_artworks_count INTEGER,
         group_description TEXT,
+        rating REAL,
         FOREIGN KEY(specific_problem_id) REFERENCES specific_problems(id)
     )
     """)
@@ -107,8 +109,8 @@ def save_in_sqlite3(results: list):
         # Insertar AbstractProblem, incluyendo visited_artworks_count
         cursor.execute("""
         INSERT INTO abstract_problems
-        (specific_problem_id, group_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks, ordered_artworks_matches, visited_artworks_count, group_description)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (specific_problem_id, group_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks, ordered_artworks_matches, visited_artworks_count, group_description, rating)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             specific_problem_id,
             ap.group_id,
@@ -122,7 +124,8 @@ def save_in_sqlite3(results: list):
             ordered_artworks_str,
             ordered_match_types_str,
             visited_count,
-            ap.group_description
+            ap.group_description,
+            float(round(random.uniform(0, 5), 1)) # Random rating
         ))
         abstract_problem_id = cursor.lastrowid
 
