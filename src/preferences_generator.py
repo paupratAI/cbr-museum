@@ -54,6 +54,10 @@ def generate_exponential_integer(low=1, high=50, scale=10):
 	
 	return value
 
+def truncated_normal(mean, sd, low, high):
+    a, b = (low - mean) / sd, (high - mean) / sd
+    return truncnorm.rvs(a, b, loc=mean, scale=sd)
+
 class PreferencesGenerator:
 	def __init__(self, seed: int = 42, themes: list = [], authors: list = []):
 		random.seed(seed)
@@ -71,7 +75,10 @@ class PreferencesGenerator:
 		guided_visit = random.choice(true_false)
 		num_experts = random.randint(0, num_people)
 		past_museums_visits = random.randint(0, 50)
-		favorite_period = random.randint(1000, 1900)
+		favorite_period = int(round(truncated_normal(mean=1823.32, 
+                                             sd=179.63, 
+                                             low=1000, 
+                                             high=2000)))
 		favorite_theme = random.choice(self.themes).theme_name
 		favorite_author = random.choice(self.authors).author_name
 
