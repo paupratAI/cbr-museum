@@ -28,11 +28,26 @@ class CBR:
             self.conn.execute("ALTER TABLE abstract_problems ADD COLUMN utility REAL DEFAULT 0.0")
         self.conn.commit()
 
-    def calculate_similarity(self, problem: AbstractProblem, group_size, group_type, art_knowledge,
-                             preferred_periods_id, preferred_author, preferred_themes, time_coefficient) -> float:
+    def calculate_similarity(
+        self, 
+        problem_group_size: int,
+        problem_group_type: str,
+        problem_art_knowledge: int,
+        problem_preferred_periods: List[Period],
+        problem_preferred_author: Author,
+        problem_preferred_themes: List[str],
+        problem_time_coefficient: float,
+        stored_group_size: int, 
+        stored_group_type: str, 
+        stored_art_knowledge: int, 
+        stored_preferred_periods_id: List[int],
+        stored_preferred_author: Author,
+        stored_preferred_themes: List[str],
+        stored_time_coefficient: float
+    ) -> float:
         """
-        Calculates the similarity between the current problem and a stored problem.
-        Weights are assigned to each feature and a weighted sum is returned.
+        Calculates the similarity between the provided parameters of a problem
+        and those of a stored case directly, without needing an AbstractProblem object.
         """
         weights = {
             "group_size": 0.05,
@@ -46,7 +61,7 @@ class CBR:
         similarity = 0.0
 
         # Group size
-        diff_group_size = abs(problem.group_size - group_size)
+        diff_group_size = abs(problem_group_size - stored_group_size)
         if diff_group_size == 0:
             similarity += weights["group_size"]
         elif diff_group_size == 1:
@@ -55,11 +70,11 @@ class CBR:
             similarity += weights["group_size"] * 0.1
 
         # Group type
-        if problem.group_type == group_type:
+        if problem_group_type == stored_group_type:
             similarity += weights["group_type"]
 
         # Art knowledge
-        diff_art_knowledge = abs(problem.art_knowledge - art_knowledge)
+        diff_art_knowledge = abs(problem_art_knowledge - stored_art_knowledge)
         if diff_art_knowledge == 0:
             similarity += weights["art_knowledge"]
         elif diff_art_knowledge == 1:
@@ -69,34 +84,38 @@ class CBR:
 
         # Preferred periods
         matched_periods = 0
-        for period_id in preferred_periods_id:
-            for p in problem.preferred_periods:
+        for period_id in stored_preferred_periods_id:
+            for p in problem_preferred_periods:
                 if period_id == p.period_id:
                     matched_periods += 1
         if matched_periods > 0:
-            similarity += weights["preferred_periods"] * (1 - abs(len(preferred_periods_id) - matched_periods))
+            similarity += weights["preferred_periods"] * (1 - abs(len(stored_preferred_periods_id) - matched_periods))
 
         # Preferred author
-        if problem.preferred_author:
-            if problem.preferred_author.author_id == preferred_author.author_id:
+        if problem_preferred_author:
+            if problem_preferred_author.author_id == stored_preferred_author.author_id:
                 similarity += weights["preferred_author"]
             else:
                 # Check overlapping periods with the preferred author
                 matched_author_periods = [
-                    period for period in problem.preferred_author.main_periods
-                    if any(p.year_beginning <= period.year_beginning <= p.year_end or
-                           p.year_beginning <= period.year_end <= p.year_end
-                           for p in preferred_author.main_periods)
+                    period for period in problem_preferred_author.main_periods
+                    if any(
+                        p.year_beginning <= period.year_beginning <= p.year_end or
+                        p.year_beginning <= period.year_end <= p.year_end
+                        for p in stored_preferred_author.main_periods
+                    )
                 ]
                 if matched_author_periods:
-                    similarity += weights["preferred_author"] * 0.8 * (len(matched_author_periods) / len(problem.preferred_author.main_periods))
+                    similarity += weights["preferred_author"] * 0.8 * (
+                        len(matched_author_periods) / len(problem_preferred_author.main_periods)
+                    )
 
         # Preferred themes
-        if problem.preferred_themes and preferred_themes and problem.preferred_themes[0] == preferred_themes[0]:
+        if problem_preferred_themes and stored_preferred_themes and problem_preferred_themes[0] == stored_preferred_themes[0]:
             similarity += weights["preferred_themes"]
 
         # Time coefficient
-        diff_time_coefficient = abs(problem.time_coefficient - time_coefficient)
+        diff_time_coefficient = abs(problem_time_coefficient - stored_time_coefficient)
         if diff_time_coefficient == 0:
             similarity += weights["time_coefficient"]
         elif diff_time_coefficient < 0.2:
@@ -105,6 +124,7 @@ class CBR:
             similarity += weights["time_coefficient"] * 0.1
 
         return round(similarity, 2)
+
 
     def retrieve_cases(self, problem: AbstractProblem, top_k=3):
         """
@@ -150,15 +170,22 @@ class CBR:
             preferred_themes = ast.literal_eval(row[8])
 
             similarity = self.calculate_similarity(
-                problem,
-                group_size=row[3],
-                group_type=row[4],
-                art_knowledge=row[5],
-                preferred_periods_id=stored_periods_id,
-                preferred_author=stored_author,
-                preferred_themes=preferred_themes,
-                time_coefficient=row[9]
+                problem_group_size=problem.group_size,
+                problem_group_type=problem.group_type,
+                problem_art_knowledge=problem.art_knowledge,
+                problem_preferred_periods=problem.preferred_periods,
+                problem_preferred_author=problem.preferred_author,
+                problem_preferred_themes=problem.preferred_themes,
+                problem_time_coefficient=problem.time_coefficient,
+                stored_group_size=row[3],
+                stored_group_type=row[4],
+                stored_art_knowledge=row[5],
+                stored_preferred_periods_id=stored_periods_id,
+                stored_preferred_author=stored_author,
+                stored_preferred_themes=preferred_themes,
+                stored_time_coefficient=row[9]
             )
+
             cases_with_similarity.append((row, similarity))
 
         # Sort by similarity and return top_k
@@ -313,56 +340,67 @@ class CBR:
             # 19: redundancy
             # 20: utility
 
-            author_data = json.loads(c[7]) if c[7] else {}
-            stored_author = Author(
-                author_id=author_data.get('author_id', None),
-                author_name=author_data.get('author_name', ""),
-                main_periods=[Period(period_id=p['period_id']) for p in author_data.get('main_periods', [])]
-            )
+            cases = []
+            for c in all_cases:
+                author_data = json.loads(c[7]) if c[7] else {}
+                stored_author = Author(
+                    author_id=author_data.get('author_id', None),
+                    author_name=author_data.get('author_name', ""),
+                    main_periods=[Period(period_id=p['period_id']) for p in author_data.get('main_periods', [])]
+                )
 
-            stored_periods = json.loads(c[6]) if c[6] else []
-            periods_list = [Period(period_id=p['period_id']) for p in stored_periods]
-            themes = ast.literal_eval(c[8]) if c[8] else []
+                stored_periods = json.loads(c[6]) if c[6] else []
+                periods_list = [Period(period_id=p['period_id']) for p in stored_periods]
+                themes = ast.literal_eval(c[8]) if c[8] else []
 
-            pseudo_problem = AbstractProblem(
-                specific_problem=None,
-                available_periods=None,
-                available_authors=None,
-                available_themes=None
-            )
-            pseudo_problem.group_size = c[3]
-            pseudo_problem.group_type = c[4]
-            pseudo_problem.art_knowledge = c[5]
-            pseudo_problem.preferred_periods = periods_list
-            pseudo_problem.preferred_author = stored_author
-            pseudo_problem.preferred_themes = themes
-            pseudo_problem.time_coefficient = c[9]
-            pseudo_problem.cluster = c[17]
+                # Extraer las características del caso
+                case_params = {
+                    "group_size": c[3],
+                    "group_type": c[4],
+                    "art_knowledge": c[5],
+                    "preferred_periods": periods_list,
+                    "preferred_author": stored_author,
+                    "preferred_themes": themes,
+                    "time_coefficient": c[9]
+                }
 
-            cases.append((c[0], pseudo_problem))
+                cases.append((c[0], case_params))
+
 
         total_cases = len(cases)
-        for i, (case_id, case_problem) in enumerate(cases):
+        for i, (case_id, case_params) in enumerate(cases):
             if total_cases <= 1:
                 redundancy = 0
             else:
                 count_similar = 0
-                for j, (other_id, other_problem) in enumerate(cases):
+                for j, (other_id, other_params) in enumerate(cases):
                     if i == j:
                         continue
+
+                    # problem = cases[i]
+                    # stored = cases[j]
+
                     sim = self.calculate_similarity(
-                        case_problem,
-                        group_size=other_problem.group_size,
-                        group_type=other_problem.group_type,
-                        art_knowledge=other_problem.art_knowledge,
-                        preferred_periods_id=[p.period_id for p in other_problem.preferred_periods],
-                        preferred_author=other_problem.preferred_author,
-                        preferred_themes=other_problem.preferred_themes,
-                        time_coefficient=other_problem.time_coefficient
+                        problem_group_size=case_params["group_size"],
+                        problem_group_type=case_params["group_type"],
+                        problem_art_knowledge=case_params["art_knowledge"],
+                        problem_preferred_periods=case_params["preferred_periods"],
+                        problem_preferred_author=case_params["preferred_author"],
+                        problem_preferred_themes=case_params["preferred_themes"],
+                        problem_time_coefficient=case_params["time_coefficient"],
+                        stored_group_size=other_params["group_size"],
+                        stored_group_type=other_params["group_type"],
+                        stored_art_knowledge=other_params["art_knowledge"],
+                        stored_preferred_periods_id=[p.period_id for p in other_params["preferred_periods"]],
+                        stored_preferred_author=other_params["preferred_author"],
+                        stored_preferred_themes=other_params["preferred_themes"],
+                        stored_time_coefficient=other_params["time_coefficient"]
                     )
+
                     if sim > 0.9:
                         count_similar += 1
                 redundancy = count_similar / (total_cases - 1)
+                redundancy = round(redundancy, 2)
 
             self.conn.execute("UPDATE abstract_problems SET redundancy = ? WHERE id = ?", (redundancy, case_id))
         self.conn.commit()
@@ -404,6 +442,7 @@ class CBR:
                 non_redundancy_factor = 0
 
             utility = (0.5 * normalized_feedback) + (0.3 * normalized_usage) + (0.2 * non_redundancy_factor)
+            utility = round(utility, 2)
             self.conn.execute("UPDATE abstract_problems SET utility = ? WHERE id = ?", (utility, case_id))
 
         self.conn.commit()
@@ -457,5 +496,9 @@ class CBR:
 
 '''if __name__ == '__main__':
     cbr = CBR()
-    feedback_list = cbr.get_feedback_list("9.4,7.9,7.8,7.6,7.5,2.8,2.8,2.7,2.7,2.7", 4.5)
-    print(feedback_list)'''
+    
+    cbr.calculate_redundancy()
+    print("Redundancy calculated.")
+
+    cbr.calculate_utility()
+    print("Utility calculated.")'''
