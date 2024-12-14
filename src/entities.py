@@ -947,6 +947,7 @@ class SpecificProblem:
     minors: bool
     num_experts: int
     past_museum_visits: int
+    group_description: str
 
     def __post_init__(self):
         assert isinstance(self.group_id, int) and self.group_id >= 0, "group_id must be a positive integer"
@@ -980,6 +981,7 @@ class AbstractProblem:
         self.preferred_author = self.compute_preferred_author()
         self.preferred_themes = self.compute_preferred_themes()
         self.time_coefficient = self.compute_time_coefficient()
+        self.group_description = self.specific_problem.group_description
         self.cluster = None
 
         # Assertions

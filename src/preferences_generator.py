@@ -42,6 +42,8 @@ from scipy.stats import expon
 from entities import SpecificProblem
 import numpy as np
 from scipy.stats import truncnorm
+from group_description import generate_group_description
+
 
 def generate_exponential_integer(low=1, high=50, scale=10):
 	value = None
@@ -81,6 +83,7 @@ class PreferencesGenerator:
                                              high=2000)))
 		favorite_theme = random.choice(self.themes).theme_name
 		favorite_author = random.choice(self.authors).author_name
+		group_description = generate_group_description(num_people, minors, guided_visit, num_experts, past_museums_visits, favorite_period, favorite_theme, favorite_author)
 
 		sp = SpecificProblem(
 			group_id=group_id,
@@ -91,7 +94,8 @@ class PreferencesGenerator:
 			guided_visit=guided_visit,
 			minors=minors,
 			num_experts=num_experts,
-			past_museum_visits=past_museums_visits
+			past_museum_visits=past_museums_visits,
+			group_description=group_description
 		)
 
 		return sp

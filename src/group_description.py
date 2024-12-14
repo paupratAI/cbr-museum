@@ -31,13 +31,15 @@ def compare_sentences(sentence_to_compare, sentences, model):
     return rescaled_sims
 
 def generate_group_description(num_people: int,
-                               favorite_author: str,
+                               minors: bool,
+                               guided_visit: bool,
+                               num_experts: int,
+                               past_museums_visits: int,
                                favorite_period: int,
                                favorite_theme: str,
-                               guided_visit: bool,
-                               minors: bool,
-                               num_experts: int,
-                               past_museum_visits: int) -> str:
+                               favorite_author: str
+                               ) -> str:
+    
     """
     Generate a first-person English description of a museum visitor group,
     incorporating their hobbies, who they are, and their interests, based on given parameters.
@@ -86,7 +88,7 @@ Do not mention the exact artist or year just use the vibes to create the hobbies
 - Children under 12 present: {"Yes" if minors else "No"}
 - Guided visit preferred: {"Yes" if guided_visit else "No"}
 - Number of art experts in the group: {num_experts}
-- Past museum visits: {past_museum_visits}
+- Past museum visits: {past_museums_visits}
 - Favorite artistic period (represented by year): {favorite_period}
 - Favorite author/artist: {favorite_author}
 - Favorite theme: {favorite_theme}
