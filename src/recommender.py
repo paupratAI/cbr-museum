@@ -1,6 +1,7 @@
 from cbr import CBR
 from cf import CF
 import sqlite3
+import json
 
 class Recommender:
 	"""
@@ -40,16 +41,21 @@ class Recommender:
 		"""
 		# Get the values from the database
 		query = f"SELECT group_id, ordered_artworks, ordered_artworks_matches, visited_artworks_count, rating FROM {self.main_table}"
-		rows = self.cursor.execute(query).fetchall()
+		self.cursor.execute(query)
+		rows = self.cursor.fetchall()
 
 		# Add the rows to the CF system
 		for row in rows:
 			group_id, ordered_artworks, ordered_artworks_matches, visited_artworks_count, rating = row
 
+			# Decode JSON fields to Python lists
+			ordered_artworks_list = json.loads(ordered_artworks) if ordered_artworks else []
+			ordered_artworks_matches_list = json.loads(ordered_artworks_matches) if ordered_artworks_matches else []
+
 			self.cf.store_group_ratings(
 				group_id=group_id, 
-				ordered_items=ordered_artworks,
-				ordered_items_matches=ordered_artworks_matches,
+				ordered_items=ordered_artworks_list,
+				ordered_items_matches=ordered_artworks_matches_list,
 				visited_items_count=visited_artworks_count, 
 				global_rating=rating
 			)
@@ -58,10 +64,11 @@ class Recommender:
 		"""
 		Recommends items using the CF and CBR systems.
 		"""
-		self.cf.recommend_items(target_group_id=target_group_id)
+		return self.cf.recommend_items(target_group_id=target_group_id)
 
 if __name__ == '__main__':
 	target_group_id = 1
 	r = Recommender()
+	r.cf.clear_ratings()
 	r.add_rows_to_cf()
 	print(r.recommend(target_group_id))
