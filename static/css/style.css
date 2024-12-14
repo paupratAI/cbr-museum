@@ -108,6 +108,24 @@ body {
     margin: 0 10px;
 }
 
+.finish-button {
+    background-color: #002147; /* Oxford Blue */
+    color: #FFF;
+    padding: 15px 30px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 1em;
+    border: none;
+    cursor: pointer;
+    margin: 0 10px;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.finish-button:hover {
+    background-color: #001633; /* Slightly darker hover state */
+    transform: translateY(-2px);
+}
+
 .start-button:hover,
 .get-id-button:hover,
 .next-button:hover {

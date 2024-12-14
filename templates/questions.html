@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+lear<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
@@ -8,13 +8,14 @@
 </head>
 <body>
 <div class="screen-container">
+    <!-- Question 1 -->
     <div class="screen" id="screen-question-1">
         <div class="form-container">
             <h1 class="title">Question 1</h1>
-            <p class="instructions">What's your favorite type of art?</p>
+            <p class="instructions">How many people will join the visit?</p>
             <form class="user-form">
                 <div class="input-row">
-                    <input type="text" class="input-field question-input" placeholder="e.g., Impressionism">
+                    <input type="text" class="input-field question-input" placeholder="e.g., 5">
                 </div>
                 <div class="buttons-row">
                     <button type="button" class="next-button" data-next="#screen-question-2">Next</button>
@@ -23,23 +24,118 @@
         </div>
     </div>
 
+    <!-- Question 2 -->
     <div class="screen" id="screen-question-2">
         <div class="form-container">
             <h1 class="title">Question 2</h1>
-            <p class="instructions">Do you prefer guided tours or exploring alone?</p>
+            <p class="instructions">Are there children under 12?</p>
             <form class="user-form">
                 <div class="input-row">
-                    <input type="text" class="input-field question-input" placeholder="e.g., Guided">
+                    <input type="text" class="input-field question-input" placeholder="yes/no">
                 </div>
                 <div class="buttons-row">
-                    <!-- This last button could say "Finish" and trigger sending answers to server -->
-                    <button type="button" class="finish-button" id="finish-questions">Finish</button>
+                    <button type="button" class="next-button" data-next="#screen-question-3">Next</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Add more screens/questions as needed, updating script accordingly -->
+    <!-- Question 3 -->
+    <div class="screen" id="screen-question-3">
+        <div class="form-container">
+            <h1 class="title">Question 3</h1>
+            <p class="instructions">Would you like a guided visit?</p>
+            <form class="user-form">
+                <div class="input-row">
+                    <input type="text" class="input-field question-input" placeholder="yes/no">
+                </div>
+                <div class="buttons-row">
+                    <button type="button" class="next-button" data-next="#screen-question-4">Next</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Question 4 -->
+    <div class="screen" id="screen-question-4">
+        <div class="form-container">
+            <h1 class="title">Question 4</h1>
+            <p class="instructions">How many experts are in the group?</p>
+            <form class="user-form">
+                <div class="input-row">
+                    <input type="text" class="input-field question-input" placeholder="e.g., 2">
+                </div>
+                <div class="buttons-row">
+                    <button type="button" class="next-button" data-next="#screen-question-5">Next</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Question 5 -->
+    <div class="screen" id="screen-question-5">
+        <div class="form-container">
+            <h1 class="title">Question 5</h1>
+            <p class="instructions">How many museums have you visited before?</p>
+            <form class="user-form">
+                <div class="input-row">
+                    <input type="text" class="input-field question-input" placeholder="e.g., 3">
+                </div>
+                <div class="buttons-row">
+                    <button type="button" class="next-button" data-next="#screen-question-6">Next</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Question 6 -->
+    <div class="screen" id="screen-question-6">
+        <div class="form-container">
+            <h1 class="title">Question 6</h1>
+            <p class="instructions">Enter the year of your favourite art period (1000 to 1900):</p>
+            <form class="user-form">
+                <div class="input-row">
+                    <input type="text" class="input-field question-input" placeholder="e.g., 1500">
+                </div>
+                <div class="buttons-row">
+                    <button type="button" class="next-button" data-next="#screen-question-7">Next</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Question 7 -->
+    <div class="screen" id="screen-question-7">
+        <div class="form-container">
+            <h1 class="title">Question 7</h1>
+            <p class="instructions">Which theme do you prefer?</p>
+            <form class="user-form">
+                <div class="input-row">
+                    <input type="text" class="input-field question-input" placeholder="e.g., Emotional, Historical, Religious, Natural, Mystical">
+                </div>
+                <div class="buttons-row">
+                    <button type="button" class="next-button" data-next="#screen-question-8">Next</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Question 8 -->
+    <div class="screen" id="screen-question-8">
+        <div class="form-container">
+            <h1 class="title">Question 8</h1>
+            <p class="instructions">What's your favourite author?</p>
+            <form class="user-form">
+                <div class="input-row">
+                    <input type="text" class="input-field question-input" placeholder="e.g., Pablo Picasso">
+                </div>
+                <div class="buttons-row">
+                    <!-- This is the last question, so we show Finish -->
+                    <button type="button" class="finish-button" id="finish-questions">Finish</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -59,13 +155,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     nextButtons.forEach(button => {
         button.addEventListener('click', () => {
-            // Collect answer from current screen
             const currentScreen = screens[currentScreenIndex];
             const inputField = currentScreen.querySelector('.question-input');
             const answer = inputField.value.trim();
             answers.push(answer);
 
-            // Move to next screen
             const targetId = button.getAttribute('data-next');
             const targetScreen = document.querySelector(targetId);
             const targetIndex = Array.from(screens).indexOf(targetScreen);
@@ -77,13 +171,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     finishButton.addEventListener('click', () => {
-        // Collect final answer
         const currentScreen = screens[currentScreenIndex];
         const inputField = currentScreen.querySelector('.question-input');
         const answer = inputField.value.trim();
         answers.push(answer);
 
-        // Send answers to server
         fetch("{{ url_for('process_answers') }}", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -93,7 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             if (data.status === 'ok') {
                 alert('LLM result: ' + data.result);
-                // You could display data.result on a new screen, or update the page.
             } else {
                 alert('Error processing answers.');
             }
