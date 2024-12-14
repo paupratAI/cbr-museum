@@ -178,6 +178,12 @@ class CF:
                     visit_count=excluded.visit_count;
             ''', (group_id, item_id, new_rating, new_visit_count))
 
+    def clear_ratings(self) -> None:
+        """
+        Clears all ratings from the database.
+        """
+        with self.conn:
+            self.conn.execute('DELETE FROM ratings')
 
     def get_group_ratings(self, group_id: int) -> Dict[int, tuple[float, int]]:
         """
@@ -314,8 +320,8 @@ class CF:
         if not common_groups:
             return 0  # No groups in common
 
-        ratings_a_vec = np.array([ratings_a[g] for g in common_groups])
-        ratings_b_vec = np.array([ratings_b[g] for g in common_groups])
+        ratings_a_vec = np.array([ratings_a[g][0] for g in common_groups])
+        ratings_b_vec = np.array([ratings_b[g][0] for g in common_groups])
 
         if method == 'cosine':
             return 1 - cosine(ratings_a_vec, ratings_b_vec)
@@ -349,7 +355,7 @@ class CF:
         List[int]
             Sorted list of item IDs by predicted relevance.
         """
-        assert method in self.VALID_METHODS, f"Invalid method; use one of {self.VALID_METHODS}"
+        assert method in self.VALID_METHODS + [None], f"Invalid method; use one of {self.VALID_METHODS}"
         assert (alpha is None) or (0 <= alpha <= 1), "Alpha must be between 0 and 1"
 
         if method is None:
