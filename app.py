@@ -1,8 +1,13 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
+from src.llama import Llama
 
 app = Flask(__name__)
 
+# In-memory counter for new users, just as an example
 current_id = 1000
+
+# Instantiate the Llama class
+llama_model = Llama(model_name='llama3.2')
 
 @app.route('/')
 def index():
@@ -21,12 +26,19 @@ def start():
             return render_template('start.html', new_id=new_id)
         elif 'begin_route' in request.form:
             entered_id = request.form.get('user_id')
-            # Instead of printing a message, go to questions.html
-            # You can store entered_id in session or database if needed
+            # Go to questions page (no answers needed yet)
             return render_template('questions.html')
 
     # If it's a GET request or no action triggered
     return render_template('start.html', new_id=new_id)
+
+@app.route('/process_answers', methods=['POST'])
+def process_answers():
+    # answers expected as JSON
+    answers = request.json.get('answers', [])
+    # Use the Llama model to run the LLM with the given answers
+    result = llama_model.run_llm(answers)
+    return jsonify(status='ok', result=result)
 
 if __name__ == '__main__':
     app.run(debug=True)

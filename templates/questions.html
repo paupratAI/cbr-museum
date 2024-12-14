@@ -8,14 +8,13 @@
 </head>
 <body>
 <div class="screen-container">
-    <!-- Start from Question 1 now -->
     <div class="screen" id="screen-question-1">
         <div class="form-container">
             <h1 class="title">Question 1</h1>
             <p class="instructions">What's your favorite type of art?</p>
             <form class="user-form">
                 <div class="input-row">
-                    <input type="text" class="input-field" placeholder="e.g., Impressionism">
+                    <input type="text" class="input-field question-input" placeholder="e.g., Impressionism">
                 </div>
                 <div class="buttons-row">
                     <button type="button" class="next-button" data-next="#screen-question-2">Next</button>
@@ -30,42 +29,77 @@
             <p class="instructions">Do you prefer guided tours or exploring alone?</p>
             <form class="user-form">
                 <div class="input-row">
-                    <input type="text" class="input-field" placeholder="e.g., Guided">
+                    <input type="text" class="input-field question-input" placeholder="e.g., Guided">
                 </div>
                 <div class="buttons-row">
-                    <button type="button" class="next-button" data-next="#screen-question-3">Next</button>
+                    <!-- This last button could say "Finish" and trigger sending answers to server -->
+                    <button type="button" class="finish-button" id="finish-questions">Finish</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Add more screens/questions as needed -->
+    <!-- Add more screens/questions as needed, updating script accordingly -->
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const screenContainer = document.querySelector('.screen-container');
-        const nextButtons = document.querySelectorAll('.next-button');
-        const screens = document.querySelectorAll('.screen');
-        let currentScreenIndex = 0;
+document.addEventListener('DOMContentLoaded', () => {
+    const screenContainer = document.querySelector('.screen-container');
+    const screens = document.querySelectorAll('.screen');
+    const nextButtons = document.querySelectorAll('.next-button');
+    const finishButton = document.getElementById('finish-questions');
+    let currentScreenIndex = 0;
 
-        nextButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const targetId = button.getAttribute('data-next');
-                const targetScreen = document.querySelector(targetId);
-                const targetIndex = Array.from(screens).indexOf(targetScreen);
-                if (targetIndex !== -1) {
-                    currentScreenIndex = targetIndex;
-                    slideToScreen(currentScreenIndex);
-                }
-            });
+    let answers = [];
+
+    function slideToScreen(index) {
+        const offset = index * -100; 
+        screenContainer.style.transform = `translateY(${offset}vh)`;
+    }
+
+    nextButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Collect answer from current screen
+            const currentScreen = screens[currentScreenIndex];
+            const inputField = currentScreen.querySelector('.question-input');
+            const answer = inputField.value.trim();
+            answers.push(answer);
+
+            // Move to next screen
+            const targetId = button.getAttribute('data-next');
+            const targetScreen = document.querySelector(targetId);
+            const targetIndex = Array.from(screens).indexOf(targetScreen);
+            if (targetIndex !== -1) {
+                currentScreenIndex = targetIndex;
+                slideToScreen(currentScreenIndex);
+            }
         });
-
-        function slideToScreen(index) {
-            const offset = index * -100; 
-            screenContainer.style.transform = `translateY(${offset}vh)`;
-        }
     });
+
+    finishButton.addEventListener('click', () => {
+        // Collect final answer
+        const currentScreen = screens[currentScreenIndex];
+        const inputField = currentScreen.querySelector('.question-input');
+        const answer = inputField.value.trim();
+        answers.push(answer);
+
+        // Send answers to server
+        fetch("{{ url_for('process_answers') }}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({answers: answers})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                alert('LLM result: ' + data.result);
+                // You could display data.result on a new screen, or update the page.
+            } else {
+                alert('Error processing answers.');
+            }
+        });
+    });
+});
 </script>
 </body>
 </html>
