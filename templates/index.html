@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
     <title>CBR Museum Experience</title>
     <link rel="stylesheet" href="../static/css/style.css">
 </head>
@@ -11,7 +10,7 @@
     <div class="container">
         <h1 class="title">Welcome to the CBR Museum Experience</h1>
         <p class="subtitle">Discover personalized routes through art and culture.</p>
-        <a href="/start" class="start-button">Begin Your Journey</a>
+        <a href="{{ url_for('start') }}" class="start-button">Begin Your Journey</a>
     </div>
 </body>
 </html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CBR Museum Experience - User Setup</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1 class="title">User Identification</h1>
+            <p class="instructions">
+                If you are a new user, click <strong>"Get ID"</strong> to receive a unique identifier.<br>
+                If you already have an ID, please enter it below.<br>
+                Make sure to keep your ID safe to retrieve your preferences later.
+            </p>
+
+            <form method="POST" class="user-form">
+                <div class="buttons-row">
+                    <button type="submit" name="get_id" class="get-id-button">Get ID</button>
+                </div>
+
+                {% if new_id %}
+                <p class="new-id-message">
+                    This is your new ID: <span class="generated-id">{{ new_id }}</span>. Please save it carefully.
+                </p>
+                {% endif %}
+
+                <div class="input-row">
+                    <label for="user_id" class="input-label">Enter your ID:</label>
+                    <input type="text" name="user_id" id="user_id" class="input-field" placeholder="e.g., 1001">
+                </div>
+
+                <div class="buttons-row">
+                    <button type="submit" name="begin_route" class="start-button">Begin Route</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

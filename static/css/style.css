@@ -1,0 +1,156 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    height: 100%;
+    min-height: 100vh;
+    background-color: #000; /* black background */
+    color: #B8860B; /* darker gold */
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    /* Ensures body expands full height */
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1; /* Fills remaining vertical space */
+    padding: 40px;
+}
+
+/* Make form-container also take full available space and center contents */
+.form-container {
+    background-color: #111; /* slightly lighter black */
+    padding: 40px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 1000px;
+    box-shadow: 0 0 30px rgba(184,134,11,0.3);
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Vertically center content inside form-container */
+    align-items: center; /* Horizontally center content inside form-container */
+    height: 100%; /* Take full vertical space available */
+}
+
+.title {
+    font-size: 3em;
+    font-weight: bold;
+    margin: 0;
+    text-align: center;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+/* Horizontal lines above and below title */
+.title::before,
+.title::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(to right, rgba(184,134,11,0), #B8860B, rgba(184,134,11,0));
+    margin: 10px auto;
+}
+
+.instructions {
+    font-size: 1.2em;
+    margin: 20px 0 30px;
+    text-align: center;
+    color: #B8860B;
+    opacity: 0.9;
+    max-width: 600px; /* To improve readability */
+}
+
+/* Buttons */
+.start-button,
+.get-id-button {
+    background-color: #B8860B;
+    color: #000;
+    text-decoration: none;
+    padding: 15px 30px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 1em;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    border: none;
+    cursor: pointer;
+    margin: 0 10px;
+}
+
+.start-button:hover,
+.get-id-button:hover {
+    background-color: #A6760A;
+    color: #000;
+    transform: translateY(-2px);
+}
+
+.user-form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 500px; /* Keep form inputs nicely contained */
+}
+
+.input-row {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.input-label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.input-field {
+    padding: 10px;
+    border: 2px solid #B8860B;
+    border-radius: 5px;
+    background-color: #000;
+    color: #B8860B;
+    font-size: 1em;
+}
+
+.input-field::placeholder {
+    color: #B8860B;
+    opacity: 0.7;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #A6760A;
+    box-shadow: 0 0 5px rgba(166,118,10,0.5);
+}
+
+.buttons-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.new-id-message {
+    text-align: center;
+    background-color: #222;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 20px 0;
+    font-size: 1.1em;
+    border: 1px solid #B8860B;
+    box-shadow: 0 0 10px rgba(184,134,11,0.2);
+}
+
+.generated-id {
+    font-weight: bold;
+    color: #FFD700;
+}
