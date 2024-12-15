@@ -1,7 +1,7 @@
 import sqlite3
 import numpy as np
 
-class DatabaseHandler:
+class DBPartitionsHandler:
 	def __init__(self, 
 			db_path: str = "../data/database.db", 
 			train_split: float = 0.8, 
