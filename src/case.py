@@ -9,14 +9,13 @@ class Case:
 	art_knowledge: int
 	preferred_periods_ids: list[int]
 	preferred_author_name: str
-	preferred_themes_ids: list[int]
-	reduced_mobility: float
+	preferred_themes: list[int]
+	reduced_mobility: int
 	time_coefficient: float
 	group_description: str
 	ordered_artworks: list[int]
 	ordered_artworks_matches: list[float]
 	visited_artworks_count: int
-	route_score: float
 	rating: int
 	textual_feedback: str
 	only_elevator: int
