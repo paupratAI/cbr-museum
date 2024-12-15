@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
 # Load data from JSON file
 with open('data/sorted_artworks.json', 'r') as f:
@@ -30,6 +31,9 @@ num_cols = df.select_dtypes(include=[np.number]).columns
 # If num cols are don't have id keep the
 num_cols = [col for col in num_cols if 'id' not in col]
 
+output_dir = 'images'
+os.makedirs(output_dir, exist_ok=True)
+
 for col in num_cols:
     plt.figure()
     sns.histplot(df[col], kde=True, bins=30, color='blue')
@@ -37,7 +41,8 @@ for col in num_cols:
     plt.xlabel(col)
     plt.ylabel('Frequency')
     plt.grid(True)
-    plt.show()
+    plt.savefig(os.path.join(output_dir, f'histogram_{col}.png'))
+    plt.close()
 
 # Bar plot for styles
 style_counts = df['style'].explode().value_counts()
@@ -57,6 +62,7 @@ plt.title('Frequency of Artists')
 plt.xlabel('Artist')
 plt.ylabel('Frequency')
 plt.grid(axis='y')
+plt.savefig(os.path.join(output_dir, 'barplot_artists.png'))
 plt.show()
 
 # Scatter plot: Complexity vs. Dimension
