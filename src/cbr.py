@@ -504,6 +504,12 @@ class CBR:
         """Removes cases with low utility from the database."""
         with self.conn:
             self.conn.execute("DELETE FROM abstract_problems WHERE utility <= ?", (threshold,))
+
+    def recommend_items(self, ap: AbstractProblem) -> List[int]:
+        """
+        Recommends items based on the utility values of the stored cases.
+        """
+        pass
     
 '''if __name__ == '__main__':
     cbr = CBR()

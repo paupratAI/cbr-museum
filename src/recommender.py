@@ -3,7 +3,7 @@ from cf import CF
 import sqlite3
 import json
 
-from entities import AbstractProblem
+from entities import AbstractProblem, SpecificProblem
 from ontology.authors import authors
 from ontology.themes import theme_instances
 from ontology.periods import periods
@@ -89,6 +89,41 @@ class Recommender:
 
 		print("All rows added to the CF system.")
 
+	def convert_to_problems(clean_response: list) -> AbstractProblem:
+		"""
+			Converts a `clean_response` data list into a SpecificProblem object and then into an AbstractProblem.
+
+			Args:
+				clean_response (list): List with the necessary data to build a SpecificProblem.
+				authors (list): List of available authors.
+				themes (dict): Dictionary of available themes.
+				periods (list): List of available periods.
+
+			Returns:
+				AbstractProblem: The abstract problem created from clean_response.
+		"""
+		specific_problem = SpecificProblem(
+			group_id=clean_response[0],
+			num_people=clean_response[1],
+			favorite_author=clean_response[2],
+			favorite_period=clean_response[3],
+			favorite_theme=clean_response[4],
+			guided_visit=clean_response[5],
+			minors=clean_response[6],
+			num_experts=clean_response[7],
+			past_museum_visits=clean_response[8],
+			group_description=clean_response[9]
+		)
+
+		abstract_problem = AbstractProblem(
+			specific_problem=specific_problem,
+			available_authors=authors,
+			available_themes=theme_instances,
+			available_periods=periods
+		)
+
+		return abstract_problem
+
 	def recommend(self, target_group_id: int, clean_response: list):
 		"""
 		Recommends items using the CF and CBR systems.
@@ -96,10 +131,11 @@ class Recommender:
 		The combination of the recommendations is done by averaging the positions of the items in the two lists and sorting them by the average position.
 		"""
 		# Cridar a la funció que calgui per obtenir abs_prob des de clean_response
+		ap = self.convert_to_problems(clean_response)
 
 		# Calculate the routes
 		cf_result = self.cf.recommend_items(target_group_id=target_group_id)
-		cbr_result = self.cbr.recommend_items(abs_prob=)
+		cbr_result = self.cbr.recommend_items(abs_prob=ap)
 
 		# Combine the recommendations from both systems
 		average_position = {
