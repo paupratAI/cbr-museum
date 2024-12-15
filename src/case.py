@@ -9,7 +9,7 @@ class Case:
 	art_knowledge: int
 	preferred_periods_ids: list[int]
 	preferred_author_name: str
-	preferred_themes: list[int]
+	preferred_themes: list[str]
 	reduced_mobility: int
 	time_coefficient: float
 	group_description: str
