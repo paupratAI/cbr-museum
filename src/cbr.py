@@ -497,24 +497,11 @@ class CBR:
 
 
 
-if __name__ == '__main__':
+'''if __name__ == '__main__':
     cbr = CBR()
     
-    ordered_artworks = [14591, 14572, 14574, 61603, 16499, 44892, 14598, 16568, 16571, 64818, 8958, 111164, 62371, 18709, 28067, 66039, 111060, 24306, 5357, 109275, 135430, 149681, 109439, 24836, 90300, 122054, 56905, 16487, 111436, 87045, 111380, 79307, 23700, 27984, 104031, 9512, 35376, 46327, 61428, 16488, 23333, 59426, 105203, 88724, 100858, 4081, 42566, 70003, 43060, 185963]
+    cbr.calculate_redundancy()
+    print("Redundancy calculated.")
 
-    base_problem = AbstractProblem(
-        group_size=5,
-        group_type="family",
-        art_knowledge=2,
-        preferred_periods=[Period(period_id=1), Period(period_id=2)],
-        preferred_author=Author(author_id=1, author_name="Van Gogh", main_periods=[]),
-        preferred_themes=["Impressionism", "Modernism"],
-        time_coefficient=1.0,
-        cluster="cluster_1",
-        group_description="A family interested in Impressionism and Modernism"
-    )
-
-    adapted_artworks = cbr.adapt_case(base_problem)
-
-    # Imprime el resultado
-    print("Adapted Artworks:", adapted_artworks)
+    cbr.calculate_utility()
+    print("Utility calculated.")'''
