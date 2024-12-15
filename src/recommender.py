@@ -49,7 +49,7 @@ class Recommender:
 		Retrieves data from the database.
 		"""
 		sp = clean_response
-		ap = AbstractProblem(specific_problem=sp, available_authors=self.get_authors(), available_themes=theme_instances, available_periods=list(periods.values()))
+		ap = AbstractProblem(specific_problem=sp, available_authors=self.get_authors(), available_themes=theme_instances, available_periods=periods)
 		self.cbr.retrieve_cases(problem=ap)
 	
 	def get_authors(self):
@@ -119,7 +119,7 @@ class Recommender:
 			specific_problem=specific_problem,
 			available_authors=list(authors.values()),
 			available_themes=theme_instances,
-			available_periods=list(periods.values())
+			available_periods=periods
 		)
 
 		return abstract_problem

@@ -429,7 +429,7 @@ class CBR:
         :param clustering: An instance of the Clustering class used for assigning clusters.
         """
         
-        abstract_problem = AbstractProblem(specific_problem, list(periods.values()), list(authors.values()), theme_instances)
+        abstract_problem = AbstractProblem(specific_problem, periods, list(authors.values()), theme_instances)
 
         cursor = self.conn.cursor()
 

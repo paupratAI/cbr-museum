@@ -21,7 +21,7 @@ class GenArtArgs():
     data: list = field(default_factory=list)
     reference_preferences_proportion: float = 0.75
     num_artworks: int = 50
-    num_cases: int = 2000
+    num_cases: int = 10
     format: str = "sqlite"
 
     def __post_init__(self):
@@ -89,7 +89,7 @@ if __name__ == "__main__":
         print(f"Generating case {i+1}/{gen_art_args.num_cases} ({((i+1)/gen_art_args.num_cases)*100:.2f}%)", end="\r")
         abs_prob = AbstractProblem(
             specific_problem=sp,
-            available_periods=list(periods.values()),
+            available_periods=periods,
             available_authors=list(authors_set),
             available_themes=theme_instances
         )
@@ -97,7 +97,7 @@ if __name__ == "__main__":
         abs_sol = AbstractSolution(related_to_AbstractProblem=abs_prob)
         abs_sol.compute_matches(artworks=artworks)
 
-        t = TimeLimitGenerator(low=35, high=400)
+        t = TimeLimitGenerator(low=20, high=120)
         time = t.generate()
 
         # Generate reduce_mobility with weights of 0.85 False and 0.15 True
