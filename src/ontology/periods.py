@@ -24,3 +24,5 @@ periods = [
     Period(20, 1960, 1980, ["Sadness", "Joy", "Love", "Landscapes"], "Pop Art"),
     Period(21, 1980, 2000, ["Christianity", "Landscapes", "Joy", "Love"], "Contemporary Art")
 ]
+
+periods_dict = {p.period_id: p for p in periods}

@@ -8,7 +8,7 @@ from dataclasses import asdict
 from clustering import Clustering
 from ontology.periods import periods
 from ontology.themes import theme_instances
-from authors import authors
+from ontology.authors import authors
 from group_description import compare_sentences, load_model
 
 class CBR:

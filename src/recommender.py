@@ -4,7 +4,7 @@ import sqlite3
 import json
 
 from entities import AbstractProblem
-from authors import authors
+from ontology.authors import authors
 from ontology.themes import theme_instances
 from ontology.periods import periods
 from db_partitions_handler import DBPartitionsHandler

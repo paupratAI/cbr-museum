@@ -1,5 +1,5 @@
 import json
-from authors import authors
+from ontology.authors import authors
 from ontology.periods import periods
 import random
 from ontology.art_theme_pairs import art_theme_pairs

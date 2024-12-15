@@ -1,4 +1,4 @@
-from ontology.periods import periods
+from periods import periods
 from dataclasses import dataclass, field
 from entities import Author
 

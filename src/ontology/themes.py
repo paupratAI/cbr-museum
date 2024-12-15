@@ -8,3 +8,5 @@ theme_instances = [
     Theme("natural", ["Landscapes", "Fauna", "Flora", "Maritime Scenes", "Meteorological Phenomena", "Mountains and Valleys"]),
     Theme("mystical", ["Magic", "Occult", "Astrology", "Alchemy", "Mysticism", "Ancient Rituals"])
 ]
+
+themes_dict = {t.theme_name: t for t in theme_instances}
