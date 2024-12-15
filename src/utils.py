@@ -1,14 +1,13 @@
 import sqlite3
 import json
-from dataclasses import asdict
 import math
 
-def save_in_sqlite3(case_data: dict):
+def save_in_sqlite3(cases_data: list[dict]):
     """
     Save the case data in the SQLite.
 
     Args:
-        case_data (dict): Dictionary with the case data containing the follwing keys:
+        cases_data (list[dict]): List with case data dictionaries containing the following:
         - group_id (int): The group ID.
         - group_size (int): The group size.
         - group_type (str): The group type.
@@ -30,7 +29,7 @@ def save_in_sqlite3(case_data: dict):
         - guided_visit (int): 1 if the group should have a guided visit, 0 otherwise.
     """
 
-    conn = sqlite3.connect("../data/database.db")
+    conn = sqlite3.connect("data/database.db")
     cursor = conn.cursor()
 
     # Create the cases table if it does not exist
@@ -60,33 +59,34 @@ def save_in_sqlite3(case_data: dict):
     """)
     
     # Insert into cases
-    cursor.execute(
-    """
-    INSERT INTO cases
-    (group_id, group_size, group_type, art_knowledge, preferred_periods_ids, preferred_author_name, preferred_themes, reduced_mobility, time_coefficient, group_description, ordered_artworks, ordered_artworks_matches, visited_artworks_count, rating, textual_feedback, only_elevator, time_coefficient_correction, artwork_to_remove, guided_visit)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """
-    , (
-        case_data["group_id"],
-        case_data["group_size"],
-        case_data["group_type"],
-        case_data["art_knowledge"],
-        json.dumps(case_data["preferred_periods_ids"]),
-        case_data["preferred_author_name"],
-        json.dumps(case_data["preferred_themes"]),
-        case_data["reduced_mobility"],
-        case_data["time_coefficient"],
-        case_data["group_description"],
-        json.dumps(case_data["ordered_artworks"]),
-        json.dumps(case_data["ordered_artworks_matches"]),
-        case_data["visited_artworks_count"],
-        case_data["rating"],
-        case_data["textual_feedback"],
-        case_data["only_elevator"],
-        case_data["time_coefficient_correction"],
-        case_data["artwork_to_remove"],
-        case_data["guided_visit"]
-    ))
+    for case_data in cases_data:
+        cursor.execute(
+        """
+        INSERT INTO cases
+        (group_id, group_size, group_type, art_knowledge, preferred_periods_ids, preferred_author_name, preferred_themes, reduced_mobility, time_coefficient, group_description, ordered_artworks, ordered_artworks_matches, visited_artworks_count, rating, textual_feedback, only_elevator, time_coefficient_correction, artwork_to_remove, guided_visit)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """
+        , (
+            case_data["group_id"],
+            case_data["group_size"],
+            case_data["group_type"],
+            case_data["art_knowledge"],
+            json.dumps(case_data["preferred_periods_ids"]),
+            case_data["preferred_author_name"],
+            json.dumps(case_data["preferred_themes"]),
+            case_data["reduced_mobility"],
+            case_data["time_coefficient"],
+            case_data["group_description"],
+            json.dumps(case_data["ordered_artworks"]),
+            json.dumps(case_data["ordered_artworks_matches"]),
+            case_data["visited_artworks_count"],
+            case_data["rating"],
+            case_data["textual_feedback"],
+            case_data["only_elevator"],
+            case_data["time_coefficient_correction"],
+            case_data["artwork_to_remove"],
+            case_data["guided_visit"]
+        ))
 
     conn.commit()
     conn.close()
