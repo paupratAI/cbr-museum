@@ -30,9 +30,8 @@ class Recommender:
 
 		self.ratings_range = ratings_range
 
-		self.cbr = CBR()
+		self.cbr: CBR = CBR(db_path)
 		
-		# self.cbr: CBR = CBR(db_path)
 		self.cf: CF = CF(
 			db_path=db_path, 
 			default_alpha=cf_alpha, 
