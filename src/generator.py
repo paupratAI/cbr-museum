@@ -89,7 +89,7 @@ if __name__ == "__main__":
         print(f"Generating case {i+1}/{gen_art_args.num_cases} ({((i+1)/gen_art_args.num_cases)*100:.2f}%)", end="\r")
         abs_prob = AbstractProblem(
             specific_problem=sp,
-            available_periods=periods,
+            available_periods=list(periods.values()),
             available_authors=list(authors_set),
             available_themes=theme_instances
         )

@@ -1,7 +1,7 @@
 from entities import Period
 
 # Periods remember we assign themes's labels to periods
-periods = [
+periods_instances = [
     Period(1, 1000, 1150, ["Sadness", "Christianity", "Antiquity", "Magic"], "Romanesque"),
     Period(2, 1140, 1400, ["Christianity", "Battles and Wars", "Antiquity", "Monarchies", "Greek Mythology"], "Gothic"),
     Period(3, 1250, 1380, ["Islam", "Conquests", "Flora", "Landscapes", "Maritime Scenes"], "Islamic Golden Age"),
@@ -25,4 +25,4 @@ periods = [
     Period(21, 1980, 2000, ["Christianity", "Landscapes", "Joy", "Love"], "Contemporary Art")
 ]
 
-periods_dict = {p.period_id: p for p in periods}
+periods = {p.period_id: p for p in periods_instances}
