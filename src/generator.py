@@ -31,12 +31,12 @@ class GenArtArgs():
 if __name__ == "__main__":
     gen_art_args = GenArtArgs()
     artworks_data = gen_art_args.data[:gen_art_args.num_artworks]
-    authors_s = set()
+    authors_set = set()
     artworks = []
     for artwork in artworks_data:
         author_name = artwork["created_by"]
         author = authors[author_name] 
-        authors_s.add(author)
+        authors_set.add(author)
 
         name = artwork["artwork_name"]
 
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     
     # Create a preferences generator
     results = []
-    pg = PreferencesGenerator(themes=theme_instances, authors=list(authors_s))
+    pg = PreferencesGenerator(themes=theme_instances, authors=list(authors_set))
     num_reference_samples = int(gen_art_args.num_cases * gen_art_args.reference_preferences_proportion)
     data_sample = pg.generate_sample_data(num_reference_samples=num_reference_samples, num_total_samples=gen_art_args.num_cases)
 
@@ -90,7 +90,7 @@ if __name__ == "__main__":
         abs_prob = AbstractProblem(
             specific_problem=sp,
             available_periods=periods,
-            available_authors=list(authors_s),
+            available_authors=list(authors_set),
             available_themes=theme_instances
         )
 
@@ -151,7 +151,51 @@ if __name__ == "__main__":
             json.dump(serializable_results, f, ensure_ascii=False, indent=4)
 
     elif gen_art_args.format == "sqlite":
-        save_in_sqlite3(results)
+        """
+        case_data (dict): Dictionary with the case data containing the follwing keys:
+        - group_id (int): The group ID.
+        - group_size (int): The group size.
+        - group_type (str): The group type.
+        - art_knowledge (int): The art knowledge level.
+        - preferred_periods_ids (list[int]): The list of preferred periods IDs of the group.
+        - preferred_author_name (str): The preferred author name of the group.
+        - preferred_themes (list[str]): The list of preferred subthemes of the group.
+        - reduced_mobility (int): 1 if the group has reduced mobility, 0 otherwise.
+        - time_coefficient (float): The time coefficient.
+        - group_description (str): The group description.
+        - ordered_artworks (list[int]): The list of ordered arwork IDs of the group.
+        - ordered_artworks_matches (list[float]): The list of ordered artwork matches of the group.
+        - visited_artworks_count (int): The number of visited artworks.
+        - rating (int): The rating of the group.
+        - textual_feedback (str): The textual feedback of the group.
+        - only_elevator (int): 1 if the group should use only the elevator, 0 otherwise.
+        - time_coefficient_correction (str): The time coefficient correction.
+        - artwork_to_remove (str): The artwork to remove, if any (None otherwise).
+        - guided_visit (int): 1 if the group should have a guided visit, 0 otherwise.
+        """
+        case_data = {
+            "group_id": abs_prob.group_id,
+            "group_size": abs_prob.group_size,
+            "group_type": abs_prob.group_type,
+            "art_knowledge": abs_prob.art_knowledge,
+            "preferred_periods_ids": [p.period_id for p in abs_prob.preferred_periods],
+            "preferred_author_name": abs_prob.preferred_author.author_name if abs_prob.preferred_author else None,
+            "preferred_themes": abs_prob.preferred_themes,
+            "reduced_mobility": reduced_mobility,
+            "time_coefficient": abs_prob.time_coefficient,
+            "group_description": abs_prob.group_description,
+            "ordered_artworks": abs_sol.ordered_artworks,
+            "ordered_artworks_matches": [m.match_type for m in sorted(abs_sol.matches, key=lambda m: m.match_type, reverse=True)],
+            "visited_artworks_count": spec_sol.visited_artworks_count,
+            "rating": full_feedback["evaluation"],
+            "textual_feedback": full_feedback["textual_feedback"],
+            "only_elevator": full_feedback["only_elevator"],
+            "time_coefficient_correction": full_feedback["time_coefficient"],
+            "artwork_to_remove": full_feedback["artwork_to_remove"],
+            "guided_visit": full_feedback["guided_visit"]
+        }
+
+        save_in_sqlite3(case_data=case_data)
     """
     cbr = CBR()
     print(ap.group_size, ap.group_type, ap.art_knowledge, ap.preferred_periods, ap.preferred_author, ap.preferred_themes, ap.time_coefficient)
