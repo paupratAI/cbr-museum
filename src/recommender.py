@@ -92,12 +92,19 @@ class Recommender:
 	def recommend(self, target_group_id: int):
 		"""
 		Recommends items using the CF and CBR systems.
-		"""
-		return self.cf.recommend_items(target_group_id=target_group_id)
 
-if __name__ == '__main__':
-	target_group_id = 1
-	r = Recommender()
-	r.cf.clear_ratings()
-	r.add_rows_to_cf()
-	print(r.recommend(target_group_id))
+		The combination of the recommendations is done by averaging the positions of the items in the two lists and sorting them by the average position.
+		"""
+		cf_result = self.cf.recommend_items(target_group_id=target_group_id)
+		cbr_result = self.cbr.recommend_items(target_group_id=target_group_id)
+
+		# Combine the recommendations from both systems
+		average_position = {
+			item_id: (cf_result.index(item_id) + cbr_result.index(item_id)) / 2
+			for item_id in cf_result
+		}
+
+		# Sort the items by the average position
+		combined_result = sorted(cf_result, key=lambda x: average_position[x])
+
+		return combined_result
