@@ -234,8 +234,7 @@ class CBR:
                 redundancy = 0
             else:
                 total_similarity = 0
-                count_similar = 0
-                for j, (other_id, other_params) in enumerate(cases):
+                for j, (_, other_params) in enumerate(cases):
                     if i == j:
                         continue
                     sim = self.calculate_similarity(
@@ -420,7 +419,7 @@ class CBR:
             artworks.append(artwork_to_remove)
         return artworks
     
-    def retain(self, specific_problem: SpecificProblem, user_feedback: int, visited_count: int, clustering: 'Clustering'):
+    def retain(self, specific_problem: SpecificProblem, user_feedback: int, visited_count: int, clustering: 'Clustering', ordered_artworks: List[int], ordered_artworks_matches: List[int]):
         """
         Stores a SpecificProblem and its corresponding AbstractProblem in the database.
 
@@ -492,8 +491,8 @@ class CBR:
             preferred_author_json,
             preferred_themes_json,
             abstract_problem.time_coefficient,
-            json.dumps([], ensure_ascii=False),  
-            json.dumps([], ensure_ascii=False),  
+            json.dumps(ordered_artworks, ensure_ascii=False), 
+            json.dumps(ordered_artworks_matches, ensure_ascii=False),
             visited_count,
             abstract_problem.group_description,
             user_feedback,  
