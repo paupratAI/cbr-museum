@@ -89,14 +89,17 @@ class Recommender:
 
 		print("All rows added to the CF system.")
 
-	def recommend(self, target_group_id: int):
+	def recommend(self, target_group_id: int, clean_response: list):
 		"""
 		Recommends items using the CF and CBR systems.
 
 		The combination of the recommendations is done by averaging the positions of the items in the two lists and sorting them by the average position.
 		"""
+		# Cridar a la funció que calgui per obtenir abs_prob des de clean_response
+
+		# Calculate the routes
 		cf_result = self.cf.recommend_items(target_group_id=target_group_id)
-		cbr_result = self.cbr.recommend_items(target_group_id=target_group_id)
+		cbr_result = self.cbr.recommend_items(abs_prob=)
 
 		# Combine the recommendations from both systems
 		average_position = {
