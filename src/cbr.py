@@ -1,14 +1,14 @@
 import sqlite3
-from entities import AbstractProblem, SpecificProblem, Author, Period, Theme
+from src.entities import AbstractProblem, SpecificProblem, Author, Period, Theme
 from typing import List
 import json
 import ast
 from dataclasses import asdict
 
-from clustering import Clustering
-from ontology.periods import periods
-from ontology.themes import theme_instances
-from authors import authors
+from src.clustering import Clustering
+from src.ontology.periods import periods
+from src.ontology.themes import theme_instances
+from src.authors import authors
 
 class CBR:
     def __init__(self, db_path='./data/database.db'):

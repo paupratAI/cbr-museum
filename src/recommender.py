@@ -1,14 +1,19 @@
-from cbr import CBR
-from cf import CF
+from src.cbr import CBR
+from src.cf import CF
 import sqlite3
 import json
+
+from src.entities import AbstractProblem
+from src.authors import authors
+from src.ontology.themes import theme_instances
+from src.ontology.periods import periods
 
 class Recommender:
 	"""
 	Main class for the recommender system that combines the collaborative filtering (CF) and case-based reasoning (CBR) systems.
 	"""
 	def __init__(self, 
-			db_path='../data/database.db',
+			db_path='data/database.db',
 			main_table: str = 'abstract_problems',
 			cf_alpha: float = 0.5, 
 			cf_gamma: float = 1,
@@ -23,6 +28,8 @@ class Recommender:
 		self.cursor = self.conn.cursor()
 
 		self.ratings_range = ratings_range
+
+		self.cbr = CBR()
 		
 		# self.cbr: CBR = CBR(db_path)
 		self.cf: CF = CF(
@@ -34,6 +41,22 @@ class Recommender:
 			ratings_range=ratings_range
 		)
 		pass
+
+	def retrieve_data(self, clean_response):
+		"""
+		Retrieves data from the database.
+		"""
+		sp = clean_response
+		ap = AbstractProblem(specific_problem=sp, available_authors=self.get_authors(), available_themes=theme_instances, available_periods=periods)
+		self.cbr.retrieve_cases(problem=ap)
+	
+	def get_authors(self):
+		"""
+		Returns the authors from the CBR system.
+		"""
+		# Pick the first 50 in the dictionary
+		aut = list(authors.values())[:50]
+		return aut
 
 	def add_rows_to_cf(self):
 		"""

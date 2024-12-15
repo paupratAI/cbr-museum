@@ -1,6 +1,6 @@
-from ontology.periods import periods
+from src.ontology.periods import periods
 from dataclasses import dataclass, field
-from entities import Author
+from src.entities import Author
 
 authors = {
     "Pablo Picasso": Author(

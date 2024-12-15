@@ -1,4 +1,4 @@
-from entities import Theme
+from src.entities import Theme
 
 # Theme examples
 theme_instances = [
