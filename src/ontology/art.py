@@ -1,5 +1,5 @@
 from entities import Artwork
-{
+artworks ={
     5357: Artwork(5357, 'The Red Armchair', None, 'Pablo Picasso', 16, 'Joy', 12838, True, 58, 6, None),
     18709: Artwork(18709, 'The Frugal Meal, from The Saltimbanques', None, 'Pablo Picasso', 15, 'Sadness', 1824, True, 30, 4, None),
     28067: Artwork(28067, 'The Old Guitarist', None, 'Pablo Picasso', 15, 'Despair', 10004, True, 70, 6, None),
