@@ -97,7 +97,7 @@ if __name__ == "__main__":
         abs_sol = AbstractSolution(related_to_AbstractProblem=abs_prob)
         abs_sol.compute_matches(artworks=artworks)
 
-        t = TimeLimitGenerator(low=20, high=120)
+        t = TimeLimitGenerator(low=35, high=400)
         time = t.generate()
 
         # Generate reduce_mobility with weights of 0.85 False and 0.15 True
