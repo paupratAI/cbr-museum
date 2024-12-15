@@ -21,7 +21,7 @@ class GenArtArgs():
     data: list = field(default_factory=list)
     reference_preferences_proportion: float = 0.75
     num_artworks: int = 50
-    num_cases: int = 5
+    num_cases: int = 10
     format: str = "sqlite"
 
     def __post_init__(self):
@@ -141,6 +141,7 @@ if __name__ == "__main__":
             "preferred_themes": abs_prob.preferred_themes,
             "reduced_mobility": reduced_mobility,
             "time_coefficient": abs_prob.time_coefficient,
+            "time_limit": time,
             "group_description": abs_prob.group_description,
             "ordered_artworks": abs_sol.ordered_artworks,
             "ordered_artworks_matches": [m.match_type for m in sorted(abs_sol.matches, key=lambda m: m.match_type, reverse=True)],
@@ -186,6 +187,7 @@ if __name__ == "__main__":
         - preferred_themes (list[str]): The list of preferred subthemes of the group.
         - reduced_mobility (int): 1 if the group has reduced mobility, 0 otherwise.
         - time_coefficient (float): The time coefficient.
+        - time_limit (float): The time limit for the group visit.
         - group_description (str): The group description.
         - ordered_artworks (list[int]): The list of ordered arwork IDs of the group.
         - ordered_artworks_matches (list[float]): The list of ordered artwork matches of the group.

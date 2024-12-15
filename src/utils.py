@@ -17,6 +17,7 @@ def save_in_sqlite3(cases_data: list[dict]):
         - preferred_themes (list[str]): The list of preferred themes of the group.
         - reduced_mobility (int): 1 if the group has reduced mobility, 0 otherwise.
         - time_coefficient (float): The time coefficient.
+        - time_limit (float): The time limit for the group visit.
         - group_description (str): The group description.
         - ordered_artworks (list[int]): The list of ordered arwork IDs of the group.
         - ordered_artworks_matches (list[float]): The list of ordered artwork matches of the group.
@@ -45,6 +46,7 @@ def save_in_sqlite3(cases_data: list[dict]):
         preferred_themes TEXT,
         reduced_mobility BOOLEAN,
         time_coefficient REAL,
+        time_limit REAL,
         group_description TEXT,
         ordered_artworks TEXT,
         ordered_artworks_matches TEXT,
@@ -63,8 +65,8 @@ def save_in_sqlite3(cases_data: list[dict]):
         cursor.execute(
         """
         INSERT INTO cases
-        (group_id, group_size, group_type, art_knowledge, preferred_periods_ids, preferred_author_name, preferred_themes, reduced_mobility, time_coefficient, group_description, ordered_artworks, ordered_artworks_matches, visited_artworks_count, rating, textual_feedback, only_elevator, time_coefficient_correction, artwork_to_remove, guided_visit)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (group_id, group_size, group_type, art_knowledge, preferred_periods_ids, preferred_author_name, preferred_themes, reduced_mobility, time_coefficient, time_limit, group_description, ordered_artworks, ordered_artworks_matches, visited_artworks_count, rating, textual_feedback, only_elevator, time_coefficient_correction, artwork_to_remove, guided_visit)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         , (
             case_data["group_id"],
@@ -76,6 +78,7 @@ def save_in_sqlite3(cases_data: list[dict]):
             json.dumps(case_data["preferred_themes"]),
             case_data["reduced_mobility"],
             case_data["time_coefficient"],
+            case_data["time_limit"],
             case_data["group_description"],
             json.dumps(case_data["ordered_artworks"]),
             json.dumps(case_data["ordered_artworks_matches"]),

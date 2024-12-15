@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 @dataclass
 class Case:
-	case_id: int
 	group_id: int
 	group_size: int
 	group_type: str
@@ -12,6 +11,7 @@ class Case:
 	preferred_themes: list[str]
 	reduced_mobility: int
 	time_coefficient: float
+	time_limit: float
 	group_description: str
 	ordered_artworks: list[int]
 	ordered_artworks_matches: list[float]
