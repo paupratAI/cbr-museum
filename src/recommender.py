@@ -15,7 +15,7 @@ class Recommender:
 	"""
 	def __init__(self, 
 			db_path='data/database.db',
-			main_table: str = 'abstract_problems',
+			main_table: str = 'cases',
 			cf_alpha: float = 0.5, 
 			cf_gamma: float = 1,
 			cf_decay_factor: float = 0.9,
@@ -41,7 +41,7 @@ class Recommender:
 			ratings_range=ratings_range
 		)
 		
-		self.dbph = DBPartitionsHandler(db_path="data/database.db", train_split=0.8, main_table="abstract_problems", ratings_range=[0, 5], seed=42)
+		self.dbph = DBPartitionsHandler(db_path="data/database.db", train_split=0.8, main_table="cases", ratings_range=[0, 5], seed=42)
 
 
 	def retrieve_data(self, clean_response):

@@ -1,11 +1,13 @@
 import sqlite3
 import numpy as np
+from feedback import generate_and_parse_museum_feedback
+import random
 
 class DBPartitionsHandler:
 	def __init__(self, 
 			db_path: str = "../data/database.db", 
 			train_split: float = 0.8, 
-			main_table: str = "abstract_problems",
+			main_table: str = "cases",
 			ratings_range: list = [0, 5],
 			seed: int = 42
 			):
@@ -78,41 +80,72 @@ class DBPartitionsHandler:
 
 		self.cursor.execute(f"SELECT rating FROM test_{self.main_table}")
 		return self.cursor.fetchall()
+	
+	def get_predictions_ratings(self, predictions: list[list[int]]):
+		"""
+		Returns the ratings of the test set using the same expert LLM that rated the test set.
+		"""
+		# Get the test rows
+		query = f"SELECT group_size, group_type, group_description, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient FROM test_{self.main_table}"
+		self.cursor.execute(query)
+		test_rows = self.cursor.fetchall()
+
+		assert len(test_rows) == len(predictions), "The number of predictions should match the number of test rows."
+
+		for test_row, prediction in zip(test_rows, predictions):
+			textual_feedback = random.choice(["full", "short", "None"])
+			
+
+			group_size, group_type, group_description, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient = test_row
+
+			# Generate the feedback
+			feedback = generate_and_parse_museum_feedback(
+				group_size=group_size,
+				group_type=group_type,
+				group_description=group_description,
+				reduced_mobility='Unknown',
+				art_knowledge_level=art_knowledge,
+				preferred_periods=preferred_periods,
+				preferred_authors=preferred_author,
+				preferred_themes=preferred_themes,
+				time_coefficient=time_coefficient,
+				proposed_paintings=prediction,
+				route_score='Unknown',
+				perfect_route_score=10,
+				textual_feedback=textual_feedback
+			)
+
+			return feedback['evaluation']
 
 	def evaluate_predictions(self, 
-			predictions: np.ndarray, 
+			predictions: list[list[int]], 
 			improvement_error_funcs: list[str] = ['lin-lin'],
 			) -> dict[str, tuple[float, np.ndarray]]:
 		"""
-		Evaluates the predictions using the improvement and error functions provided.
+		Evaluates the predictions in the test set using the improvement and error functions provided.
 
 		Args:
-			predictions (np.ndarray): The predictions to evaluate.
+			predictions (list[list[int]]): A list of lists containing the predictions for each test row.
 			improvement_error_funcs (list[str]): A list of strings containing the improvement and error functions to use. 
-				Each string should be in the format 'improvement_func-error_func'w,
-				here improvement_func and error_func are the functions to use (lin, log, exp).
+				Each string should be in the format 'improvement_func-error_func', where improvement_func and error_func are the functions to use (lin, log, exp).
 
 		Returns:
 			dict[tuple, tuple[float, list[float]]]: A dictionary containing the improvement metrics for each function pair. 
 				The keys are the names of the function pairs, and the values are tuples containing the average metric and the individual metrics.
 				Higher values are better.
 		"""
+		# Get the ratings of the test set
+		predictions_ratings = np.array(self.get_predictions_ratings(predictions))
+		test_ratings = np.array(self.get_test_ratings())
 
 		scores = {}
-
 		for func_pair in improvement_error_funcs:
 			improvement_func, error_func = func_pair.split('-')
 			assert improvement_func in ['lin', 'log', 'exp'], "Improvement function should be one of 'lin', 'log', 'exp'"
 			assert error_func in ['lin', 'log', 'exp'], "Error function should be one of 'lin', 'log', 'exp'"
 
-			# Get the ratings of the test set
-			test_ratings = np.array(self.get_test_ratings())
-			
-			if isinstance(predictions, list):
-				predictions = np.array(predictions)
-
 			# Calculate the metric
-			average_metric, individual_metrics = self.calculate_metric(y_test=test_ratings, y_pred=predictions, improvement_func=improvement_func, error_func=error_func)
+			average_metric, individual_metrics = self.calculate_metric(y_test=test_ratings, y_pred=predictions_ratings, improvement_func=improvement_func, error_func=error_func)
 
 			scores[func_pair] = (average_metric, individual_metrics)
 

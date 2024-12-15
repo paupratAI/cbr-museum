@@ -366,6 +366,7 @@ class CF:
 
         # If the group is new, return the average rating of all items
         if target_group_id not in all_groups:
+            print(f"New group detected ({target_group_id}) in CF, returning average ratings.")
             avg_ratings = {}
             for item in self.get_all_items():
                 item_ratings = self.get_item_ratings(item)

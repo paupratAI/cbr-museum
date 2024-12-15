@@ -1,4 +1,4 @@
-from entities import Period, Author
+from dataclasses import dataclass
 
 @dataclass
 class Case:
@@ -13,13 +13,13 @@ class Case:
 	reduced_mobility: float
 	time_coefficient: float
 	group_description: str
-	visited_artworks_count: int
 	ordered_artworks: list[int]
 	ordered_artworks_matches: list[float]
+	visited_artworks_count: int
+	route_score: float
 	rating: int
 	textual_feedback: str
 	only_elevator: int
 	time_coefficient_correction: str
 	artwork_to_remove: str
-	route_score: float
 	guided_visit: int
