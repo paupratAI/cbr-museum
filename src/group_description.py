@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 def load_model():
     # Load the model
     model = SentenceTransformer("thenlper/gte-small")
-    print("Model loaded successfully!")
     return model
 
 def compare_sentences(sentence_to_compare, sentences, model):
@@ -26,7 +25,7 @@ def compare_sentences(sentence_to_compare, sentences, model):
     def logistic_rescale(sim, threshold=0.84, temperature=0.03):
         # Apply a logistic function centered around 'threshold'
         return 1 / (1 + exp(-(sim - threshold) / temperature))
-    
+    similarities = [similarities]
     rescaled_sims = [logistic_rescale(s) for s in similarities]
     return rescaled_sims
 

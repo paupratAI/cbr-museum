@@ -318,7 +318,7 @@ class Clustering:
     # Example of classifying a new case without retrieving recommendations
     new_case = {
         'num_people': 4,
-        'favorite_author': 3,  # Must match existing categories
+        'favorite_author': "James McNeill",  # Must match existing categories
         'favorite_period': 1995,
         'favorite_theme': 'religious',    # Must match existing categories
         'guided_visit': 1,

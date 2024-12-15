@@ -9,13 +9,15 @@ from clustering import Clustering
 from ontology.periods import periods
 from ontology.themes import theme_instances
 from authors import authors
+from group_description import compare_sentences, load_model
 
 class CBR:
     def __init__(self, db_path='./data/database.db'):
         self.conn = sqlite3.connect(db_path)
         self.conn.row_factory = sqlite3.Row 
-        self.create_indices()
         self.ensure_columns()
+        self.create_indices()
+        self.model = load_model()
 
     def create_indices(self):
         """Create indices for faster query performance."""
@@ -47,14 +49,14 @@ class CBR:
         problem_preferred_periods: List[Period],
         problem_preferred_author: Author,
         problem_preferred_themes: List[str],
-        problem_time_coefficient: float,
+        problem_time_coefficient: str,
         stored_group_size: int, 
         stored_group_type: str, 
         stored_art_knowledge: int, 
         stored_preferred_periods_id: List[int],
         stored_preferred_author: Author,
         stored_preferred_themes: List[str],
-        stored_time_coefficient: float
+        stored_time_coefficient: str
     ) -> float:
         """
         Calculates the similarity between the provided parameters of a problem
@@ -126,13 +128,14 @@ class CBR:
             similarity += weights["preferred_themes"]
 
         # Time coefficient
-        diff_time_coefficient = abs(problem_time_coefficient - stored_time_coefficient)
-        if diff_time_coefficient == 0:
+        if problem_time_coefficient == stored_time_coefficient:
             similarity += weights["time_coefficient"]
-        elif diff_time_coefficient < 0.2:
-            similarity += weights["time_coefficient"] * 0.5
-        elif diff_time_coefficient <= 0.5:
-            similarity += weights["time_coefficient"] * 0.1
+
+        # Group description
+        '''if problem_group_description and stored_group_description:
+            sims = compare_sentences(problem_group_description, stored_group_description, self.model)
+            description_similarity = sims[0]
+            similarity += weights["group_description"] * description_similarity'''
 
         return round(similarity, 2)
 
@@ -140,7 +143,6 @@ class CBR:
     def retrieve_cases(self, problem: AbstractProblem, top_k=3):
         """
         Retrieves the most similar cases to the given problem and updates their usage_count.
-        Only retrieves cases with a rating greater than 2.
         """
         query = """
             SELECT * 
@@ -184,15 +186,15 @@ class CBR:
 
             cases_with_similarity.append((row, distance))
 
-            # Sort by distance and return top_k
-            ranked_cases = sorted(cases_with_similarity, key=lambda x: x[1], reverse=True)
-            selected_cases = ranked_cases[:top_k]
+        # Sort by distance and return top_k
+        ranked_cases = sorted(cases_with_similarity, key=lambda x: x[1], reverse=True)
+        selected_cases = ranked_cases[:top_k]
 
-            # Update usage_count
-            for case, dist in selected_cases:
-                self.increment_usage_count(case['id']) 
+        # Actualizar el contador de uso
+        for case, dist in selected_cases:
+            self.increment_usage_count(case['id']) 
 
-            return selected_cases
+        return selected_cases
 
     def increment_usage_count(self, case_id):
         """Increments usage_count each time a case is retrieved."""
@@ -369,7 +371,8 @@ class CBR:
                 "preferred_periods": periods_list,
                 "preferred_author": stored_author,
                 "preferred_themes": themes,
-                "time_coefficient": row['time_coefficient']
+                "time_coefficient": row['time_coefficient'],
+                "group_description": row['group_description']
             }
             cases.append((row['id'], case_params))
 
@@ -382,7 +385,6 @@ class CBR:
                 for j, (other_id, other_params) in enumerate(cases):
                     if i == j:
                         continue
-
                     sim = self.calculate_similarity(
                         problem_group_size=case_params["group_size"],
                         problem_group_type=case_params["group_type"],
@@ -497,11 +499,11 @@ class CBR:
 
 
 
-'''if __name__ == '__main__':
+if __name__ == '__main__':
     cbr = CBR()
     
     cbr.calculate_redundancy()
     print("Redundancy calculated.")
 
     cbr.calculate_utility()
-    print("Utility calculated.")'''
+    print("Utility calculated.")
