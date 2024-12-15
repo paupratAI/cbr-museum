@@ -1,4 +1,4 @@
-from entities import Period
+from src.entities import Period
 
 # Periods remember we assign themes's labels to periods
 periods = [
