@@ -7,9 +7,9 @@ class Case:
 	group_size: int
 	group_type: str
 	art_knowledge: int
-	preferred_periods: list[Period]
-	preferred_author: Author
-	preferred_themes: list[str]
+	preferred_periods_ids: list[int]
+	preferred_author_name: str
+	preferred_themes_ids: list[int]
 	reduced_mobility: float
 	time_coefficient: float
 	group_description: str
