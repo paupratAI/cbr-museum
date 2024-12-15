@@ -505,11 +505,22 @@ class CBR:
         with self.conn:
             self.conn.execute("DELETE FROM abstract_problems WHERE utility <= ?", (threshold,))
 
-    def recommend_items(self, ap: AbstractProblem) -> List[int]:
+    def recommend_items(self, ap: AbstractProblem, top_k: int = 3) -> List[int]:
         """
         Recommends items based on the utility values of the stored cases.
+
+        Args:
+            ap (AbstractProblem): The abstract problem representing the current user query.
+            top_k (int): The number of top recommendations to return.
+
+        Returns:
+            List[int]: A list of recommended artwork IDs sorted by relevance.
         """
-        pass
+        recommended_artworks = self.reuse(ap)
+        if not recommended_artworks:
+            return []  
+        return recommended_artworks
+
     
 '''if __name__ == '__main__':
     cbr = CBR()
