@@ -361,12 +361,24 @@ class CF:
         if alpha is None:
             alpha = self.default_alpha
 
+        # Retrieve all groups
+        all_groups = self.get_all_groups()
+
+        # If the group is new, return the average rating of all items
+        if target_group_id not in all_groups:
+            avg_ratings = {}
+            for item in self.get_all_items():
+                item_ratings = self.get_item_ratings(item)
+                avg_rating = sum(r[0] for r in item_ratings.values()) / len(item_ratings) if item_ratings else 0
+                avg_ratings[item] = avg_rating
+
+            sorted_avg_ratings = sorted(avg_ratings.keys(), key=lambda x: avg_ratings[x], reverse=True)
+
+            return sorted_avg_ratings
+
         # Retrieve all items and the target group's ratings
         all_items = self.get_all_items()
         target_ratings = self.get_group_ratings(target_group_id)
-
-        # Retrieve all groups except the target group
-        all_groups = [g for g in self.get_all_groups() if g != target_group_id]
 
         user_based_predictions, item_based_predictions = {}, {}
         for item in all_items:
@@ -376,7 +388,7 @@ class CF:
 
             group_similarities = sorted([
                 (group, self.group_similarity(target_group_id, group, method=method))
-                for group in all_groups
+                for group in all_groups if group != target_group_id
             ], key=lambda x: x[1], reverse=True)
 
             # Only consider the top-k most similar users
