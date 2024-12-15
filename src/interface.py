@@ -1,7 +1,7 @@
 import ollama
 import sqlite3
 from typing import List
-from src.recommender import Recommender
+from recommender import Recommender
 
 class Llama:
     def __init__(self, model_name='llama3.2'):
