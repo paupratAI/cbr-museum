@@ -107,6 +107,23 @@ class Artwork:
     default_time: int
     artwork_style: List[Style] = field(default_factory=list)
 
+    def __repr__(self):
+        formula = (
+            f'Artwork('
+            f'{self.artwork_id!r}, '
+            f'{self.artwork_name!r}, '
+            f'{self.artwork_in_room!r}, '
+            f'{self.created_by.author_name!r}, '
+            f'{self.artwork_in_period.period_id!r}, '
+            f'{self.artwork_theme!r}, '
+            f'{self.dimension!r}, '
+            f'{self.relevance!r}, '
+            f'{self.complexity!r}, '
+            f'{self.default_time!r}, '
+            f'None)'
+        )
+        return f'{formula}'
+
 authors = {
     "Pablo Picasso": Author(
         author_id=0,

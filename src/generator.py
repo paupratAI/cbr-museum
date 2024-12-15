@@ -77,6 +77,7 @@ if __name__ == "__main__":
             default_time=default_time
         )
         artworks.append(artwork_instance)
+        print(artworks)
     
     # Create a preferences generator
     results = []
