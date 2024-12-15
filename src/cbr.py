@@ -372,7 +372,6 @@ class CBR:
                 "preferred_author": stored_author,
                 "preferred_themes": themes,
                 "time_coefficient": row['time_coefficient'],
-                "group_description": row['group_description']
             }
             cases.append((row['id'], case_params))
 
@@ -381,6 +380,7 @@ class CBR:
             if total_cases <= 1:
                 redundancy = 0
             else:
+                total_similarity = 0
                 count_similar = 0
                 for j, (other_id, other_params) in enumerate(cases):
                     if i == j:
@@ -402,9 +402,8 @@ class CBR:
                         stored_time_coefficient=other_params["time_coefficient"]
                     )
 
-                    if sim > 0.9:
-                        count_similar += 1
-                redundancy = count_similar / (total_cases - 1)
+                    total_similarity += sim
+                redundancy = total_similarity / (total_cases - 1)
                 redundancy = round(redundancy, 2)
 
             self.conn.execute("UPDATE abstract_problems SET redundancy = ? WHERE id = ?", (redundancy, case_id))
@@ -470,7 +469,7 @@ class CBR:
             return []
 
         try:
-            matches = list(map(float, ordered_artworks_matches_str.split(',')))
+            matches = list(map(float, ordered_artworks_matches_str.strip('[]').split(',')))
         except ValueError:
             # If parsing fails or empty string
             return []
