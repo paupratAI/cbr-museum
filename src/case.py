@@ -23,3 +23,7 @@ class Case:
 	time_coefficient_correction: str
 	artwork_to_remove: str
 	guided_visit: int
+	cluster_id: int
+	redundancy: float
+	usage_count: int
+	utility: float
