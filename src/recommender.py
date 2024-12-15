@@ -1,13 +1,13 @@
-from src.cbr import CBR
-from src.cf import CF
+from cbr import CBR
+from cf import CF
 import sqlite3
 import json
 
-from src.entities import AbstractProblem
-from src.authors import authors
-from src.ontology.themes import theme_instances
-from src.ontology.periods import periods
-from src.db_partitions_handler import DBPartitionsHandler
+from entities import AbstractProblem
+from authors import authors
+from ontology.themes import theme_instances
+from ontology.periods import periods
+from db_partitions_handler import DBPartitionsHandler
 
 class Recommender:
 	"""

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from src.interface import Llama, Interface 
+from interface import Llama, Interface 
 
 app = Flask(__name__)
 
