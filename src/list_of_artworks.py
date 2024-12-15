@@ -1,5 +1,5 @@
 import json
-from ontology.authors import authors
+from authors import authors
 from ontology.periods import periods
 import random
 from ontology.art_theme_pairs import art_theme_pairs
@@ -10,7 +10,7 @@ import pandas as pd
 with open("data/sorted_artworks.json", "r", encoding="utf-8") as file:
     data = json.load(file)
 
-artworks_data = data[:50]
+artworks_data = data[39:50]
 artworks = []
 for artwork in artworks_data:
     author_name = artwork["created_by"]

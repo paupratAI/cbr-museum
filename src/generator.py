@@ -4,7 +4,7 @@ import random
 from entities import Author, Period, Style, Artwork, AbstractProblem, SpecificSolution
 from ontology.periods import periods
 from ontology.themes import theme_instances
-from ontology.authors import authors
+from authors import authors
 from ontology.art_theme_pairs import art_theme_pairs
 
 from preferences_generator import PreferencesGenerator, TimeLimitGenerator
