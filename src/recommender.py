@@ -7,6 +7,7 @@ from src.entities import AbstractProblem
 from src.authors import authors
 from src.ontology.themes import theme_instances
 from src.ontology.periods import periods
+from src.db_partitions_handler import DBPartitionsHandler
 
 class Recommender:
 	"""
