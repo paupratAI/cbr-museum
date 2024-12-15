@@ -70,8 +70,10 @@ class Recommender:
 		self.cursor.execute(query)
 		rows = self.cursor.fetchall()
 
+		total_rows = len(rows)
 		# Add the rows to the CF system
-		for row in rows:
+		for i, row in enumerate(rows):
+			print(f"Adding row {i+1}/{total_rows} to the CF system.", end='\r')
 			group_id, ordered_artworks, ordered_artworks_matches, visited_artworks_count, rating = row
 
 			# Decode JSON fields to Python lists
@@ -85,6 +87,8 @@ class Recommender:
 				visited_items_count=visited_artworks_count, 
 				global_rating=rating
 			)
+
+		print("All rows added to the CF system.")
 
 	def recommend(self, target_group_id: int):
 		"""
