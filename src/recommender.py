@@ -40,7 +40,9 @@ class Recommender:
 			default_decay_factor=cf_decay_factor, 
 			ratings_range=ratings_range
 		)
-		pass
+		
+		self.dbph = DBPartitionsHandler(db_path="data/database.db", train_split=0.8, main_table="abstract_problems", ratings_range=[0, 5], seed=42)
+
 
 	def retrieve_data(self, clean_response):
 		"""
