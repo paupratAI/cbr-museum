@@ -11,33 +11,6 @@ def save_in_sqlite3(results: list):
     conn = sqlite3.connect("../data/database.db")
     cursor = conn.cursor()
 
-    # Create the cases table if it does not exist
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS cases (
-        case_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        group_id INTEGER,
-        group_size INTEGER,
-        group_type TEXT,
-        art_knowledge INTEGER,
-        preferred_periods_ids TEXT,
-        preferred_author_name TEXT,
-        preferred_themes_ids TEXT,
-        reduced_mobility REAL,
-        time_coefficient REAL,
-        group_description TEXT,
-        ordered_artworks TEXT,
-        ordered_artworks_matches TEXT,
-        visited_artworks_count INTEGER,
-        route_score REAL,
-        rating INTEGER,
-        textual_feedback TEXT,
-        only_elevator INTEGER,
-        time_coefficient_correction TEXT,
-        artwork_to_remove TEXT,
-        guided_visit INTEGER
-    )
-    """)
-
     # Create tables if they do not exist
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS specific_problems (
