@@ -1,14 +1,14 @@
 import sqlite3
-from src.entities import AbstractProblem, SpecificProblem, Author, Period, Theme
+from entities import AbstractProblem, SpecificProblem, Author, Period, Theme
 from typing import List
 import json
 import ast
 from dataclasses import asdict
 
-from src.clustering import Clustering
-from src.ontology.periods import periods
-from src.ontology.themes import theme_instances
-from src.authors import authors
+from clustering import Clustering
+from ontology.periods import periods
+from ontology.themes import theme_instances
+from authors import authors
 
 class CBR:
     def __init__(self, db_path='./data/database.db'):
@@ -293,9 +293,53 @@ class CBR:
         with self.conn:
             self.conn.execute("DELETE FROM abstract_problems WHERE utility <= ?", (threshold,))
 
-    def adapt_case(self):
-        """Adapts a retrieved case to a new problem if needed."""
-        pass
+    def adapt_case(self, base_problem: AbstractProblem):
+        """
+        Adapts a solution for the base problem by combining and reordering artworks
+        from the three most similar cases.
+
+        :param base_problem: The AbstractProblem instance representing the new problem.
+        :return: A list of adapted artworks ordered according to the ontology.
+        """
+        # Retrieve the top 3 most similar cases
+        top_cases = self.retrieve_cases(base_problem, top_k=3)
+        
+        if not top_cases:
+            return []  
+        
+        # Combine artworks from the top cases into a set (no duplicates)
+        artwork_set = set()
+        for case, _ in top_cases:
+            artworks = json.loads(case['ordered_artworks']) 
+            artwork_set.update(artworks)
+
+        # Convert the set back to a list for ordering
+        combined_artworks = list(artwork_set)
+
+        # Function to calculate ontology-based relevance
+        def artwork_relevance(artwork_id):
+            """
+            Calculates the relevance of an artwork based on its relation to the base problem's ontology.
+            Higher scores indicate a closer match.
+            """
+            score = 0
+            # Prioritize artworks matching the preferred themes
+            for theme in base_problem.preferred_themes:
+                if theme in theme_instances and artwork_id in theme_instances[theme].artworks:
+                    score += 3  # Weight for matching preferred themes
+            
+            # Prioritize artworks matching the preferred periods
+            for period in base_problem.preferred_periods:
+                if artwork_id in period.artworks:
+                    score += 2  # Weight for matching preferred periods
+            
+            return score
+
+        # Order artworks based on relevance
+        combined_artworks.sort(key=artwork_relevance, reverse=True)
+
+        return combined_artworks
+
 
     def calculate_redundancy(self):
         """
@@ -453,11 +497,24 @@ class CBR:
 
 
 
-'''if __name__ == '__main__':
+if __name__ == '__main__':
     cbr = CBR()
     
-    cbr.calculate_redundancy()
-    print("Redundancy calculated.")
+    ordered_artworks = [14591, 14572, 14574, 61603, 16499, 44892, 14598, 16568, 16571, 64818, 8958, 111164, 62371, 18709, 28067, 66039, 111060, 24306, 5357, 109275, 135430, 149681, 109439, 24836, 90300, 122054, 56905, 16487, 111436, 87045, 111380, 79307, 23700, 27984, 104031, 9512, 35376, 46327, 61428, 16488, 23333, 59426, 105203, 88724, 100858, 4081, 42566, 70003, 43060, 185963]
 
-    cbr.calculate_utility()
-    print("Utility calculated.")'''
+    base_problem = AbstractProblem(
+        group_size=5,
+        group_type="family",
+        art_knowledge=2,
+        preferred_periods=[Period(period_id=1), Period(period_id=2)],
+        preferred_author=Author(author_id=1, author_name="Van Gogh", main_periods=[]),
+        preferred_themes=["Impressionism", "Modernism"],
+        time_coefficient=1.0,
+        cluster="cluster_1",
+        group_description="A family interested in Impressionism and Modernism"
+    )
+
+    adapted_artworks = cbr.adapt_case(base_problem)
+
+    # Imprime el resultado
+    print("Adapted Artworks:", adapted_artworks)
