@@ -438,13 +438,13 @@ class CF:
         # Scale to give the same importance to both predictions
         min_user_based_prediction, max_user_based_prediction = min(user_based_predictions.values()), max(user_based_predictions.values())
         scaled_user_based_predictions = {
-            item: (user_based_predictions[item] - min_user_based_prediction) / (max_user_based_prediction - min_user_based_prediction)
+            item: (user_based_predictions[item] - min_user_based_prediction) / (max_user_based_prediction - min_user_based_prediction) if max_user_based_prediction != min_user_based_prediction else 0
             for item in all_items
         }
 
         min_item_based_prediction, max_item_based_prediction = min(item_based_predictions.values()), max(item_based_predictions.values())
         scaled_item_based_predictions = {
-            item: (item_based_predictions[item] - min_item_based_prediction) / (max_item_based_prediction - min_item_based_prediction)
+            item: (item_based_predictions[item] - min_item_based_prediction) / (max_item_based_prediction - min_item_based_prediction) if max_item_based_prediction != min_item_based_prediction else 0
             for item in all_items
         }
 
