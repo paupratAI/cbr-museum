@@ -1065,7 +1065,7 @@ class AbstractProblem:
         favorite_author_name = self.specific_problem.favorite_author
         if favorite_author_name is not None:
             return next(
-                (author for author in self.available_authors if author.author_name == favorite_author_name),
+                (author for author in self.available_authors if author == favorite_author_name),
                 None
             )
         else:
