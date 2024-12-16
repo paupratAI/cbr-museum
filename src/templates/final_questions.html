@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CBR Museum - Final Questions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="screen-container">
+    <!-- Final Question 1 -->
+    <div class="screen" id="final-question-1">
+        <div class="form-container">
+            <h1 class="title">Final Question 1</h1>
+            <p class="instructions">How many days would you like to visit? (1 to 7):</p>
+            <form class="user-form">
+                <div class="input-row">
+                    <input type="text" class="input-field question-input" placeholder="e.g., 3">
+                </div>
+                <div class="buttons-row">
+                    <button type="button" class="next-button" data-next="#final-question-2">Next</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Final Question 2 -->
+    <div class="screen" id="final-question-2">
+        <div class="form-container">
+            <h1 class="title">Final Question 2</h1>
+            <p class="instructions">How many daily hours will you dedicate to the visit? (1 to 12):</p>
+            <form class="user-form">
+                <div class="input-row">
+                    <input type="text" class="input-field question-input" placeholder="e.g., 4">
+                </div>
+                <div class="buttons-row">
+                    <button type="button" class="next-button" data-next="#final-question-3">Next</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Final Question 3 (Finish) -->
+    <div class="screen" id="final-question-3">
+        <div class="form-container">
+            <h1 class="title">Final Question 3</h1>
+            <p class="instructions">Is there someone with reduced mobility? (yes/no):</p>
+            <form class="user-form">
+                <div class="input-row">
+                    <input type="text" class="input-field question-input" placeholder="yes/no">
+                </div>
+                <div class="buttons-row">
+                    <button type="button" class="finish-button" id="final-finish">Finish</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Loading popup -->
+<div class="loading-popup" id="loading-popup">
+    <div class="loading-content">
+        <div class="spinner"></div>
+        <p>Processing...</p>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const screenContainer = document.querySelector('.screen-container');
+    const screens = document.querySelectorAll('.screen');
+    const nextButtons = document.querySelectorAll('.next-button');
+    const finishButton = document.getElementById('final-finish');
+    const loadingPopup = document.getElementById('loading-popup');
+
+    let currentScreenIndex = 0;
+    let finalAnswers = [];
+
+    function slideToScreen(index) {
+        const offset = index * -100; 
+        screenContainer.style.transform = `translateY(${offset}vh)`;
+    }
+
+    function showLoading() {
+        loadingPopup.classList.add('show');
+    }
+
+    function hideLoading(callback) {
+        setTimeout(() => {
+            loadingPopup.classList.remove('show');
+            loadingPopup.addEventListener('transitionend', function handler() {
+                loadingPopup.removeEventListener('transitionend', handler);
+                if (callback) callback();
+            });
+        }, 1000);
+    }
+
+    nextButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const currentScreen = screens[currentScreenIndex];
+            const inputField = currentScreen.querySelector('.question-input');
+            const answer = inputField.value.trim();
+            finalAnswers.push(answer);
+
+            showLoading();
+            hideLoading(() => {
+                const targetId = button.getAttribute('data-next');
+                const targetScreen = document.querySelector(targetId);
+                const targetIndex = Array.from(screens).indexOf(targetScreen);
+                if (targetIndex !== -1) {
+                    currentScreenIndex = targetIndex;
+                    slideToScreen(currentScreenIndex);
+                }
+            });
+        });
+    });
+
+    finishButton.addEventListener('click', () => {
+        const currentScreen = screens[currentScreenIndex];
+        const inputField = currentScreen.querySelector('.question-input');
+        const answer = inputField.value.trim();
+        finalAnswers.push(answer);
+
+        showLoading();
+        // After this, you could send finalAnswers to the server
+        // For now, just simulate completion
+        hideLoading(() => {
+            alert("All final questions answered: " + JSON.stringify(finalAnswers));
+            // Here you could do a fetch POST to a new endpoint, or redirect somewhere else
+        });
+    });
+});
+</script>
+</body>
+</html>

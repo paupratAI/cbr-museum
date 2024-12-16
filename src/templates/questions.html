@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    finishButton.addEventListener('click', () => {
+        finishButton.addEventListener('click', () => {
         const currentScreen = screens[currentScreenIndex];
         const inputField = currentScreen.querySelector('.question-input');
         const answer = inputField.value.trim();
@@ -216,7 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'ok') {
-                    alert('LLM result: ' + data.result);
+                    // Instead of alerting, redirect to final questions
+                    window.location.href = "{{ url_for('final_questions') }}";
                 } else {
                     alert('Error processing answers.');
                 }
