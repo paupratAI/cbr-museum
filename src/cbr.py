@@ -146,7 +146,7 @@ class CBR:
                     # Consider similar authors
                     similar_authors = stored_author.similar_authors
                     if problem_author_name in similar_authors:
-                        similarity += weights["preferred_author"] * 0.8  # Peso reducido para autores similares
+                        similarity += weights["preferred_author"] * 0.8  
 
 
         # Preferred themes
