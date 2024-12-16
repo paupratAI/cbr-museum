@@ -110,21 +110,15 @@ class CBR:
         elif diff_art_knowledge == 2:
             similarity += weights["art_knowledge"] * 0.1
 
-        similarity_before = similarity
         # Preferred periods
         matched_periods = 0
-        print(f"problem_preferred_periods: {problem_preferred_periods}")
-        print(f"stored_preferred_periods_id: {stored_preferred_periods_id}")
         for period_id in stored_preferred_periods_id:
             for p in problem_preferred_periods:
                 if period_id == p.period_id:
                     matched_periods += 1
         if matched_periods > 0:
             similarity += weights["preferred_periods"] * (1 - abs(len(stored_preferred_periods_id) - matched_periods))
-        
-        if similarity - similarity_before != 0:
-            print(f"similarity preferred periods: {similarity - similarity_before}")
-
+    
         # Preferred author
         if problem_preferred_author and stored_author_name:
             problem_author_name = problem_preferred_author.author_name
@@ -354,7 +348,7 @@ class CBR:
         rows = self.conn.execute(query, params).fetchall()
         cases_with_similarity = []
         for row in rows:
-            stored_periods_id = [period_id for period_id in row['preferred_periods_ids']]
+            stored_periods_id = json.loads(row['preferred_periods_ids'])
 
             stored_author_name = row['preferred_author_name']
 
@@ -667,7 +661,7 @@ class CBR:
 def row_to_dict(row):
     return {k: row[k] for k in row.keys()}
 
-if __name__ == '__main__':
+'''if __name__ == '__main__':
     conn = sqlite3.connect('./data/database_2000_semi_new.db')
     cursor = conn.cursor()
 
@@ -693,4 +687,4 @@ if __name__ == '__main__':
     print(ap.preferred_themes)
 
     route = cbr.reuse(ap, top_k=3)
-    print(route), print(len(route))
+    print(route), print(len(route))'''
