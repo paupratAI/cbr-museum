@@ -21,6 +21,8 @@ def start():
             return render_template('start.html', new_id=new_id)
         elif 'begin_route' in request.form:
             entered_id = request.form.get('user_id')
+            if entered_id:
+                iface.id = int(entered_id)
             # Go to questions page (no answers needed yet)
             return render_template('questions.html')
 
@@ -30,6 +32,7 @@ def start():
 def process_answers():
     answers = request.json.get('answers', [])
     result = llama_model.run_llm(answers)
+    result.insert(0, iface.id)
     return jsonify(status='ok', result=result)
 
 @app.route('/final_questions', methods=['GET'])

@@ -58,7 +58,5 @@ class Interface:
         cursor = self.db.cursor()
         cursor.execute("SELECT group_id FROM abstract_problems ORDER BY group_id DESC LIMIT 1")
         group_id = cursor.fetchone()
-        if group_id is None:
-            return 1
-        else:
-            return group_id[0] + 1
+        self.id = 1 if group_id is None else group_id[0] + 1
+        return self.id
