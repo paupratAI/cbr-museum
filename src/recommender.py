@@ -126,7 +126,7 @@ class Recommender:
 
 		return abstract_problem
 
-	def recommend(self, target_group_id: int, clean_response: list = [], beta: float = 0.5) -> dict[str, list]:
+	def recommend(self, target_group_id: int, clean_response: list = [], ap: AbstractProblem = None, beta: float = 0.5) -> dict[str, list]:
 		"""
 		Recommends items using the CF and CBR systems.
 
@@ -140,8 +140,9 @@ class Recommender:
 		Returns:
 			dict(str, list): A dictionary with the CBR, CF and Hybrid recommendations.
 		"""
-		# Cridar a la funció que calgui per obtenir abs_prob des de clean_response
-		# ap = self.convert_to_problems(clean_response)
+		# Obtain abstract problem from clean_response
+		if not ap:
+			ap = self.convert_to_problems(clean_response)
 
 		# Calculate the routes
 		cf_result = self.cf.recommend_items(target_group_id=target_group_id)
