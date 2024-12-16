@@ -41,7 +41,7 @@ class Recommender:
 			ratings_range=ratings_range
 		)
 		
-		self.dbph = DBPartitionsHandler(db_path="data/database.db", train_split=0.8, main_table="cases", ratings_range=[0, 5], seed=42)
+		self.dbph = DBPartitionsHandler(db_path=self.db_path, train_split=0.8, main_table="cases", ratings_range=[0, 5], seed=42)
 
 
 	def retrieve_data(self, clean_response):
