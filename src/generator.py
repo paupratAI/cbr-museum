@@ -21,7 +21,7 @@ class GenArtArgs():
     data: list = field(default_factory=list)
     reference_preferences_proportion: float = 0.75
     num_artworks: int = 50
-    num_cases: int = 10
+    num_cases: int = 2000
     format: str = "sqlite"
 
     def __post_init__(self):
