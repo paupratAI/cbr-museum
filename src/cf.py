@@ -330,7 +330,7 @@ class CF:
     def recommend_items(
         self, target_group_id: int, method: str | None = None, alpha: float | None = None,
         top_k_users: int | None = None, top_k_items: int | None = None
-    ) -> List[int]:
+    ) -> tuple[List[int], List[float]]:
         """
         Recommends a sorted list of items for a target group.
 
@@ -349,8 +349,8 @@ class CF:
 
         Returns
         -------
-        List[int]
-            Sorted list of item IDs by predicted relevance.
+        Tuple[List[int], List[float]]
+            Sorted list of item IDs by predicted relevance and their corresponding probabilities.
         """
         assert method in self.VALID_METHODS + [None], f"Invalid method; use one of {self.VALID_METHODS}"
         assert (alpha is None) or (0 <= alpha <= 1), "Alpha must be between 0 and 1"
@@ -459,4 +459,6 @@ class CF:
 
         # print([round(float(predicted_ratings[item]), 4) for item in sorted_items])
 
-        return sorted_items
+        sorted_probs = [predicted_ratings[item] for item in sorted_items]
+
+        return sorted_items, sorted_probs

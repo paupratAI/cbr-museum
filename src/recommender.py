@@ -145,7 +145,8 @@ class Recommender:
 			ap = self.convert_to_problems(clean_response)
 
 		# Calculate the routes
-		cf_result = self.cf.recommend_items(target_group_id=target_group_id)
+		cf_result, cf_probs = self.cf.recommend_items(target_group_id=target_group_id) # CF probs must be used to aproximate matches (by scaling these probs to 0-10) when storing the case in the CF databse
+		
 		# cbr_result = self.cbr.recommend_items(abs_prob=ap)
 
 		# # Combine the recommendations from both systems
@@ -187,7 +188,7 @@ class Recommender:
 
 			print(f"Generating test prediction {(i+1)}/{len(test_rows)}", end='\r')
 
-			predictions.append(self.cf.recommend_items(target_group_id=group_id))
+			predictions.append(self.cf.recommend_items(target_group_id=group_id)[0])
 
 		# Evaluate the predictions
 		scores = self.dbph.evaluate_predictions(predictions=predictions)
