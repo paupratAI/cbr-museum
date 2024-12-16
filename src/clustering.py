@@ -222,6 +222,50 @@ class Clustering:
         df_new = df_new[self.feature_names]
         X_scaled_new = self.scaler.transform(df_new)
         return int(self.kmeans.predict(X_scaled_new)[0])
+    
+    def get_cases_in_cluster(self, cluster_id):
+        """
+        Retrieve and display all cases belonging to a specific cluster.
+
+        Parameters:
+            cluster_id (int): The ID of the cluster whose cases are to be retrieved.
+
+        Returns:
+            pd.DataFrame: A DataFrame containing detailed information of all cases in the specified cluster.
+        """
+        if self.conn is None:
+            raise ValueError("Database connection is not established.")
+        
+        # Define the query to fetch cases from the specified cluster
+        query = """
+        SELECT 
+            case_id, 
+            num_people, 
+            preferred_author_name, 
+            preferred_year, 
+            preferred_main_theme, 
+            guided_visit, 
+            minors, 
+            num_experts, 
+            past_museum_visits
+        FROM cases
+        WHERE cluster = ?
+        ORDER BY case_id
+        """
+        
+        # Execute the query and fetch the data
+        df = pd.read_sql_query(query, self.conn, params=(cluster_id,))
+        
+        if df.empty:
+            print(f"No cases found in cluster {cluster_id}.")
+            return df
+        
+        # Display the DataFrame
+        print(f"\nCases in Cluster {cluster_id}:")
+        print(df.to_string(index=False))
+        
+        return df
+
 
     def close_connection(self):
         """Close the database connection."""
@@ -229,7 +273,7 @@ class Clustering:
         print("Database connection closed.")
 
 # Usage Example
-if __name__ == "__main__":
+"""if __name__ == "__main__":
     # Initialize the clustering system
     clustering_system = Clustering(db_path='./data/database_2000.db', model_path='./models/kmeans_model.joblib')
 
@@ -237,7 +281,7 @@ if __name__ == "__main__":
         # Fetch data and perform clustering
         raw_data = clustering_system.fetch_data_from_cases()
         X_scaled = clustering_system.encode_and_scale_features()
-        clustering_system.perform_clustering(X_scaled, min_k=20, max_k=50, minimum_examples_per_cluster=23)
+        clustering_system.perform_clustering(X_scaled, min_k=10, max_k=30, minimum_examples_per_cluster=10)
         clustering_system.save_clusters_to_cases()
         clustering_system.print_cluster_statistics()
         clustering_system.print_centroids_readable()
@@ -266,7 +310,8 @@ if __name__ == "__main__":
         classification_system.load_model()
         cluster_id = classification_system.classify_new_case(new_case)
         print(f"\nThe new case is assigned to cluster: {cluster_id}")
+        classification_system.get_cases_in_cluster(cluster_id)
     except FileNotFoundError as fnfe:
         print(f"Model Loading Error: {fnfe}")
     finally:
-        classification_system.close_connection()
+        classification_system.close_connection()"""
