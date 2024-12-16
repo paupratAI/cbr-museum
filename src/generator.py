@@ -102,6 +102,7 @@ class ArtGenerator:
                 daily_minutes=time,
             )
             spec_sol.distribute_artworks()
+            print('......................................................')
 
             textual_feedback = random.choice(["full", "short", "None"])
 

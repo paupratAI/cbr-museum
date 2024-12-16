@@ -1134,32 +1134,26 @@ class Match:
         assert isinstance(self.artwork_time, (int, float)) and self.artwork_time > 0, "artwork_time must be a positive number"
 
 def get_author_similarity(art_author: Author, pref_author: Author) -> float:
-
     if art_author == pref_author:
-        # Same author
         return 6.0
 
     if art_author.author_name in pref_author.similar_authors:
-        # Directly similar author
         return 5.0
 
-    # Second-level search: for each author in pref_author.similar_authors, check their similar_authors
     found_second_level = False
     for similar_name in pref_author.similar_authors:
         if similar_name in authors:
             sim_auth = authors[similar_name]
             if art_author.author_name in sim_auth.similar_authors:
-                # Found in a "second-level" similar author
                 found_second_level = True
                 break
     
     if found_second_level:
         return 3.0
 
-    # Fallback: max distance in terms of main_periods
-    # Compare each period of the art_author with each period of the pref_author and take max period similarity
+    # Si no s'ha trobat similitud directa, calculem el score mitjançant els períodes principals de cada autor.
+    # Aquests autors tenen una llista de períodes (main_periods), així que recorrem tots.
     less_period_score = 2.0
-    # We reuse the period similarity logic
     for a_period in art_author.main_periods:
         for p_period in pref_author.main_periods:
             d = abs(a_period.period_id - p_period.period_id)
@@ -1170,25 +1164,19 @@ def get_author_similarity(art_author: Author, pref_author: Author) -> float:
     return less_period_score if less_period_score > 0 else 0.1
 
 def get_theme_similarity(art_theme: str, pref_themes: List[str]) -> float:
-
-    # Direct exact match?
     if art_theme in pref_themes:
         return 2.0
-
     else:
         return 0.0
 
-def get_period_similarity(art_period: Period, pref_periods: List[Period]) -> float:
-    # Calculate maximum similarity across all preferred periods
+def get_period_similarity(art_periods: List[Period], pref_periods: List[Period]) -> float:
     best_score = 0.0
-    for p in pref_periods:
-        # Distance is based on period_id difference
-        d = abs(art_period.period_id - p.period_id)
-        # Calculate score
-        score = 2 - (d * 0.1)
-        if score > best_score:
-            best_score = score
-        # Now we return the rounded num with 2 decimals
+    for a_period in art_periods:
+        for p_period in pref_periods:
+            d = abs(a_period.period_id - p_period.period_id)
+            score = 2 - (d * 0.1)
+            if score > best_score:
+                best_score = score
     return best_score
 
 @dataclass
@@ -1197,7 +1185,7 @@ class AbstractSolution:
     matches: List[Match] = field(default_factory=list)
     max_score: int = 0
     avg_score: float = 0.0
-    ordered_artworks: List[int] = field(default_factory=list)  # New attribute
+    ordered_artworks: List[int] = field(default_factory=list)  # Nou atribut
 
     def compute_matches(self, artworks: List[Artwork]):
         ap = self.related_to_AbstractProblem
@@ -1213,21 +1201,15 @@ class AbstractSolution:
 
         for art in artworks:
             author_sim = get_author_similarity(art.created_by, preferred_author) if preferred_author else 1.0
-            
             theme_sim = get_theme_similarity(art.artwork_theme, preferred_themes) if preferred_themes != [] else 1.0
-
+            
+            # Ara art.artwork_in_period és una llista, ho passem directament
             period_sim = get_period_similarity(art.artwork_in_period, preferred_periods)
 
-            # print(f"Artwork: {art.artwork_id} - Author: {author_sim} - Theme: {theme_sim} - Period: {period_sim}")
-
-            # We round the sum with two decimals
-
             match_score = round((author_sim * weights["author"] + theme_sim * weights["theme"] + period_sim * weights["period"]), 2)
-
-            # print(f"Match score: {match_score}")
-
             time_coef = ap.get_time_coefficient()
             final_time = art.default_time * time_coef
+
             self.matches.append(Match(art, match_score, final_time))
             if match_score > self.max_score:
                 self.max_score = match_score
@@ -1235,7 +1217,6 @@ class AbstractSolution:
         if len(self.matches) > 0:
             self.avg_score = sum(m.match_type for m in self.matches) / len(self.matches)
 
-        # Once all matches are calculated, sort and store the list of IDs
         sorted_matches = sorted(self.matches, key=lambda m: m.match_type, reverse=True)
         self.ordered_artworks = [m.artwork.artwork_id for m in sorted_matches]
 
