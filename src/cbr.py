@@ -48,14 +48,14 @@ class CBR:
         problem_preferred_periods: List[Period],
         problem_preferred_author: Author,
         problem_preferred_themes: List[str],
-        problem_time_coefficient: str,
+        problem_time_coefficient: float,
         stored_group_size: int, 
         stored_group_type: str, 
         stored_art_knowledge: int, 
         stored_preferred_periods_id: List[int],
-        stored_preferred_author: Author,
+        stored_preferred_author: str,
         stored_preferred_themes: List[str],
-        stored_time_coefficient: str,
+        stored_time_coefficient: float,
         problem_group_description: str = None,
         stored_group_description: str = None
     ) -> float:
@@ -119,31 +119,48 @@ class CBR:
             similarity += weights["preferred_periods"] * (1 - abs(len(stored_preferred_periods_id) - matched_periods))
 
         # Preferred author
-        if problem_preferred_author:
-            if problem_preferred_author.author_id == stored_preferred_author.author_id:
+        if problem_preferred_author and stored_preferred_author:
+            problem_author_name = problem_preferred_author.author_name
+            stored_author_name = stored_preferred_author
+
+            if problem_author_name == stored_author_name:
                 similarity += weights["preferred_author"]
             else:
-                # Check overlapping periods with the preferred author
-                matched_author_periods = [
-                    period for period in problem_preferred_author.main_periods
-                    if any(
-                        p.year_beginning <= period.year_beginning <= p.year_end or
-                        p.year_beginning <= period.year_end <= p.year_end
-                        for p in stored_preferred_author.main_periods
-                    )
-                ]
-                if matched_author_periods:
-                    similarity += weights["preferred_author"] * 0.8 * (
-                        len(matched_author_periods) / len(problem_preferred_author.main_periods)
-                    )
+                # Get the Author instances from the 'authors' dictionary
+                stored_author = authors.get(stored_author_name)
+                problem_author = authors.get(problem_author_name)
+
+                if stored_author and problem_author:
+                    # Get the IDs of the main periods
+                    stored_period_ids = {period.period_id for period in stored_author.main_periods}
+                    problem_period_ids = {period.period_id for period in problem_author.main_periods}
+
+                    # Calculate the intersection of periods
+                    common_periods = stored_period_ids.intersection(problem_period_ids)
+                    total_periods = len(problem_period_ids)
+
+                    if total_periods > 0:
+                        period_overlap_ratio = len(common_periods) / total_periods
+                        similarity += weights["preferred_author"] * 0.5 * period_overlap_ratio
+
+                    # Consider similar authors
+                    similar_authors = stored_author.similar_authors
+                    if problem_author_name in similar_authors:
+                        similarity += weights["preferred_author"] * 0.8  # Peso reducido para autores similares
+
 
         # Preferred themes
         if problem_preferred_themes and stored_preferred_themes and problem_preferred_themes[0] == stored_preferred_themes[0]:
             similarity += weights["preferred_themes"]
 
         # Time coefficient
-        if problem_time_coefficient == stored_time_coefficient:
+        diff_time_coefficient = abs(problem_time_coefficient - stored_time_coefficient)
+        if diff_time_coefficient == 0:
             similarity += weights["time_coefficient"]
+        elif diff_time_coefficient == 0.25:
+            similarity += weights["time_coefficient"] * 0.5
+        elif diff_time_coefficient == 0.5:
+            similarity += weights["time_coefficient"] * 0.1
 
         # Group description
         if problem_group_description and stored_group_description:
