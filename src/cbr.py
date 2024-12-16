@@ -112,6 +112,8 @@ class CBR:
         similarity_before = similarity
         # Preferred periods
         matched_periods = 0
+        print(f"problem_preferred_periods: {problem_preferred_periods}")
+        print(f"stored_preferred_periods_id: {stored_preferred_periods_id}")
         for period_id in stored_preferred_periods_id:
             for p in problem_preferred_periods:
                 if period_id == p.period_id:
@@ -121,8 +123,6 @@ class CBR:
         
         if similarity - similarity_before != 0:
             print(f"similarity preferred periods: {similarity - similarity_before}")
-
-        similarity_before = similarity
 
         # Preferred author
         if problem_preferred_author and stored_author_name:
@@ -151,24 +151,12 @@ class CBR:
                     similar_authors = stored_author.similar_authors
                     if problem_author_name in similar_authors:
                         similarity += weights["preferred_author"] * 0.8  
-        
-        '''if similarity - similarity_before != 0:
-            print(f"similarity after preferred author: {similarity - similarity_before}")'''
-
-        similarity_before = similarity
 
         # Preferred themes
-        print(f"problem_preferred_themes: {problem_preferred_themes}")
-        print(f"stored_preferred_themes: {stored_preferred_themes}")
         if problem_preferred_themes and stored_preferred_themes:
             common_themes = set(problem_preferred_themes).intersection(stored_preferred_themes)
             if common_themes:
                 similarity += weights["preferred_themes"]
-
-        if similarity - similarity_before != 0:
-            print(f"similarity after preferred themes: {similarity - similarity_before}")
-
-        similarity_before = similarity
         
         # Time coefficient
         diff_time_coefficient = abs(problem_time_coefficient - stored_time_coefficient)
@@ -369,7 +357,7 @@ class CBR:
 
             stored_author_name = row['preferred_author_name']
 
-            preferred_themes = row['preferred_themes']
+            preferred_themes = ast.literal_eval(row['preferred_themes']) 
 
             similarity = self.calculate_similarity(
                 problem_group_size=problem.group_size,
