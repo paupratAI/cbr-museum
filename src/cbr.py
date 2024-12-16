@@ -17,7 +17,7 @@ class CBR:
         self.conn.row_factory = sqlite3.Row 
         self.ensure_columns()
         self.create_indices()
-        self.model = load_model()
+        #self.model = load_model()
 
     def create_indices(self):
         """Create indices for faster query performance."""
@@ -46,7 +46,7 @@ class CBR:
         problem_group_type: str = None,
         problem_art_knowledge: int = None,
         problem_preferred_periods: List[Period] = None,
-        problem_author_name: str = None,
+        problem_preferred_author: Author = None,
         problem_preferred_themes: List[str] = None,
         problem_time_coefficient: float = None,
         stored_group_size: int = None, 
@@ -109,6 +109,7 @@ class CBR:
         elif diff_art_knowledge == 2:
             similarity += weights["art_knowledge"] * 0.1
 
+        similarity_before = similarity
         # Preferred periods
         matched_periods = 0
         for period_id in stored_preferred_periods_id:
@@ -117,10 +118,15 @@ class CBR:
                     matched_periods += 1
         if matched_periods > 0:
             similarity += weights["preferred_periods"] * (1 - abs(len(stored_preferred_periods_id) - matched_periods))
+        
+        if similarity - similarity_before != 0:
+            print(f"similarity preferred periods: {similarity - similarity_before}")
+
+        similarity_before = similarity
 
         # Preferred author
-        if problem_author_name and stored_author_name:
-
+        if problem_preferred_author and stored_author_name:
+            problem_author_name = problem_preferred_author.author_name
             if problem_author_name == stored_author_name:
                 similarity += weights["preferred_author"]
             else:
@@ -145,12 +151,25 @@ class CBR:
                     similar_authors = stored_author.similar_authors
                     if problem_author_name in similar_authors:
                         similarity += weights["preferred_author"] * 0.8  
+        
+        '''if similarity - similarity_before != 0:
+            print(f"similarity after preferred author: {similarity - similarity_before}")'''
 
+        similarity_before = similarity
 
         # Preferred themes
-        if problem_preferred_themes and stored_preferred_themes and problem_preferred_themes[0] == stored_preferred_themes[0]:
-            similarity += weights["preferred_themes"]
+        print(f"problem_preferred_themes: {problem_preferred_themes}")
+        print(f"stored_preferred_themes: {stored_preferred_themes}")
+        if problem_preferred_themes and stored_preferred_themes:
+            common_themes = set(problem_preferred_themes).intersection(stored_preferred_themes)
+            if common_themes:
+                similarity += weights["preferred_themes"]
 
+        if similarity - similarity_before != 0:
+            print(f"similarity after preferred themes: {similarity - similarity_before}")
+
+        similarity_before = similarity
+        
         # Time coefficient
         diff_time_coefficient = abs(problem_time_coefficient - stored_time_coefficient)
         if diff_time_coefficient == 0:
@@ -272,7 +291,7 @@ class CBR:
                         problem_group_type=case_params["group_type"],
                         problem_art_knowledge=case_params["art_knowledge"],
                         problem_preferred_periods=case_params["preferred_periods"],
-                        problem_author_name=case_params["preferred_author"],
+                        problem_preferred_author=case_params["preferred_author"],
                         problem_preferred_themes=case_params["preferred_themes"],
                         problem_time_coefficient=case_params["time_coefficient"],
                         stored_group_size=other_params["group_size"],
@@ -350,14 +369,14 @@ class CBR:
 
             stored_author_name = row['preferred_author_name']
 
-            preferred_themes = ast.literal_eval(row['preferred_themes'])
+            preferred_themes = row['preferred_themes']
 
             similarity = self.calculate_similarity(
                 problem_group_size=problem.group_size,
                 problem_group_type=problem.group_type,
                 problem_art_knowledge=problem.art_knowledge,
                 problem_preferred_periods=problem.preferred_periods,
-                problem_author_name=problem.preferred_author,
+                problem_preferred_author=problem.preferred_author,
                 problem_preferred_themes=problem.preferred_themes,
                 problem_time_coefficient=problem.time_coefficient,
                 stored_group_size=row['group_size'],
@@ -372,7 +391,7 @@ class CBR:
             feedback = row['rating']
             distance = similarity * feedback
 
-            cases_with_similarity.append((row, distance))
+            cases_with_similarity.append((row, similarity))
 
         # Sort by distance and return top_k
         ranked_cases = sorted(cases_with_similarity, key=lambda x: x[1], reverse=True)
@@ -565,7 +584,7 @@ if __name__ == '__main__':
     conn.close()
 
     cbr = CBR()
-    sp = SpecificProblem(group_id=1, num_people=2, favorite_author='Pablo Picasso', favorite_period=1900, favorite_theme='Impressionism', guided_visit=True, minors=False, num_experts=1, past_museum_visits=3, group_description='A group of friends visiting the museum.')
+    sp = SpecificProblem(group_id=1, num_people=2, favorite_author='Pablo Picasso', favorite_period=1900, favorite_theme='historical', guided_visit=True, minors=False, num_experts=1, past_museum_visits=3, group_description='A group of friends visiting the museum.')
     ap = AbstractProblem(sp, periods, list(authors.values()), theme_instances)
     ap.cluster = 1
 
@@ -573,3 +592,4 @@ if __name__ == '__main__':
     for case, similarity in cases:
         case_dict = row_to_dict(case)
         print(f"Case: {case_dict['case_id']}, Similarity: {similarity}")
+    print(ap.preferred_themes)

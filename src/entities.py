@@ -38,6 +38,9 @@ theme_instances = [
     Theme("mystical", ["Magic", "Occult", "Astrology", "Alchemy", "Mysticism", "Ancient Rituals"])
 ]
 
+themes_dict = {t.theme_name: t for t in theme_instances}
+
+
 @dataclass
 class Period:
     period_id: int
@@ -1061,13 +1064,10 @@ class AbstractProblem:
                 if period.year_beginning <= favorite_year <= period.year_end
             ]
         
-    def compute_preferred_author(self) -> 'Author':
+    def compute_preferred_author(self) -> Author:
         favorite_author_name = self.specific_problem.favorite_author
         if favorite_author_name is not None:
-            return next(
-                (author for author in self.available_authors if author == favorite_author_name),
-                None
-            )
+            return authors.get(favorite_author_name, None)
         else:
             return None  # Represents any author
 
@@ -1076,10 +1076,7 @@ class AbstractProblem:
         if not favorite_theme_choice or favorite_theme_choice.lower() == "any":
             return [t.theme_name for t in self.available_themes]
         
-        theme = next(
-            (t for t in self.available_themes if t.theme_name.lower() == favorite_theme_choice.lower()),
-            None
-        )
+        theme = themes_dict[favorite_theme_choice]
         return theme.labels if theme else []
 
     def compute_time_coefficient(self) -> float:
