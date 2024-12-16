@@ -238,22 +238,18 @@ class CBR:
 
         cases = []
         for row in all_cases:
-            author_data = json.loads(row['preferred_author']) if row['preferred_author'] else {}
-            stored_author = Author(
-                author_id=author_data.get('author_id', None),
-                author_name=author_data.get('author_name', ""),
-                main_periods=[Period(period_id=p['period_id']) for p in author_data.get('main_periods', [])]
-            )
+            stored_author = row['preferred_author_name']
+            problem_author = authors.get(row['preferred_author_name'])
 
-            stored_periods = json.loads(row['preferred_periods']) if row['preferred_periods'] else []
-            periods_list = [Period(period_id=p['period_id']) for p in stored_periods]
-            themes = ast.literal_eval(row['preferred_themes']) if row['preferred_themes'] else []
+            stored_periods_id = json.loads(row['preferred_periods_ids'])
+            problem_period = [period for period in periods if period.period_id in stored_periods_id]
+            themes = ast.literal_eval(row['preferred_themes']) 
 
             case_params = {
                 "group_size": row['group_size'],
                 "group_type": row['group_type'],
                 "art_knowledge": row['art_knowledge'],
-                "preferred_periods": periods_list,
+                "preferred_periods": stored_periods_id,
                 "preferred_author": stored_author,
                 "preferred_themes": themes,
                 "time_coefficient": row['time_coefficient'],
@@ -273,14 +269,14 @@ class CBR:
                         problem_group_size=case_params["group_size"],
                         problem_group_type=case_params["group_type"],
                         problem_art_knowledge=case_params["art_knowledge"],
-                        problem_preferred_periods=case_params["preferred_periods"],
-                        problem_preferred_author=case_params["preferred_author"],
+                        problem_preferred_periods=problem_period,
+                        problem_preferred_author=problem_author,
                         problem_preferred_themes=case_params["preferred_themes"],
                         problem_time_coefficient=case_params["time_coefficient"],
                         stored_group_size=other_params["group_size"],
                         stored_group_type=other_params["group_type"],
                         stored_art_knowledge=other_params["art_knowledge"],
-                        stored_preferred_periods_id=[p.period_id for p in other_params["preferred_periods"]],
+                        stored_preferred_periods_id=[other_params["preferred_periods"]],
                         stored_author_name=other_params["preferred_author"],
                         stored_preferred_themes=other_params["preferred_themes"],
                         stored_time_coefficient=other_params["time_coefficient"]
@@ -661,7 +657,7 @@ class CBR:
 def row_to_dict(row):
     return {k: row[k] for k in row.keys()}
 
-"""if __name__ == '__main__':
+if __name__ == '__main__':
     conn = sqlite3.connect('./data/database.db')
     cursor = conn.cursor()
 
@@ -674,8 +670,10 @@ def row_to_dict(row):
 
     conn.commit()
     conn.close()
-
     cbr = CBR()
+    cbr.calculate_redundancy()
+    cbr.calculate_utility()
+    '''cbr = CBR()
     sp = SpecificProblem(group_id=1, num_people=2, favorite_author='Pablo Picasso', favorite_period=1900, favorite_theme='historical', guided_visit=True, minors=False, num_experts=1, past_museum_visits=3, group_description='A group of friends visiting the museum.')
     ap = AbstractProblem(sp, periods, list(authors.values()), theme_instances)
     ap.cluster = 1
@@ -687,4 +685,4 @@ def row_to_dict(row):
     print(ap.preferred_themes)
 
     route = cbr.reuse(ap, top_k=3)
-    print(route), print(len(route))"""
+    print(route), print(len(route))'''
