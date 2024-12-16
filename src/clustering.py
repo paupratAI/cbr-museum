@@ -20,21 +20,32 @@ class Clustering:
         self.feature_names = []
 
     def determine_optimal_clusters(self, X_scaled, min_clusters=3, max_clusters=10):
-        """Determine the optimal number of clusters using the silhouette score."""
+        """
+        Determine the optimal number of clusters using the silhouette score
+        and update the KMeans model with the best result.
+        """
         best_score = -1
-        best_k = 2
+        best_k = None
+        best_model = None  # Track the best model
+        
+        # Iterate over the range of clusters
         for k in range(min_clusters, max_clusters + 1):
             kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
             labels = kmeans.fit_predict(X_scaled)
             score = silhouette_score(X_scaled, labels)
             print(f'Number of clusters: {k}, Silhouette Score: {score:.4f}')
+            
+            # Update the best result if this score is the highest
             if score > best_score:
                 best_score = score
                 best_k = k
-        self.kmeans = KMeans(n_clusters=best_k, random_state=42, n_init=10)
-        self.kmeans.fit(X_scaled)
+                best_model = kmeans
+        
+        # Finalize the KMeans model with the best k
+        self.kmeans = best_model
         self.cluster_labels = self.kmeans.predict(X_scaled)
-        print(f'\nOptimal number of clusters determined: {best_k}')
+        print(f'\nOptimal number of clusters determined: {best_k} with Silhouette Score: {best_score:.4f}')
+
         return best_k
 
     def fetch_data_from_cases(self):
@@ -66,11 +77,17 @@ class Clustering:
         self.feature_names = list(self.data.columns)
         return X_scaled
 
-    def perform_clustering(self, X_scaled):
-        """Perform K-Means clustering."""
+    def perform_clustering(self, X_scaled, min_k=3, max_k=10):
+        """
+        Perform KMeans clustering using the determined optimal number of clusters.
+        """
         if self.kmeans is None:
-            self.determine_optimal_clusters(X_scaled)
-        self.cluster_labels = self.kmeans.predict(X_scaled)
+            print("Determining the optimal number of clusters...")
+            self.determine_optimal_clusters(X_scaled, min_clusters=min_k, max_clusters=max_k)
+        else:
+            # If KMeans is already initialized (e.g., from saved model), just predict
+            self.cluster_labels = self.kmeans.predict(X_scaled)
+        
         print("Cluster assignments completed.")
         return self.cluster_labels
 
@@ -196,7 +213,7 @@ if __name__ == "__main__":
     # Fetch data and perform clustering
     raw_data = clustering_system.fetch_data_from_cases()
     X_scaled = clustering_system.encode_and_scale_features()
-    clustering_system.perform_clustering(X_scaled)
+    clustering_system.perform_clustering(X_scaled, min_k=20, max_k=50)
     clustering_system.save_clusters_to_cases()
     clustering_system.print_cluster_statistics()
     clustering_system.print_centroids_readable()
