@@ -17,7 +17,7 @@ class CBR:
         self.conn.row_factory = sqlite3.Row 
         self.ensure_columns()
         self.create_indices()
-        #self.model = load_model()
+        self.model = load_model()
 
     def create_indices(self):
         """Create indices for faster query performance."""
@@ -55,21 +55,36 @@ class CBR:
         stored_preferred_periods_id: List[int],
         stored_preferred_author: Author,
         stored_preferred_themes: List[str],
-        stored_time_coefficient: str
+        stored_time_coefficient: str,
+        problem_group_description: str = None,
+        stored_group_description: str = None
     ) -> float:
         """
         Calculates the similarity between the provided parameters of a problem
         and those of a stored case directly, without needing an AbstractProblem object.
         """
-        weights = {
-            "group_size": 0.05,
-            "group_type": 0.1,
-            "art_knowledge": 0.2,
-            "preferred_periods": 0.2,
-            "preferred_author": 0.2,
-            "preferred_themes": 0.2,
-            "time_coefficient": 0.05
-        }
+        if problem_group_description:
+            weights = {
+                "group_size": 0.05,
+                "group_type": 0.1,
+                "art_knowledge": 0.2,
+                "preferred_periods": 0.2,
+                "preferred_author": 0.2,
+                "preferred_themes": 0.2,
+                "time_coefficient": 0.05
+            }
+        else:
+            weights = {
+                "group_size": 0.05,
+                "group_type": 0.05,
+                "art_knowledge": 0.1,
+                "preferred_periods": 0.2,
+                "preferred_author": 0.2,
+                "preferred_themes": 0.2,
+                "time_coefficient": 0.05,
+                "group_description": 0.15
+            }
+
         similarity = 0.0
 
         # Group size
@@ -131,10 +146,10 @@ class CBR:
             similarity += weights["time_coefficient"]
 
         # Group description
-        #if problem_group_description and stored_group_description:
-        #    sims = compare_sentences(problem_group_description, stored_group_description, self.model)
-        #    description_similarity = sims[0]
-        #    similarity += weights["group_description"] * description_similarity
+        if problem_group_description and stored_group_description:
+            sims = compare_sentences(problem_group_description, stored_group_description, self.model)
+            description_similarity = sims[0]
+            similarity += weights["group_description"] * description_similarity
 
         return round(similarity, 2)
 
