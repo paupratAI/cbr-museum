@@ -22,22 +22,22 @@ class CBR:
     def create_indices(self):
         """Create indices for faster query performance."""
         with self.conn:
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_cluster ON abstract_problems(cluster);")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_usage_count ON abstract_problems(usage_count);")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_utility ON abstract_problems(utility);")
-            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_redundancy ON abstract_problems(redundancy);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_cluster ON cases(cluster);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_usage_count ON cases(usage_count);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_utility ON cases(utility);")
+            self.conn.execute("CREATE INDEX IF NOT EXISTS idx_redundancy ON cases(redundancy);")
 
     def ensure_columns(self):
         """Ensure necessary columns (utility, usage_count, redundancy) exist in the table."""
-        cursor = self.conn.execute("PRAGMA table_info(abstract_problems)")
+        cursor = self.conn.execute("PRAGMA table_info(cases)")
         columns = [col[1] for col in cursor.fetchall()]
 
         if 'usage_count' not in columns:
-            self.conn.execute("ALTER TABLE abstract_problems ADD COLUMN usage_count INTEGER DEFAULT 0")
+            self.conn.execute("ALTER TABLE cases ADD COLUMN usage_count INTEGER DEFAULT 0")
         if 'redundancy' not in columns:
-            self.conn.execute("ALTER TABLE abstract_problems ADD COLUMN redundancy REAL DEFAULT 0.0")
+            self.conn.execute("ALTER TABLE cases ADD COLUMN redundancy REAL DEFAULT 0.0")
         if 'utility' not in columns:
-            self.conn.execute("ALTER TABLE abstract_problems ADD COLUMN utility REAL DEFAULT 0.0")
+            self.conn.execute("ALTER TABLE cases ADD COLUMN utility REAL DEFAULT 0.0")
         self.conn.commit()
 
     def calculate_similarity(
@@ -172,7 +172,7 @@ class CBR:
 
     def increment_usage_count(self, case_id):
         """Increments usage_count each time a case is retrieved."""
-        cursor = self.conn.execute("SELECT usage_count FROM abstract_problems WHERE id = ?", (case_id,))
+        cursor = self.conn.execute("SELECT usage_count FROM cases WHERE id = ?", (case_id,))
         result = cursor.fetchone()
         if result is not None and result[0] is not None:
             usage_count = result[0]
@@ -180,7 +180,7 @@ class CBR:
             usage_count = 0
 
         usage_count += 1
-        self.conn.execute("UPDATE abstract_problems SET usage_count = ? WHERE id = ?", (usage_count, case_id))
+        self.conn.execute("UPDATE cases SET usage_count = ? WHERE id = ?", (usage_count, case_id))
         self.conn.commit()
 
     def get_feedback_list(self, ordered_artworks_matches_str: str, rating: float) -> List[float]:
@@ -233,7 +233,7 @@ class CBR:
         Calculate redundancy for each case.
         Redundancy is defined as the fraction of other cases that are very similar (>0.9) to this one.
         """
-        cursor = self.conn.execute("SELECT * FROM abstract_problems")
+        cursor = self.conn.execute("SELECT * FROM cases")
         all_cases = cursor.fetchall()
 
         cases = []
@@ -290,7 +290,7 @@ class CBR:
                 redundancy = total_similarity / (total_cases - 1)
                 redundancy = round(redundancy, 2)
 
-            self.conn.execute("UPDATE abstract_problems SET redundancy = ? WHERE id = ?", (redundancy, case_id))
+            self.conn.execute("UPDATE cases SET redundancy = ? WHERE id = ?", (redundancy, case_id))
         self.conn.commit()
 
     def calculate_utility(self):
@@ -307,13 +307,13 @@ class CBR:
         self.ensure_columns()
         self.calculate_redundancy()
 
-        cursor = self.conn.execute("SELECT MAX(usage_count) FROM abstract_problems")
+        cursor = self.conn.execute("SELECT MAX(usage_count) FROM cases")
         max_usage = cursor.fetchone()[0]
         if max_usage is None or max_usage == 0:
             max_usage = 1
 
         # Retrieve required data for all cases
-        cursor = self.conn.execute("SELECT id, ordered_artworks_matches, rating, usage_count, redundancy FROM abstract_problems")
+        cursor = self.conn.execute("SELECT id, ordered_artworks_matches, rating, usage_count, redundancy FROM cases")
         rows = cursor.fetchall()
 
         for case_id, ordered_artworks_matches_str, rating, usage_count, redundancy in rows:
@@ -331,7 +331,7 @@ class CBR:
 
             utility = (0.5 * normalized_feedback) + (0.3 * normalized_usage) + (0.2 * non_redundancy_factor)
             utility = round(utility, 2)
-            self.conn.execute("UPDATE abstract_problems SET utility = ? WHERE id = ?", (utility, case_id))
+            self.conn.execute("UPDATE cases SET utility = ? WHERE id = ?", (utility, case_id))
 
         self.conn.commit()
 
@@ -341,7 +341,7 @@ class CBR:
         """
         query = """
             SELECT * 
-            FROM abstract_problems 
+            FROM cases 
             WHERE cluster = ? 
         """
         params = (problem.cluster,)
@@ -508,9 +508,9 @@ class CBR:
         }
         cluster = clustering.classify_new_case(new_case)
 
-        # Insert AbstractProblem into the abstract_problems table
+        # Insert AbstractProblem into the cases table
         cursor.execute("""
-            INSERT INTO abstract_problems
+            INSERT INTO cases
             (specific_problem_id, group_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks, ordered_artworks_matches, visited_artworks_count, group_description, rating, cluster)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
@@ -535,7 +535,7 @@ class CBR:
     def forget_cases(self, threshold=0.15):
         """Removes cases with low utility from the database."""
         with self.conn:
-            self.conn.execute("DELETE FROM abstract_problems WHERE utility <= ?", (threshold,))
+            self.conn.execute("DELETE FROM cases WHERE utility <= ?", (threshold,))
 
     def recommend_items(self, ap: AbstractProblem, top_k: int = 3) -> List[int]:
         """
