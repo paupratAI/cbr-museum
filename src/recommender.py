@@ -124,11 +124,16 @@ class Recommender:
 
 		return abstract_problem
 
-	def recommend(self, target_group_id: int, clean_response: list):
+	def recommend(self, target_group_id: int, clean_response: list, beta: float = 0.5) -> list:
 		"""
 		Recommends items using the CF and CBR systems.
 
 		The combination of the recommendations is done by averaging the positions of the items in the two lists and sorting them by the average position.
+
+		Args:
+			target_group_id (int): The group ID of the target group.
+			clean_response (list): The list of data from the group.
+			beta (float): The weight of the CF system in the combination of the recommendations.
 		"""
 		# Cridar a la funció que calgui per obtenir abs_prob des de clean_response
 		ap = self.convert_to_problems(clean_response)
@@ -139,7 +144,7 @@ class Recommender:
 
 		# Combine the recommendations from both systems
 		average_position = {
-			item_id: (cf_result.index(item_id) + cbr_result.index(item_id)) / 2
+			item_id: (cf_result.index(item_id) * beta + cbr_result.index(item_id) * (1 - beta)) / 2
 			for item_id in cf_result
 		}
 
