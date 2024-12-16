@@ -9,6 +9,8 @@ from ontology.themes import theme_instances
 from ontology.periods import periods
 from db_partitions_handler import DBPartitionsHandler
 
+import pickle as pkl
+
 class Recommender:
 	"""
 	Main class for the recommender system that combines the collaborative filtering (CF) and case-based reasoning (CBR) systems.
@@ -18,7 +20,7 @@ class Recommender:
 			main_table: str = 'cases',
 			cf_alpha: float = 0.5, 
 			cf_gamma: float = 1,
-			cf_decay_factor: float = 0.9,
+			cf_decay_factor: float = 1,
 			cf_method: str = 'cosine',
 			ratings_range: list = [0, 5],
 			):
@@ -30,7 +32,7 @@ class Recommender:
 
 		self.ratings_range = ratings_range
 
-		self.cbr: CBR = CBR(db_path)
+		# self.cbr: CBR = CBR(db_path)
 		
 		self.cf: CF = CF(
 			db_path=db_path, 
@@ -41,7 +43,7 @@ class Recommender:
 			ratings_range=ratings_range
 		)
 		
-		self.dbph = DBPartitionsHandler(db_path=self.db_path, train_split=0.8, main_table="cases", ratings_range=[0, 5], seed=42)
+		self.dbph = DBPartitionsHandler(db_path=self.db_path, train_split=0.975, main_table="cases", ratings_range=[0, 5], seed=42, overwrite=False)
 
 
 	def retrieve_data(self, clean_response):
@@ -60,12 +62,12 @@ class Recommender:
 		aut = list(authors.values())[:50]
 		return aut
 
-	def add_rows_to_cf(self):
+	def add_rows_to_cf(self, table_name: str):
 		"""
 		Adds all the rows of the main table to the CF system.
 		"""
 		# Get the values from the database
-		query = f"SELECT group_id, ordered_artworks, ordered_artworks_matches, visited_artworks_count, rating FROM {self.main_table}"
+		query = f"SELECT group_id, ordered_artworks, ordered_artworks_matches, visited_artworks_count, rating FROM {table_name}"
 		self.cursor.execute(query)
 		rows = self.cursor.fetchall()
 
@@ -83,7 +85,7 @@ class Recommender:
 				group_id=group_id, 
 				ordered_items=ordered_artworks_list,
 				ordered_items_matches=ordered_artworks_matches_list,
-				visited_items_count=visited_artworks_count, 
+				visited_items_count=visited_artworks_count,
 				global_rating=rating
 			)
 
@@ -124,7 +126,7 @@ class Recommender:
 
 		return abstract_problem
 
-	def recommend(self, target_group_id: int, clean_response: list, beta: float = 0.5) -> list:
+	def recommend(self, target_group_id: int, clean_response: list = [], beta: float = 0.5) -> dict[str, list]:
 		"""
 		Recommends items using the CF and CBR systems.
 
@@ -133,22 +135,66 @@ class Recommender:
 		Args:
 			target_group_id (int): The group ID of the target group.
 			clean_response (list): The list of data from the group.
-			beta (float): The weight of the CF system in the combination of the recommendations.
+			beta (float): The weight of the CF system in the combination of the hybrid recommendation.
+
+		Returns:
+			dict(str, list): A dictionary with the CBR, CF and Hybrid recommendations.
 		"""
 		# Cridar a la funció que calgui per obtenir abs_prob des de clean_response
-		ap = self.convert_to_problems(clean_response)
+		# ap = self.convert_to_problems(clean_response)
 
 		# Calculate the routes
 		cf_result = self.cf.recommend_items(target_group_id=target_group_id)
-		cbr_result = self.cbr.recommend_items(abs_prob=ap)
+		# cbr_result = self.cbr.recommend_items(abs_prob=ap)
 
-		# Combine the recommendations from both systems
-		average_position = {
-			item_id: (cf_result.index(item_id) * beta + cbr_result.index(item_id) * (1 - beta)) / 2
-			for item_id in cf_result
+		# # Combine the recommendations from both systems
+		# average_position = {
+		# 	item_id: (cf_result.index(item_id) * beta + cbr_result.index(item_id) * (1 - beta)) / 2
+		# 	for item_id in cf_result
+		# }
+
+		# # Sort the items by the average position
+		# combined_result = sorted(cf_result, key=lambda x: average_position[x])
+
+		combined_result = cf_result
+
+		recommendations = {
+			"cf": cf_result,
+			"cbr": [],
+			"hybrid": combined_result
 		}
 
-		# Sort the items by the average position
-		combined_result = sorted(cf_result, key=lambda x: average_position[x])
+		return recommendations
 
-		return combined_result
+	def evaluate(self, reload_cf: bool = False, save: bool = False):
+		"""
+		Evaluates the Recommender system in the test set.
+		"""
+		train_table_name = self.dbph.get_train_table_name()
+		test_table_name = self.dbph.get_test_table_name()
+
+		# Add the train rows to the CF system
+		if reload_cf:
+			self.add_rows_to_cf(table_name=train_table_name)
+
+		# Get the predictions from the CF system
+		test_rows = self.dbph.get_test_rows()
+		predictions = []
+
+		for i, row in enumerate(test_rows):
+			group_id = row[1]
+
+			print(f"Generating test prediction {(i+1)}/{len(test_rows)}", end='\r')
+
+			predictions.append(self.cf.recommend_items(target_group_id=group_id))
+
+		# Evaluate the predictions
+		scores = self.dbph.evaluate_predictions(predictions=predictions)
+
+		print(scores)
+
+		if save:
+			with open(f"scores/scores_cf_alpha{self.cf.default_alpha}_cfgamma{self.cf.default_gamma}_cfdecay{self.cf.default_decay_factor}_cfmethod{self.cf.default_method}.pkl", "wb") as f:
+				pkl.dump(scores, f)
+
+		return scores

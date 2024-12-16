@@ -366,7 +366,7 @@ class CF:
 
         # If the group is new, return the average rating of all items
         if target_group_id not in all_groups:
-            print(f"New group detected ({target_group_id}) in CF, returning average ratings.")
+            # print(f"New group detected ({target_group_id}) in CF, returning average ratings.")
             avg_ratings = {}
             for item in self.get_all_items():
                 item_ratings = self.get_item_ratings(item)
@@ -457,6 +457,6 @@ class CF:
         # Sort items by predicted ratings in descending order
         sorted_items = sorted(predicted_ratings.keys(), key=lambda x: predicted_ratings[x], reverse=True)
 
-        print([round(float(predicted_ratings[item]), 4) for item in sorted_items])
+        # print([round(float(predicted_ratings[item]), 4) for item in sorted_items])
 
         return sorted_items

@@ -2,14 +2,18 @@ import sqlite3
 import numpy as np
 from feedback import generate_and_parse_museum_feedback
 import random
+from ontology.periods import periods_dict
+from authors import authors
+from ontology.art import artworks
 
 class DBPartitionsHandler:
 	def __init__(self, 
 			db_path: str = "../data/database.db", 
-			train_split: float = 0.8, 
+			train_split: float = 0.975, # 50 cases for testing
 			main_table: str = "cases",
 			ratings_range: list = [0, 5],
-			seed: int = 42
+			seed: int = 42,
+			overwrite: bool = False
 			):
 		assert 0 <= train_split <= 1, "Train split should be between 0 and 1"
 
@@ -21,7 +25,8 @@ class DBPartitionsHandler:
 		self.conn = sqlite3.connect(db_path)
 		self.cursor = self.conn.cursor()
 
-		self.create_data_partitions(seed)
+		if overwrite:
+			self.create_data_partitions(seed)
 
 	def create_data_partitions(self, seed: int):
 		"""
@@ -30,7 +35,8 @@ class DBPartitionsHandler:
 		Args:
 			seed (int): The seed to use for the random split.
 		"""
-
+		# Check if the train and test tables are already created with the same split proportion
+		# Count the length of the train and test tables to check the proportion if they exist
 		# Set the seed
 		np.random.seed(seed)
 
@@ -81,22 +87,42 @@ class DBPartitionsHandler:
 		self.cursor.execute(f"SELECT rating FROM test_{self.main_table}")
 		return self.cursor.fetchall()
 	
+	def get_test_rows(self):
+		"""
+		Returns the rows of the test set.
+		"""
+
+		self.cursor.execute(f"SELECT * FROM test_{self.main_table}")
+		return self.cursor.fetchall()
+	
 	def get_predictions_ratings(self, predictions: list[list[int]]):
 		"""
 		Returns the ratings of the test set using the same expert LLM that rated the test set.
 		"""
 		# Get the test rows
-		query = f"SELECT group_size, group_type, group_description, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient FROM test_{self.main_table}"
+		query = f"SELECT group_size, group_type, group_description, art_knowledge, preferred_periods_ids, preferred_author_name, preferred_themes, time_coefficient FROM test_{self.main_table}"
 		self.cursor.execute(query)
 		test_rows = self.cursor.fetchall()
 
 		assert len(test_rows) == len(predictions), "The number of predictions should match the number of test rows."
 
-		for test_row, prediction in zip(test_rows, predictions):
+		predictions_ratings = []
+
+		for i, (test_row, prediction) in enumerate(zip(test_rows, predictions)):
+			print(f"Evaluating prediction {i+1}/{len(test_rows)}", end='\r')
+
 			textual_feedback = random.choice(["full", "short", "None"])
-			
+
+			prediction = [artworks[artwork_id] for artwork_id in prediction]
 
 			group_size, group_type, group_description, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient = test_row
+
+			preferred_periods = preferred_periods.replace("[", "").replace("]", "").replace("'", "").replace(" ", "").split(",") if preferred_periods else []
+			preferred_periods = [int(period.strip()) for period in preferred_periods]
+			preferred_periods = [periods_dict[period_id] for period_id in preferred_periods]
+
+			preferred_author = preferred_author.strip()
+			preferred_author = authors[preferred_author]
 
 			# Generate the feedback
 			feedback = generate_and_parse_museum_feedback(
@@ -115,11 +141,13 @@ class DBPartitionsHandler:
 				textual_feedback=textual_feedback
 			)
 
-			return feedback['evaluation']
+			predictions_ratings.append(feedback['evaluation'])
+
+		return predictions_ratings
 
 	def evaluate_predictions(self, 
 			predictions: list[list[int]], 
-			improvement_error_funcs: list[str] = ['lin-lin'],
+			improvement_error_funcs: list[str] = ['exp-exp', 'exp-lin', 'exp-log', 'lin-exp', 'lin-lin', 'lin-log', 'log-exp', 'log-lin', 'log-log']
 			) -> dict[str, tuple[float, np.ndarray]]:
 		"""
 		Evaluates the predictions in the test set using the improvement and error functions provided.
@@ -168,34 +196,23 @@ class DBPartitionsHandler:
 		# Diferencias entre predicciones y valores reales
 		diffs = y_pred - y_test
 
-		absolute_errors = np.where(diffs >= 0, 0, -diffs)
-		absolute_improvements = np.where(diffs >= 0, diffs, 0)
+		absolute_errors = np.where(diffs < 0, -diffs, 0)
+		absolute_improvements = np.where(diffs > 0, diffs, 0)
 		
 		# Improvement function
-		def apply_improvement_func(absolute_improvements):
-			if improvement_func == 'log':
+		def apply_func(absolute_improvements, func: str):
+			if func == 'log':
 				return np.log1p(absolute_improvements)  # log(1 + x)
-			elif improvement_func == 'lin':
+			elif func == 'lin':
 				return absolute_improvements  # Lineal
-			elif improvement_func == 'exp':
+			elif func == 'exp':
 				return np.expm1(absolute_improvements)  # exp(x) - 1
 			else:
 				raise ValueError(f"Improvement function '{improvement_func}' not recognized.")
 		
-		# Error function
-		def apply_error_func(absolute_errors):
-			if error_func == 'log':
-				return np.log1p(-absolute_errors)  # log(1 - x)
-			elif error_func == 'lin':
-				return -absolute_errors  # Lineal
-			elif error_func == 'exp':
-				return np.expm1(-absolute_errors)  # exp(-x) - 1
-			else:
-				raise ValueError(f"Error function '{error_func}' not recognized.")
-		
 		# Apply the functions
-		improvements = apply_improvement_func(absolute_improvements)
-		errors = apply_error_func(absolute_errors)
+		improvements = apply_func(absolute_improvements, func=improvement_func)
+		errors = apply_func(absolute_errors, func=error_func)
 
 		# Calculate the metric
 		metrics = improvements - errors
