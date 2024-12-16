@@ -38,7 +38,9 @@ class ArtGenerator:
 
     def prepare_artworks(self):
         artworks_data = self.args.data[:self.args.num_artworks]
-        for artwork in artworks_data:
+        for i, artwork in enumerate(artworks_data):
+            print(f"Preparing artwork {i+1}/{self.args.num_artworks} ({((i+1)/self.args.num_artworks)*100:.2f}%)", end="\r")
+
             author_name = artwork["created_by"]
             author = authors[author_name]
             self.authors_set.add(author)
@@ -102,7 +104,6 @@ class ArtGenerator:
                 daily_minutes=time,
             )
             spec_sol.distribute_artworks()
-            print('......................................................')
 
             textual_feedback = random.choice(["full", "short", "None"])
 
@@ -177,36 +178,12 @@ class ArtGenerator:
                 json.dump(serializable_results, f, ensure_ascii=False, indent=4)
 
         elif self.args.format == "sqlite":
-            """
-            case_data (dict): Dictionary with the case data containing the follwing keys:
-            - group_id (int): The group ID.
-            - group_size (int): The group size.
-            - group_type (str): The group type.
-            - art_knowledge (int): The art knowledge level.
-            - preferred_periods_ids (list[int]): The list of preferred periods IDs of the group.
-            - preferred_author_name (str): The preferred author name of the group.
-            - preferred_themes (list[str]): The list of preferred subthemes of the group.
-            - reduced_mobility (int): 1 if the group has reduced mobility, 0 otherwise.
-            - time_coefficient (float): The time coefficient.
-            - time_limit (float): The time limit for the group visit.
-            - group_description (str): The group description.
-            - ordered_artworks (list[int]): The list of ordered arwork IDs of the group.
-            - ordered_artworks_matches (list[float]): The list of ordered artwork matches of the group.
-            - visited_artworks_count (int): The number of visited artworks.
-            - rating (int): The rating of the group.
-            - textual_feedback (str): The textual feedback of the group.
-            - only_elevator (int): 1 if the group should use only the elevator, 0 otherwise.
-            - time_coefficient_correction (str): The time coefficient correction.
-            - artwork_to_remove (str): The artwork to remove, if any (None otherwise).
-            - guided_visit (int): 1 if the group should have a guided visit, 0 otherwise.
-            """
             save_in_sqlite3(cases_data=self.cases_data)
 
     def run(self):
         self.prepare_artworks()
         self.generate_cases()
         self.save_results()
-
 
 if __name__ == "__main__":
     gen_art_args = GenArtArgs()
