@@ -609,7 +609,7 @@ class CBR:
 		with self.conn:
 			self.conn.execute("DELETE FROM cases WHERE utility <= ?", (threshold,))
 
-	def recommend_items(self, ap: AbstractProblem, top_k: int = 3) -> List[int]:
+	def recommend_items(self, ap: AbstractProblem, top_k: int = 3) -> Tuple[List[int], List[float]]:
 		"""
 		Recommends items based on the utility values of the stored cases.
 
@@ -618,12 +618,12 @@ class CBR:
 			top_k (int): The number of top recommendations to return.
 
 		Returns:
-			List[int]: A list of recommended artwork IDs sorted by relevance.
+			Tuple[List[int], List[float]]: A tuple containing the recommended item IDs and their corresponding vales (criterion of order).
 		"""
-		recommended_artworks = self.reuse(ap)
+		recommended_artworks, recommended_probs = self.reuse(ap)
 		if not recommended_artworks:
-			return []  
-		return recommended_artworks
+			return [], []
+		return recommended_artworks, recommended_probs
 
 	
 def row_to_dict(row):
