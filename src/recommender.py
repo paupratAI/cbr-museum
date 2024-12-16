@@ -24,6 +24,10 @@ class Recommender:
 		cf_decay_factor: float = 1,
 		cf_method: str = 'cosine',
 		beta: float = 0.5,
+		cbr_alpha: float = 0.6,
+		cbr_beta: float = 0.3,
+		cbr_gamma: float = 0.1,
+		cbr_top_k: int = 3,
 		ratings_range: list = [0, 5],
 		clustering: bool = False
 		):
@@ -40,6 +44,10 @@ class Recommender:
 			cf_gamma (float): The gamma parameter for the CF system.
 			cf_decay_factor (float): The decay factor for the CF system.
 			cf_method (str): The method to use for the CF system.
+			cbr_alpha (float): The alpha parameter for the CBR system.
+			cbr_beta (float): The beta parameter for the CBR system.
+			cbr_gamma (float): The gamma parameter for the CBR system.
+			cbr_top_k (int): The number of top cases to consider in the CBR system.
 			db_path (str): The path to the SQLite database.
 			main_table (str): The name of the main table in the database.
 			ratings_range (list): The range of ratings to use in the feedback.
@@ -58,7 +66,7 @@ class Recommender:
 
 		self.ratings_range = ratings_range
 
-		self.cbr: CBR = CBR(db_path)
+		self.cbr: CBR = CBR(db_path, alpha=cbr_alpha, beta=cbr_beta, gamma=cbr_gamma, top_k=cbr_top_k)
 		
 		self.cf: CF = CF(
 			db_path=db_path, 
