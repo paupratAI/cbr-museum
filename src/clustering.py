@@ -18,29 +18,40 @@ class Clustering:
         self.data = None
         self.cluster_labels = None
         self.feature_names = []
+        self.ids = None  # Initialize ids attribute
 
-    def determine_optimal_clusters(self, X_scaled, min_clusters=3, max_clusters=10):
+    def determine_optimal_clusters(self, X_scaled, min_clusters=3, max_clusters=10, minimum_examples_per_cluster=3):
         """
         Determine the optimal number of clusters using the silhouette score
-        and update the KMeans model with the best result.
+        and ensure each cluster has at least minimum_examples_per_cluster examples.
+        Update the KMeans model with the best result that satisfies the constraint.
         """
         best_score = -1
         best_k = None
         best_model = None  # Track the best model
-        
+
         # Iterate over the range of clusters
         for k in range(min_clusters, max_clusters + 1):
             kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
             labels = kmeans.fit_predict(X_scaled)
             score = silhouette_score(X_scaled, labels)
             print(f'Number of clusters: {k}, Silhouette Score: {score:.4f}')
-            
-            # Update the best result if this score is the highest
-            if score > best_score:
-                best_score = score
-                best_k = k
-                best_model = kmeans
-        
+
+            # Check if all clusters have at least minimum_examples_per_cluster examples
+            unique, counts = pd.Series(labels).value_counts().sort_index().index, pd.Series(labels).value_counts().sort_index().values
+            if all(count >= minimum_examples_per_cluster for count in counts):
+                print(f'All clusters have at least {minimum_examples_per_cluster} examples.')
+                # Update the best result if this score is the highest
+                if score > best_score:
+                    best_score = score
+                    best_k = k
+                    best_model = kmeans
+            else:
+                print(f'Cluster size below minimum for k={k}. Skipping this k.')
+
+        if best_model is None:
+            raise ValueError(f"No k between {min_clusters} and {max_clusters} satisfies the minimum examples per cluster constraint.")
+
         # Finalize the KMeans model with the best k
         self.kmeans = best_model
         self.cluster_labels = self.kmeans.predict(X_scaled)
@@ -77,13 +88,19 @@ class Clustering:
         self.feature_names = list(self.data.columns)
         return X_scaled
 
-    def perform_clustering(self, X_scaled, min_k=3, max_k=10):
+    def perform_clustering(self, X_scaled, min_k=3, max_k=10, minimum_examples_per_cluster=3):
         """
         Perform KMeans clustering using the determined optimal number of clusters.
+        Ensures each cluster has at least minimum_examples_per_cluster examples.
         """
         if self.kmeans is None:
             print("Determining the optimal number of clusters...")
-            self.determine_optimal_clusters(X_scaled, min_clusters=min_k, max_clusters=max_k)
+            self.determine_optimal_clusters(
+                X_scaled, 
+                min_clusters=min_k, 
+                max_clusters=max_k, 
+                minimum_examples_per_cluster=minimum_examples_per_cluster
+            )
         else:
             # If KMeans is already initialized (e.g., from saved model), just predict
             self.cluster_labels = self.kmeans.predict(X_scaled)
@@ -178,7 +195,7 @@ class Clustering:
         
         # Reorder columns for readability
         ordered_columns = ['num_people', 'preferred_author_name', 'preferred_year',
-                        'guided_visit', 'minors', 'num_experts', 'past_museum_visits', 'preferred_main_theme']
+                           'guided_visit', 'minors', 'num_experts', 'past_museum_visits', 'preferred_main_theme']
         centroids_df = centroids_df[ordered_columns]
         
         print("\nCluster Centroids (Readable Format):")
@@ -187,15 +204,20 @@ class Clustering:
 
     def classify_new_case(self, new_case):
         """Classify a new case into a cluster."""
+        # Encode categorical features
+        preferred_author_encoded = self.label_encoder_author.transform([new_case['preferred_author_name']])[0]
+        preferred_theme_encoded = self.label_encoder_theme.transform([new_case['preferred_main_theme']])[0]
+
+        # Create DataFrame for the new case
         df_new = pd.DataFrame([{
             'num_people': new_case['num_people'],
-            'preferred_author_name_encoded': self.label_encoder_author.transform([new_case['preferred_author_name']])[0],
+            'preferred_author_name_encoded': preferred_author_encoded,
             'preferred_year': new_case['preferred_year'],
             'guided_visit': new_case['guided_visit'],
             'minors': new_case['minors'],
             'num_experts': new_case['num_experts'],
             'past_museum_visits': new_case['past_museum_visits'],
-            'preferred_main_theme_encoded': self.label_encoder_theme.transform([new_case['preferred_main_theme']])[0]
+            'preferred_main_theme_encoded': preferred_theme_encoded
         }])
         df_new = df_new[self.feature_names]
         X_scaled_new = self.scaler.transform(df_new)
@@ -208,17 +230,22 @@ class Clustering:
 
 # Usage Example
 if __name__ == "__main__":
+    # Initialize the clustering system
     clustering_system = Clustering(db_path='./data/database_2000.db', model_path='./models/kmeans_model.joblib')
 
-    # Fetch data and perform clustering
-    raw_data = clustering_system.fetch_data_from_cases()
-    X_scaled = clustering_system.encode_and_scale_features()
-    clustering_system.perform_clustering(X_scaled, min_k=20, max_k=50)
-    clustering_system.save_clusters_to_cases()
-    clustering_system.print_cluster_statistics()
-    clustering_system.print_centroids_readable()
-    clustering_system.save_model()
-    clustering_system.close_connection()
+    try:
+        # Fetch data and perform clustering
+        raw_data = clustering_system.fetch_data_from_cases()
+        X_scaled = clustering_system.encode_and_scale_features()
+        clustering_system.perform_clustering(X_scaled, min_k=20, max_k=50, minimum_examples_per_cluster=23)
+        clustering_system.save_clusters_to_cases()
+        clustering_system.print_cluster_statistics()
+        clustering_system.print_centroids_readable()
+        clustering_system.save_model()
+    except ValueError as ve:
+        print(f"Clustering Error: {ve}")
+    finally:
+        clustering_system.close_connection()
 
     # Classify a new case
     new_case = {
@@ -231,8 +258,15 @@ if __name__ == "__main__":
         'num_experts': 2,
         'past_museum_visits': 5
     }
-    clustering_system = Clustering(db_path='./data/database_2000.db', model_path='./models/kmeans_model.joblib')
-    clustering_system.load_model()
-    cluster_id = clustering_system.classify_new_case(new_case)
-    print(f"\nThe new case is assigned to cluster: {cluster_id}")
-    clustering_system.close_connection()
+
+    # Initialize a new clustering system instance for classification
+    classification_system = Clustering(db_path='./data/database_2000.db', model_path='./models/kmeans_model.joblib')
+
+    try:
+        classification_system.load_model()
+        cluster_id = classification_system.classify_new_case(new_case)
+        print(f"\nThe new case is assigned to cluster: {cluster_id}")
+    except FileNotFoundError as fnfe:
+        print(f"Model Loading Error: {fnfe}")
+    finally:
+        classification_system.close_connection()
