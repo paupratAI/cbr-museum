@@ -17,22 +17,42 @@ class Recommender:
 	Main class for the recommender system that combines the collaborative filtering (CF) and case-based reasoning (CBR) systems.
 	"""
 	def __init__(self, 
-			db_path='data/database.db',
-			main_table: str = 'cases',
-			cf_alpha: float = 0.5, 
-			cf_gamma: float = 1,
-			cf_decay_factor: float = 1,
-			cf_method: str = 'cosine',
-			ratings_range: list = [0, 5],
-			clustering: bool = False
-			):
-		
-		self.db_path = db_path
+		db_path='data/database.db',
+		main_table: str = 'cases',
+		cf_alpha: float = 0.5, 
+		cf_gamma: float = 1,
+		cf_decay_factor: float = 1,
+		cf_method: str = 'cosine',
+		beta: float = 0.5,
+		ratings_range: list = [0, 5],
+		clustering: bool = False
+		):
+		"""
+		Initializes the Recommender system.
+
+		Args:
+			beta (float): The weight of the CF system in the combination of the hybrid recommendation.
+			- beta = 0 means only CBR recommendations are used.
+			- beta = 1 means only CF recommendations are used.
+			- 0 < beta < 1 means a combination of both recommendations is used.
+
+			cf_alpha (float): The alpha parameter for the CF system.
+			cf_gamma (float): The gamma parameter for the CF system.
+			cf_decay_factor (float): The decay factor for the CF system.
+			cf_method (str): The method to use for the CF system.
+			db_path (str): The path to the SQLite database.
+			main_table (str): The name of the main table in the database.
+			ratings_range (list): The range of ratings to use in the feedback.
+			clustering (bool): Whether to calculate the clusters or not.
+		"""
+		assert 0 <= beta <= 1, "Beta should be between 0 and 1."
 		
 		if clustering:
 			self.clustering()
 
 		self.main_table = main_table
+		self.db_path = db_path
+		self.beta = beta
 		self.conn = sqlite3.connect(db_path)
 		self.cursor = self.conn.cursor()
 
@@ -151,8 +171,11 @@ class Recommender:
 		)
 
 		return abstract_problem
+	
+	def store_case(self) -> None:
+		pass
 
-	def recommend(self, target_group_id: int, clean_response: list = [], ap: AbstractProblem = None, beta: float = 0.5) -> dict[str, list]:
+	def recommend(self, target_group_id: int, clean_response: list = [], ap: AbstractProblem = None, eval_mode: bool = False) -> dict[str, list]:
 		"""
 		Recommends items using the CF and CBR systems.
 
@@ -161,7 +184,8 @@ class Recommender:
 		Args:
 			target_group_id (int): The group ID of the target group.
 			clean_response (list): The list of data from the group.
-			beta (float): The weight of the CF system in the combination of the hybrid recommendation.
+			ap (AbstractProblem): The abstract problem to use for the CBR system.
+			eval_mode (bool): Whether to use the evaluation mode or not. Eval mode does not add the resulting cases to CBR nor CF.
 
 		Returns:
 			dict(str, list): A dictionary with the CBR, CF and Hybrid recommendations.
@@ -170,21 +194,31 @@ class Recommender:
 		if not ap:
 			ap = self.convert_to_problems(clean_response)
 
+		cf_result, cbr_result = [], []
+
 		# Calculate the routes
-		cf_result, cf_probs = self.cf.recommend_items(target_group_id=target_group_id) # CF probs must be used to aproximate matches (by scaling these probs to 0-10) when storing the case in the CF databse
+		if self.beta > 0:
+			cf_result, cf_probs = self.cf.recommend_items(target_group_id=target_group_id) # CF probs must be used to aproximate matches when storing the case in the CF databse
+			cf_probs_dict = {item_id: prob for item_id, prob in zip(cf_result, cf_probs)}
 		
-		cbr_result = self.cbr.recommend_items(abs_prob=ap)
+		if self.beta < 1:
+			cbr_result, cbr_probs = self.cbr.recommend_items(ap=ap)
+			cbr_probs_dict = {item_id: prob for item_id, prob in zip(cbr_result, cbr_probs)}
 
-		# # Combine the recommendations from both systems
-		# average_position = {
-		# 	item_id: (cf_result.index(item_id) * beta + cbr_result.index(item_id) * (1 - beta)) / 2
-		# 	for item_id in cf_result
-		# }
+		# Combine the recommendations from both systems
+		all_items = cf_result if self.beta > 0 else cbr_result
+		if 0 < self.beta < 1:
+			averaged_probs_dict = {
+				item_id: (cf_probs_dict[item_id] * self.beta + cbr_probs_dict[item_id] * (1 - self.beta)) for item_id in all_items
+			}
 
-		# # Sort the items by the average position
-		# combined_result = sorted(cf_result, key=lambda x: average_position[x])
-
-		combined_result = cf_result
+		# Sort the items by the average position
+		if self.beta == 0:
+			combined_result = cbr_result
+		elif self.beta == 1:
+			combined_result = cf_result
+		else:
+			combined_result = list(sorted(averaged_probs_dict.keys(), key=lambda x: averaged_probs_dict[x]))
 
 		recommendations = {
 			"cf": cf_result,
@@ -192,14 +226,16 @@ class Recommender:
 			"hybrid": combined_result
 		}
 
+		# if not eval_mode:
+		# 	self.store_case()
+
 		return recommendations
 
 	def evaluate(self, reload_cf: bool = False, save: bool = False):
 		"""
-		Evaluates the Recommender system in the test set.
+		Evaluates the Recommender Hybrid predictions in the test set.
 		"""
 		train_table_name = self.dbph.get_train_table_name()
-		test_table_name = self.dbph.get_test_table_name()
 
 		# Add the train rows to the CF system
 		if reload_cf:
@@ -214,7 +250,7 @@ class Recommender:
 
 			print(f"Generating test prediction {(i+1)}/{len(test_rows)}", end='\r')
 
-			predictions.append(self.cf.recommend_items(target_group_id=group_id)[0])
+			predictions.append(self.recommend(target_group_id=group_id, clean_response=row, eval_mode=True)["hybrid"])
 
 		# Evaluate the predictions
 		scores = self.dbph.evaluate_predictions(predictions=predictions)
@@ -222,6 +258,7 @@ class Recommender:
 		print(scores)
 
 		if save:
+			return scores
 			with open(f"scores/scores_cf_alpha{self.cf.default_alpha}_cfgamma{self.cf.default_gamma}_cfdecay{self.cf.default_decay_factor}_cfmethod{self.cf.default_method}.pkl", "wb") as f:
 				pkl.dump(scores, f)
 
