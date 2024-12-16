@@ -32,5 +32,10 @@ def process_answers():
     result = llama_model.run_llm(answers)
     return jsonify(status='ok', result=result)
 
+@app.route('/final_questions', methods=['GET'])
+def final_questions():
+    return render_template('final_questions.html')
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=5001, debug=False)

@@ -51,8 +51,8 @@ class Llama:
 class Interface:
     def __init__(self):
         self.llama = Llama()
-        self.recommender = Recommender()
-        self.db = sqlite3.connect("data/database.db", check_same_thread=False)
+        self.recommender = Recommender(db_path="data/database_2000_old.db")
+        self.db = sqlite3.connect("data/database_2000:olf.db", check_same_thread=False)
 
     def get_id(self):
         cursor = self.db.cursor()
