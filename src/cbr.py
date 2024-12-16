@@ -15,11 +15,15 @@ from group_description import compare_sentences, load_model
 from typing import List, Tuple
 
 class CBR:
-	def __init__(self, db_path='./data/database.db'):
+	def __init__(self, db_path='./data/database.db', alpha=0.6, beta=0.3, gamma=0.1, top_k=3):
 		self.conn = sqlite3.connect(db_path)
 		self.conn.row_factory = sqlite3.Row 
 		self.ensure_columns()
 		self.create_indices()
+		self.alpha = alpha
+		self.beta = beta
+		self.gamma = gamma
+		self.top_k = top_k
 		#self.model = load_model()
 
 	def create_indices(self):
@@ -384,9 +388,7 @@ class CBR:
 
 		return selected_cases
 
-	def reuse(self, base_problem: AbstractProblem, top_k: int = 3, 
-			alpha: float = 0.6, beta: float = 0.3, gamma: float = 0.1, 
-			desired_artwork_count: int = 50) -> Tuple[List[int], List[float]]:
+	def reuse(self, base_problem: AbstractProblem) -> Tuple[List[int], List[float]]:
 			"""
 			Adapts a solution for the base problem by combining and reordering artworks
 			from the top k most similar cases to create a personalized route of desired_artwork_count artworks.
@@ -401,6 +403,12 @@ class CBR:
 					- A list of adapted artwork IDs ordered according to the combined scores.
 					- A corresponding list of their total scores.
 			"""
+			top_k = self.top_k
+			alpha = self.alpha
+			beta = self.beta
+			gamma = self.gamma
+			desired_artwork_count = 50
+
 			# Step 1: Retrieve the top k most similar cases
 			retrieved_cases = self.retrieve(base_problem, top_k=top_k)
 
