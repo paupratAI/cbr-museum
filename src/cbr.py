@@ -1,5 +1,5 @@
 import sqlite3
-from entities import AbstractProblem, SpecificProblem, Author, Period, Theme
+from entities import AbstractProblem, SpecificProblem, Author, Period, Theme, AbstractSolution
 from typing import List
 import json
 import ast
@@ -8,6 +8,7 @@ from dataclasses import asdict
 from clustering import Clustering
 from ontology.periods import periods
 from ontology.themes import theme_instances
+from ontology.art import artworks
 from authors import authors
 from group_description import compare_sentences, load_model
 
@@ -403,65 +404,174 @@ class CBR:
 
         return selected_cases
 
-    def reuse(self, base_problem: AbstractProblem) -> List[int]:
+    def reuse(self, base_problem: AbstractProblem, top_k: int = 3, 
+          alpha: float = 0.6, beta: float = 0.3, gamma: float = 0.1, 
+          desired_artwork_count: int = 50) -> List[int]:
         """
         Adapts a solution for the base problem by combining and reordering artworks
-        from the three most similar cases.
+        from the top k most similar cases to create a personalized route of desired_artwork_count artworks.
 
         :param base_problem: The AbstractProblem instance representing the new problem.
-        :return: A list of adapted artworks ordered according to the ontology.
+        :param top_k: Number of top similar cases to consider.
+        :param alpha: Weight for normalized frequency.
+        :param beta: Weight for normalized match_type.
+        :param gamma: Weight for normalized inverse average position.
+        :param desired_artwork_count: Total number of artworks desired in the final route.
+        :return: A list of adapted artwork IDs ordered according to the combined scores.
         """
-        # Retrieve the top 3 most similar cases
-        top_cases = self.retrieve(base_problem, top_k=3)
-        
-        if not top_cases:
-            return []  
-        
-        # Combine artworks from the top cases into a set (no duplicates)
-        artwork_set = set()
-        for case, _ in top_cases:
-            artworks = json.loads(case['ordered_artworks']) 
-            artwork_set.update(artworks)
+        # Step 1: Retrieve the top k most similar cases
+        retrieved_cases = self.retrieve(base_problem, top_k=top_k)
 
-        # Convert the set back to a list for ordering
-        combined_artworks = list(artwork_set)
+        # Step 2: Initialize dictionaries to store frequencies and positions
+        artwork_frequency = {}
+        artwork_positions = {}
 
-        # Function to calculate ontology-based relevance
-        def artwork_relevance(artwork_id):
-            """
-            Calculates the relevance of an artwork based on its relation to the base problem's ontology.
-            Higher scores indicate a closer match.
-            """
-            score = 0
-            # Prioritize artworks matching the preferred themes
-            for theme in base_problem.preferred_themes:
-                if theme in theme_instances and artwork_id in theme_instances[theme].artworks:
-                    score += 3  # Weight for matching preferred themes
+        for case_tuple in retrieved_cases:
+            case, similarity = case_tuple
+            case_dict = row_to_dict(case)
             
-            # Prioritize artworks matching the preferred periods
-            for period in base_problem.preferred_periods:
-                if artwork_id in period.artworks:
-                    score += 2  # Weight for matching preferred periods
+            # Extract 'ordered_artworks' and 'visited_artworks_count' from the case
+            ordered_artworks_str = case_dict.get('ordered_artworks', '[]')
+            visited_artworks_count = case_dict.get('visited_artworks_count', 0)
             
-            return score
+            # Convert the JSON string of artworks to a list of integers
+            try:
+                ordered_artworks = json.loads(ordered_artworks_str)
+            except json.JSONDecodeError:
+                ordered_artworks = []
+            
+            # Get the artworks actually visited
+            visited_artworks = ordered_artworks[:visited_artworks_count]
+            
+            # Update frequency and position data
+            for position, artwork_id in enumerate(visited_artworks):
+                # Update frequency count
+                artwork_frequency[artwork_id] = artwork_frequency.get(artwork_id, 0) + 1
+                
+                # Update positions list
+                if artwork_id not in artwork_positions:
+                    artwork_positions[artwork_id] = []
+                artwork_positions[artwork_id].append(position + 1)  # Positions start at 1
 
-        # Order artworks based on relevance
-        combined_artworks.sort(key=artwork_relevance, reverse=True)
+        # Step 3: Calculate average position for each artwork
+        artwork_avg_positions = {
+            artwork_id: sum(positions) / len(positions)
+            for artwork_id, positions in artwork_positions.items()
+        }
 
-        return combined_artworks
-    
-    def revise(self, artworks: List[int], artwork_to_remove: int) -> List[int]:
-        """
-        Revises the solution by moving an artwork to the end of the list if it is present.
+        # Step 4: Collect all unique artwork IDs from the retrieved cases
+        collected_artwork_ids = list(artwork_frequency.keys())
 
-        :param artworks: The list of artworks to revise.
-        :param artwork_to_remove: The artwork to move to the end of the list.
-        :return: A list of adapted artworks ordered according to the ontology.
-        """
-        if artwork_to_remove in artworks:
-            artworks.remove(artwork_to_remove)
-            artworks.append(artwork_to_remove)
-        return artworks
+        # Step 5: Handle cases with no collected artworks
+        if not collected_artwork_ids:
+            # Since we're not accessing the database, we'll assume that all cases have the same 50 artworks
+            # We'll take the ordered_artworks from the first retrieved case
+            if not retrieved_cases:
+                # No cases retrieved; return empty list
+                return []
+            
+            first_case_tuple = retrieved_cases[0]
+            first_case, _ = first_case_tuple
+            first_case_dict = row_to_dict(first_case)
+            ordered_artworks_str = first_case_dict.get('ordered_artworks', '[]')
+            
+            try:
+                ordered_artworks = json.loads(ordered_artworks_str)
+            except json.JSONDecodeError:
+                ordered_artworks = []
+            
+            # Limit to desired_artwork_count
+            final_ordered_artwork_ids = ordered_artworks[:desired_artwork_count]
+            return final_ordered_artwork_ids
+
+        # Step 6: Map collected artwork IDs to Artwork instances, filtering out any missing IDs
+        collected_artworks = [artworks[aid] for aid in collected_artwork_ids if aid in artworks]
+
+        # Step 7: Create an AbstractSolution instance and compute matches
+        abs_sol = AbstractSolution(related_to_AbstractProblem=base_problem)
+        abs_sol.compute_matches(artworks=collected_artworks)
+
+        if not abs_sol.ordered_artworks:
+            # If compute_matches did not populate ordered_artworks, return empty list
+            return []
+
+        # Step 8: Extract match_type scores from abs_sol.matches
+        matching_scores_dict = {match.artwork.artwork_id: match.match_type for match in abs_sol.matches if match.artwork.artwork_id in artworks}
+
+        if not matching_scores_dict:
+            # If no matching scores are found, return empty list
+            return []
+
+        # Step 9: Normalize frequency
+        max_frequency = max(artwork_frequency.values()) if artwork_frequency else 1
+        min_frequency = min(artwork_frequency.values()) if artwork_frequency else 1
+        freq_range = max_frequency - min_frequency if max_frequency != min_frequency else 1
+
+        normalized_frequency = {aid: (count - min_frequency) / freq_range for aid, count in artwork_frequency.items()}
+
+        # Step 10: Normalize match_type scores
+        matching_scores_values = list(matching_scores_dict.values())
+        max_matching_score = max(matching_scores_values) if matching_scores_values else 1
+        min_matching_score = min(matching_scores_values) if matching_scores_values else 0
+        matching_score_range = max_matching_score - min_matching_score if max_matching_score != min_matching_score else 1
+
+        normalized_match_score = {aid: (score - min_matching_score) / matching_score_range for aid, score in matching_scores_dict.items()}
+
+        # Step 11: Normalize inverse average position
+        # Lower average position means higher priority, so we take the inverse
+        inv_avg_pos = {aid: 1.0 / pos if pos != 0 else 0.0 for aid, pos in artwork_avg_positions.items()}
+        if inv_avg_pos:
+            max_inv_avg_position = max(inv_avg_pos.values())
+            min_inv_avg_position = min(inv_avg_pos.values())
+            inv_avg_pos_range = max_inv_avg_position - min_inv_avg_position if max_inv_avg_position != min_inv_avg_position else 1
+            normalized_inv_avg_pos = {aid: (inv_pos - min_inv_avg_position) / inv_avg_pos_range for aid, inv_pos in inv_avg_pos.items()}
+        else:
+            normalized_inv_avg_pos = {}
+
+        # Step 12: Calculate total score S for each artwork
+        artwork_total_scores = {}
+        for artwork_id in collected_artwork_ids:
+            freq_norm = normalized_frequency.get(artwork_id, 0)
+            match_norm = normalized_match_score.get(artwork_id, 0)
+            inv_pos_norm = normalized_inv_avg_pos.get(artwork_id, 0)
+            
+            # Calculate total score with the defined weights
+            total_score = alpha * freq_norm + beta * match_norm + gamma * inv_pos_norm
+            artwork_total_scores[artwork_id] = total_score
+
+        # Step 13: Order artworks by total score in descending order
+        ordered_artworks = sorted(artwork_total_scores.items(), key=lambda x: x[1], reverse=True)
+        ordered_artwork_ids = [aid for aid, score in ordered_artworks]
+
+        # Step 14: If we have enough artworks, truncate the list to desired_artwork_count
+        if len(ordered_artwork_ids) >= desired_artwork_count:
+            return ordered_artwork_ids[:desired_artwork_count]
+
+        # Step 15: If not enough, fill up using ordered_artworks from the retrieved cases
+        # Since all cases have the same 50 artworks in different orders, iterate through their ordered lists
+        for case_tuple in retrieved_cases:
+            case, similarity = case_tuple
+            case_dict = row_to_dict(case)
+            ordered_artworks_str = case_dict.get('ordered_artworks', '[]')
+            
+            try:
+                ordered_artworks_case = json.loads(ordered_artworks_str)
+            except json.JSONDecodeError:
+                continue  # Skip this case if JSON is invalid
+            
+            for aid in ordered_artworks_case:
+                if len(ordered_artwork_ids) >= desired_artwork_count:
+                    break
+                if aid not in ordered_artwork_ids:
+                    ordered_artwork_ids.append(aid)
+            
+            if len(ordered_artwork_ids) >= desired_artwork_count:
+                break
+
+        # Step 16: Final check to ensure the list has exactly desired_artwork_count artworks
+        final_ordered_artwork_ids = ordered_artwork_ids[:desired_artwork_count]
+
+        return final_ordered_artwork_ids
     
     def retain(self, specific_problem: SpecificProblem, user_feedback: int, visited_count: int, clustering: 'Clustering', ordered_artworks: List[int], ordered_artworks_matches: List[int]):
         """
@@ -593,3 +703,6 @@ if __name__ == '__main__':
         case_dict = row_to_dict(case)
         print(f"Case: {case_dict['case_id']}, Similarity: {similarity}")
     print(ap.preferred_themes)
+
+    route = cbr.reuse(ap, top_k=3)
+    print(route), print(len(route))
