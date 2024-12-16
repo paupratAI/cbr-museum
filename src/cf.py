@@ -396,14 +396,14 @@ class CF:
             if top_k_users is not None:
                 group_similarities = group_similarities[:top_k_users]
 
-            for similar_group, similar_item_similarity in group_similarities:
+            for similar_group, similar_group_similarity in group_similarities:
                 group_ratings = self.get_group_ratings(similar_group)
 
                 if item in group_ratings:
                     group_item_rating = group_ratings[item][0]
 
-                    user_based_score += similar_item_similarity * group_item_rating
-                    user_similarity_sum += similar_item_similarity
+                    user_based_score += similar_group_similarity * group_item_rating
+                    user_similarity_sum += similar_group_similarity
 
             user_based_prediction = (
                 user_based_score / user_similarity_sum if user_similarity_sum > 0 else 0
