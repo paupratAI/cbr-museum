@@ -1,6 +1,6 @@
 import sqlite3
 from entities import AbstractProblem, SpecificProblem, Author, Period, Theme, AbstractSolution
-from typing import List
+from typing import List, Dict, Tuple
 import json
 import ast
 from dataclasses import asdict
@@ -25,22 +25,22 @@ class CBR:
 	def create_indices(self):
 		"""Create indices for faster query performance."""
 		with self.conn:
-			self.conn.execute("CREATE INDEX IF NOT EXISTS idx_cluster ON cases(cluster);")
-			self.conn.execute("CREATE INDEX IF NOT EXISTS idx_usage_count ON cases(usage_count);")
-			self.conn.execute("CREATE INDEX IF NOT EXISTS idx_utility ON cases(utility);")
-			self.conn.execute("CREATE INDEX IF NOT EXISTS idx_redundancy ON cases(redundancy);")
+			self.conn.execute("CREATE INDEX IF NOT EXISTS idx_cluster ON train_cases(cluster);")
+			self.conn.execute("CREATE INDEX IF NOT EXISTS idx_usage_count ON train_cases(usage_count);")
+			self.conn.execute("CREATE INDEX IF NOT EXISTS idx_utility ON train_cases(utility);")
+			self.conn.execute("CREATE INDEX IF NOT EXISTS idx_redundancy ON train_cases(redundancy);")
 
 	def ensure_columns(self):
 		"""Ensure necessary columns (utility, usage_count, redundancy) exist in the table."""
-		cursor = self.conn.execute("PRAGMA table_info(cases)")
+		cursor = self.conn.execute("PRAGMA table_info(train_cases)")
 		columns = [col[1] for col in cursor.fetchall()]
 
 		if 'usage_count' not in columns:
-			self.conn.execute("ALTER TABLE cases ADD COLUMN usage_count INTEGER DEFAULT 0")
+			self.conn.execute("ALTER TABLE train_cases ADD COLUMN usage_count INTEGER DEFAULT 0")
 		if 'redundancy' not in columns:
-			self.conn.execute("ALTER TABLE cases ADD COLUMN redundancy REAL DEFAULT 0.0")
+			self.conn.execute("ALTER TABLE train_cases ADD COLUMN redundancy REAL DEFAULT 0.0")
 		if 'utility' not in columns:
-			self.conn.execute("ALTER TABLE cases ADD COLUMN utility REAL DEFAULT 0.0")
+			self.conn.execute("ALTER TABLE train_cases ADD COLUMN utility REAL DEFAULT 0.0")
 		self.conn.commit()
 
 	def calculate_similarity(
@@ -174,7 +174,7 @@ class CBR:
 
 	def increment_usage_count(self, case_id):
 		"""Increments usage_count each time a case is retrieved."""
-		cursor = self.conn.execute("SELECT usage_count FROM cases WHERE case_id = ?", (case_id,))
+		cursor = self.conn.execute("SELECT usage_count FROM train_cases WHERE case_id = ?", (case_id,))
 		result = cursor.fetchone()
 		if result is not None and result[0] is not None:
 			usage_count = result[0]
@@ -182,7 +182,7 @@ class CBR:
 			usage_count = 0
 
 		usage_count += 1
-		self.conn.execute("UPDATE cases SET usage_count = ? WHERE case_id = ?", (usage_count, case_id))
+		self.conn.execute("UPDATE train_cases SET usage_count = ? WHERE case_id = ?", (usage_count, case_id))
 		self.conn.commit()
 
 	def get_feedback_list(self, ordered_artworks_matches_str: str, rating: float) -> List[float]:
@@ -235,7 +235,7 @@ class CBR:
 		Calculate redundancy for each case.
 		Redundancy is defined as the fraction of other cases that are very similar (>0.9) to this one.
 		"""
-		cursor = self.conn.execute("SELECT * FROM cases")
+		cursor = self.conn.execute("SELECT * FROM train_cases")
 		all_cases = cursor.fetchall()
 
 		cases = []
@@ -288,7 +288,7 @@ class CBR:
 				redundancy = total_similarity / (total_cases - 1)
 				redundancy = round(redundancy, 2)
 
-			self.conn.execute("UPDATE cases SET redundancy = ? WHERE case_id = ?", (redundancy, case_id))
+			self.conn.execute("UPDATE train_cases SET redundancy = ? WHERE case_id = ?", (redundancy, case_id))
 		self.conn.commit()
 
 	def calculate_utility(self):
@@ -305,13 +305,13 @@ class CBR:
 		self.ensure_columns()
 		self.calculate_redundancy()
 
-		cursor = self.conn.execute("SELECT MAX(usage_count) FROM cases")
+		cursor = self.conn.execute("SELECT MAX(usage_count) FROM train_cases")
 		max_usage = cursor.fetchone()[0]
 		if max_usage is None or max_usage == 0:
 			max_usage = 1
 
 		# Retrieve required data for all cases
-		cursor = self.conn.execute("SELECT case_id, ordered_artworks_matches, rating, usage_count, redundancy FROM cases")
+		cursor = self.conn.execute("SELECT case_id, ordered_artworks_matches, rating, usage_count, redundancy FROM train_cases")
 		rows = cursor.fetchall()
 
 		for case_id, ordered_artworks_matches_str, rating, usage_count, redundancy in rows:
@@ -329,7 +329,7 @@ class CBR:
 
 			utility = (0.5 * normalized_feedback) + (0.3 * normalized_usage) + (0.2 * non_redundancy_factor)
 			utility = round(utility, 2)
-			self.conn.execute("UPDATE cases SET utility = ? WHERE case_id = ?", (utility, case_id))
+			self.conn.execute("UPDATE train_cases SET utility = ? WHERE case_id = ?", (utility, case_id))
 
 		self.conn.commit()
 
@@ -339,7 +339,7 @@ class CBR:
 		"""
 		query = """
 			SELECT * 
-			FROM cases 
+			FROM train_cases 
 			WHERE cluster = ? 
 		"""
 		params = (problem.cluster,)
@@ -521,8 +521,25 @@ class CBR:
 			final_ordered_artworks_scores = ordered_artworks_scores[:desired_artwork_count]
 
 			return final_ordered_artwork_ids, final_ordered_artworks_scores
-
 	
+	def revise(self, artworks: List[int], artwork_to_remove_name: str) -> List[int]:
+		"""
+		Revises the solution by moving an artwork to the end of the list if it is present.
+
+		:param artworks: The list of artworks to revise (list of artwork IDs).
+		:param artwork_to_remove_name: The name of the artwork to move to the end of the list.
+		:return: A list of adapted artworks ordered according to the ontology.
+		"""
+		# Obtain the ID of the artwork to remove
+		artwork_to_remove_id = authors.get(artwork_to_remove_name).author_id
+
+		# If the ID is in the list, move it to the end
+		if artwork_to_remove_id in artworks:
+			artworks.remove(artwork_to_remove_id)
+			artworks.append(artwork_to_remove_id)
+		
+		return artworks
+
 	def retain(self, specific_problem: SpecificProblem, user_feedback: int, visited_count: int, clustering: 'Clustering', ordered_artworks: List[int], ordered_artworks_matches: List[int]):
 		"""
 		Stores a SpecificProblem and its corresponding AbstractProblem in the database.
@@ -537,23 +554,6 @@ class CBR:
 
 		cursor = self.conn.cursor()
 
-		# Insert SpecificProblem into the specific_problems table
-		cursor.execute("""
-			INSERT INTO specific_problems
-			(group_id, num_people, favorite_author, favorite_period, favorite_theme, guided_visit, minors, num_experts, past_museum_visits, group_description)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-		""", (
-			specific_problem.group_id,
-			specific_problem.num_people,
-			specific_problem.favorite_author,
-			specific_problem.favorite_period,
-			specific_problem.favorite_theme,
-			1 if specific_problem.guided_visit else 0,
-			1 if specific_problem.minors else 0,
-			specific_problem.num_experts,
-			specific_problem.past_museum_visits,
-			specific_problem.group_description
-		))
 		specific_problem_id = specific_problem.group_id
 
 		# Prepare JSON-serialized fields for AbstractProblem
@@ -582,7 +582,7 @@ class CBR:
 
 		# Insert AbstractProblem into the cases table
 		cursor.execute("""
-			INSERT INTO cases
+			INSERT INTO train_cases
 			(specific_problem_id, group_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks, ordered_artworks_matches, visited_artworks_count, group_description, rating, cluster)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		""", (
@@ -604,7 +604,7 @@ class CBR:
 		))
 		self.conn.commit()
 	
-	def forget_cases(self, threshold=0.15):
+	def forget_cases(self, threshold=0.2):
 		"""Removes cases with low utility from the database."""
 		with self.conn:
 			self.conn.execute("DELETE FROM cases WHERE utility <= ?", (threshold,))
@@ -632,27 +632,28 @@ def row_to_dict(row):
 """if __name__ == '__main__':
 	conn = sqlite3.connect('./data/database.db')
 	cursor = conn.cursor()
-
-	cursor.execute("PRAGMA table_info(cases)")
+	
+	cursor.execute("PRAGMA table_info(train_cases)")
 	columns = [column[1] for column in cursor.fetchall()]
 	
 	if 'cluster' not in columns:
-		cursor.execute("ALTER TABLE cases ADD COLUMN cluster INTEGER DEFAULT 1")
-		cursor.execute("UPDATE cases SET cluster = 1")
-
+		cursor.execute("ALTER TABLE train_cases ADD COLUMN cluster INTEGER DEFAULT 1")
+		cursor.execute("UPDATE train_cases SET cluster = 1")
+	
 	conn.commit()
 	conn.close()
-
+	
 	cbr = CBR()
 	sp = SpecificProblem(group_id=1, num_people=2, favorite_author='Pablo Picasso', favorite_period=1900, favorite_theme='historical', guided_visit=True, minors=False, num_experts=1, past_museum_visits=3, group_description='A group of friends visiting the museum.')
 	ap = AbstractProblem(sp, periods, list(authors.values()), theme_instances)
 	ap.cluster = 1
-
+	
 	cases = cbr.retrieve(ap)
 	for case, similarity in cases:
 		case_dict = row_to_dict(case)
 		print(f"Case: {case_dict['case_id']}, Similarity: {similarity}")
 	print(ap.preferred_themes)
-
+	
 	route = cbr.reuse(ap, top_k=3)
-	print(route), print(len(route))"""
+	print(route), print(len(route))
+	"""
