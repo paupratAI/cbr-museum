@@ -44,9 +44,10 @@ class ArtGenerator:
             self.authors_set.add(author)
 
             name = artwork["artwork_name"]
+            
             year = artwork["artwork_in_period"]
-            random.shuffle(periods)
-            period = next((p for p in periods if p.year_beginning <= year <= p.year_end), periods[0])
+            matching_periods = [p for p in periods if p.year_beginning <= year <= p.year_end]
+            period = matching_periods if matching_periods else [random.choice(periods)]
 
             artwork_id = artwork["artwork_id"]
             theme_name = art_theme_pairs[artwork_id]

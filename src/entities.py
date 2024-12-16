@@ -99,7 +99,7 @@ class Artwork:
     artwork_name: str
     artwork_in_room: Optional[str]
     created_by: Author
-    artwork_in_period: Period
+    artwork_in_period: List[Period]
     artwork_theme: str
     dimension: float
     relevance: float
@@ -108,21 +108,21 @@ class Artwork:
     artwork_style: List[Style] = field(default_factory=list)
 
     def __repr__(self):
-        formula = (
-            f'Artwork('
-            f'{self.artwork_id!r}, '
-            f'{self.artwork_name!r}, '
-            f'{self.artwork_in_room!r}, '
-            f'{self.created_by!r}, '
-            f'{self.artwork_in_period!r}, '
-            f'{self.artwork_theme!r}, '
-            f'{self.dimension!r}, '
-            f'{self.relevance!r}, '
-            f'{self.complexity!r}, '
-            f'{self.default_time!r}, '
-            f'[])'
+        author_repr = f"authors['{self.created_by.author_name}']"
+        periods_repr = ", ".join(f"periods_dict[{period.period_id}]" for period in self.artwork_in_period)
+        return (
+            f"Artwork({self.artwork_id}, "
+            f"{self.artwork_name!r}, "
+            f"{self.artwork_in_room!r}, "
+            f"{author_repr}, "
+            f"[{periods_repr}], "
+            f"{self.artwork_theme!r}, "
+            f"{self.dimension}, "
+            f"{self.relevance}, "
+            f"{self.complexity}, "
+            f"{self.default_time}, "
+            f"{self.artwork_style})"
         )
-        return f'{formula}'
 
 authors = {
     "Pablo Picasso": Author(

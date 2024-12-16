@@ -10,39 +10,29 @@ import pandas as pd
 with open("data/sorted_artworks.json", "r", encoding="utf-8") as file:
     data = json.load(file)
 
-artworks_data = data[39:50]
+artworks_data = data[:50]
 artworks = []
 for artwork in artworks_data:
     author_name = artwork["created_by"]
-    author = authors[author_name] 
+    author = authors[author_name]
 
     name = artwork["artwork_name"]
-
-    # Select a valid period in case the year of the artwork does not belong to any of the periods; we will select a random one
+    
     year = artwork["artwork_in_period"]
-    random.shuffle(periods)
-    period = next((p for p in periods if p.year_beginning <= year <= p.year_end), periods[0])
+    matching_periods = [p for p in periods if p.year_beginning <= year <= p.year_end]
+    period = matching_periods if matching_periods else [random.choice(periods)]
 
-    # Theme and style
-    id = artwork["artwork_id"]
-    theme_name = art_theme_pairs[id]
+    artwork_id = artwork["artwork_id"]
+    theme_name = art_theme_pairs[artwork_id]
 
-    styles = []
-    for style in artwork["style"]:
-        style = Style(style_name=style)
-        styles.append(style)
-
-    # Other features of the artwork
+    styles = [Style(style_name=s) for s in artwork["style"]]
     dimension = int(artwork["dimension"])
     relevance = True if artwork["relevance"] == "High" else False
     complexity = int(artwork["complexity"])
-
-    # Calculate the default time
     default_time = calculate_default_time(dimension, complexity, relevance)
 
-    # Create the instance of Artwork
     artwork_instance = Artwork(
-        artwork_id=id,
+        artwork_id=artwork_id,
         artwork_name=name,
         artwork_in_room=None,
         created_by=author,
@@ -55,5 +45,8 @@ for artwork in artworks_data:
         default_time=default_time
     )
     artworks.append(artwork_instance)
-artworks_dict = {art.artwork_id: repr(art) for art in artworks}
+artworks_dict = {art.artwork_id: art.__repr__() for art in artworks}  # Evitar comillas innecesarias
 print(artworks_dict)
+
+for artwork_id, artwork_repr in artworks_dict.items():
+    print(f"{artwork_id}: {artwork_repr},")
