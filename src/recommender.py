@@ -8,6 +8,7 @@ from authors import authors
 from ontology.themes import theme_instances
 from ontology.periods import periods
 from db_partitions_handler import DBPartitionsHandler
+from clustering import Clustering
 
 import pickle as pkl
 
@@ -23,9 +24,14 @@ class Recommender:
 			cf_decay_factor: float = 1,
 			cf_method: str = 'cosine',
 			ratings_range: list = [0, 5],
+			clustering: bool = False
 			):
-
+		
 		self.db_path = db_path
+		
+		if clustering:
+			self.clustering()
+
 		self.main_table = main_table
 		self.conn = sqlite3.connect(db_path)
 		self.cursor = self.conn.cursor()
@@ -44,6 +50,26 @@ class Recommender:
 		)
 		
 		self.dbph = DBPartitionsHandler(db_path=self.db_path, train_split=0.975, main_table="cases", ratings_range=[0, 5], seed=42, overwrite=False)
+	
+	def clustering(self):
+
+		# Initialize the clustering system
+		clustering_system = Clustering(db_path='./data/database.db', model_path='./models/kmeans_model.joblib')
+
+		try:
+			# Fetch data and perform clustering
+			raw_data = clustering_system.fetch_data_from_cases()
+			X_scaled = clustering_system.encode_and_scale_features()
+			clustering_system.perform_clustering(X_scaled, min_k=10, max_k=30, minimum_examples_per_cluster=10)
+			clustering_system.save_clusters_to_cases()
+			clustering_system.print_cluster_statistics()
+			clustering_system.print_centroids_readable()
+			clustering_system.save_model()
+		except ValueError as ve:
+			print(f"Clustering Error: {ve}")
+		finally:
+			print("Closing connection to the database.")
+			clustering_system.close_connection()
 
 
 	def retrieve_data(self, clean_response):
