@@ -126,6 +126,13 @@ class ArtGenerator:
             case_data = {
                 "group_id": abs_prob.group_id,
                 "group_size": abs_prob.group_size,
+                "num_people": sp.num_people,
+                "minors": sp.minors,
+                "num_experts": sp.num_experts,
+                "past_museum_visits": sp.past_museum_visits,
+                "preferred_main_theme": sp.favorite_theme,
+                "guided_visit": sp.guided_visit,
+                "preferred_year": sp.favorite_period,
                 "group_type": abs_prob.group_type,
                 "art_knowledge": abs_prob.art_knowledge,
                 "preferred_periods_ids": [p.period_id for p in abs_prob.preferred_periods],
@@ -143,7 +150,7 @@ class ArtGenerator:
                 "only_elevator": full_feedback["only_elevator"],
                 "time_coefficient_correction": full_feedback["time_coefficient"],
                 "artwork_to_remove": full_feedback["artwork_to_remove"],
-                "guided_visit": full_feedback["guided_visit"]
+                "guided_visit_feedback": full_feedback["guided_visit"]
             }
 
             self.cases_data.append(case_data)
