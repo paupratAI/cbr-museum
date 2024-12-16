@@ -13,7 +13,7 @@ from authors import authors
 from group_description import compare_sentences, load_model
 
 class CBR:
-    def __init__(self, db_path='./data/database_2000_semi_new.db'):
+    def __init__(self, db_path='./data/database.db'):
         self.conn = sqlite3.connect(db_path)
         self.conn.row_factory = sqlite3.Row 
         self.ensure_columns()
@@ -661,8 +661,8 @@ class CBR:
 def row_to_dict(row):
     return {k: row[k] for k in row.keys()}
 
-'''if __name__ == '__main__':
-    conn = sqlite3.connect('./data/database_2000_semi_new.db')
+"""if __name__ == '__main__':
+    conn = sqlite3.connect('./data/database.db')
     cursor = conn.cursor()
 
     cursor.execute("PRAGMA table_info(cases)")
@@ -687,4 +687,4 @@ def row_to_dict(row):
     print(ap.preferred_themes)
 
     route = cbr.reuse(ap, top_k=3)
-    print(route), print(len(route))'''
+    print(route), print(len(route))"""

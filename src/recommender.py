@@ -32,7 +32,7 @@ class Recommender:
 
 		self.ratings_range = ratings_range
 
-		# self.cbr: CBR = CBR(db_path)
+		self.cbr: CBR = CBR(db_path)
 		
 		self.cf: CF = CF(
 			db_path=db_path, 
@@ -147,7 +147,7 @@ class Recommender:
 		# Calculate the routes
 		cf_result, cf_probs = self.cf.recommend_items(target_group_id=target_group_id) # CF probs must be used to aproximate matches (by scaling these probs to 0-10) when storing the case in the CF databse
 		
-		# cbr_result = self.cbr.recommend_items(abs_prob=ap)
+		cbr_result = self.cbr.recommend_items(abs_prob=ap)
 
 		# # Combine the recommendations from both systems
 		# average_position = {
@@ -162,7 +162,7 @@ class Recommender:
 
 		recommendations = {
 			"cf": cf_result,
-			"cbr": [],
+			"cbr": cbr_result,
 			"hybrid": combined_result
 		}
 
