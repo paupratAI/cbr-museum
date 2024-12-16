@@ -13,7 +13,7 @@ with open('data/sorted_artworks.json', 'r') as f:
 df = pd.DataFrame(data)
 
 # Keep top 100
-df = df.head(100)
+df = df.head(50)
 
 # Descriptive statistics
 print("Basic descriptive statistics:")
@@ -56,6 +56,7 @@ plt.show()
 
 # Bar plot for artists
 artist_counts = df['created_by'].value_counts()
+print(len(artist_counts))
 plt.figure()
 artist_counts.plot(kind='bar', color='red')
 plt.title('Frequency of Artists')
