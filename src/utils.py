@@ -10,6 +10,13 @@ def save_in_sqlite3(cases_data: list[dict]):
         cases_data (list[dict]): List with case data dictionaries containing the following:
         - group_id (int): The group ID.
         - group_size (int): The group size.
+        - num_people (int): The number of people in the group.
+        - minors (int): 1 if the group has minors, 0 otherwise.
+        - num_experts (int): The number of experts in the group.
+        - past_museum_visits (int): The number of past museum visits.
+        - preferred_main_theme (str): The preferred main theme of the group.
+        - guided_visit (int): 1 if the group asked for a guided visit, 0 otherwise.
+        - preferred_year (str): The preferred year of the group.
         - group_type (str): The group type.
         - art_knowledge (int): The art knowledge level.
         - preferred_periods_ids (list[int]): The list of preferred periods IDs of the group.
@@ -27,7 +34,7 @@ def save_in_sqlite3(cases_data: list[dict]):
         - only_elevator (int): 1 if the group should use only the elevator, 0 otherwise.
         - time_coefficient_correction (str): The time coefficient correction.
         - artwork_to_remove (str): The artwork to remove, if any (None otherwise).
-        - guided_visit (int): 1 if the group should have a guided visit, 0 otherwise.
+        - guided_visit_feedback (int): 1 if the group should have a guided visit, 0 otherwise.
     """
 
     conn = sqlite3.connect("data/database.db")
@@ -39,6 +46,13 @@ def save_in_sqlite3(cases_data: list[dict]):
         case_id INTEGER PRIMARY KEY AUTOINCREMENT,
         group_id INTEGER,
         group_size INTEGER,
+        num_people INTEGER,
+        num_experts INTEGER,
+        minors BOOLEAN,
+        past_museum_visits INTEGER,
+        preferred_main_theme TEXT,
+        guided_visit BOOLEAN,
+        preferred_year INTEGER,
         group_type TEXT,
         art_knowledge INTEGER,
         preferred_periods_ids TEXT,
@@ -56,7 +70,7 @@ def save_in_sqlite3(cases_data: list[dict]):
         only_elevator BOOLEAN,
         time_coefficient_correction TEXT,
         artwork_to_remove TEXT,
-        guided_visit BOOLEAN
+        guided_visit_feedback BOOLEAN
     )
     """)
     
@@ -64,13 +78,46 @@ def save_in_sqlite3(cases_data: list[dict]):
     for case_data in cases_data:
         cursor.execute(
         """
-        INSERT INTO cases
-        (group_id, group_size, group_type, art_knowledge, preferred_periods_ids, preferred_author_name, preferred_themes, reduced_mobility, time_coefficient, time_limit, group_description, ordered_artworks, ordered_artworks_matches, visited_artworks_count, rating, textual_feedback, only_elevator, time_coefficient_correction, artwork_to_remove, guided_visit)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO cases (
+            group_id,
+            group_size,
+            num_people,
+            minors,
+            num_experts,
+            past_museum_visits,
+            preferred_main_theme,
+            guided_visit,
+            preferred_year,
+            group_type,
+            art_knowledge,
+            preferred_periods_ids,
+            preferred_author_name,
+            preferred_themes,
+            reduced_mobility,
+            time_coefficient,
+            time_limit,
+            group_description,
+            ordered_artworks,
+            ordered_artworks_matches,
+            visited_artworks_count,
+            rating,
+            textual_feedback,
+            only_elevator,
+            time_coefficient_correction,
+            artwork_to_remove,
+            guided_visit_feedback
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         , (
             case_data["group_id"],
             case_data["group_size"],
+            case_data["num_people"],
+            case_data["minors"],
+            case_data["num_experts"],
+            case_data["past_museum_visits"],
+            case_data["preferred_main_theme"],
+            case_data["guided_visit"],
+            case_data["preferred_year"],
             case_data["group_type"],
             case_data["art_knowledge"],
             json.dumps(case_data["preferred_periods_ids"]),
@@ -88,7 +135,7 @@ def save_in_sqlite3(cases_data: list[dict]):
             case_data["only_elevator"],
             case_data["time_coefficient_correction"],
             case_data["artwork_to_remove"],
-            case_data["guided_visit"]
+            case_data["guided_visit_feedback"]
         ))
 
     conn.commit()
