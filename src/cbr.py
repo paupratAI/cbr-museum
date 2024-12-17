@@ -555,21 +555,16 @@ class CBR:
 		
 		return artworks
 
-	def retain(self, specific_problem: SpecificProblem, user_feedback: int, visited_count: int, clustering: 'Clustering', ordered_artworks: List[int], ordered_artworks_matches: List[int]):
+	def retain(self, specific_problem: SpecificProblem, abstract_problem: AbstractProblem, user_feedback: int, visited_artworks_count: int,  ordered_artworks: List[int], ordered_artworks_matches: List[int], time_limit: int,  rating: int, textual_feedback: str, cluster: int):
 		"""
 		Stores a SpecificProblem and its corresponding AbstractProblem in the database.
 
 		:param specific_problem: SpecificProblem instance containing user-defined details.
 		:param user_feedback: User feedback on the recommended route (1-5).
-		:param visited_count: Number of artworks visited in the recommended route.
+		:param visited_artworks_count: Number of artworks visited in the recommended route.
 		:param clustering: An instance of the Clustering class used for assigning clusters.
 		"""
-		
-		abstract_problem = AbstractProblem(specific_problem, periods, list(authors.values()), theme_instances)
-
 		cursor = self.conn.cursor()
-
-		specific_problem_id = specific_problem.group_id
 
 		# Prepare JSON-serialized fields for AbstractProblem
 		preferred_periods_json = json.dumps(
@@ -582,39 +577,42 @@ class CBR:
 		) if abstract_problem.preferred_author else None
 		preferred_themes_json = json.dumps(abstract_problem.preferred_themes, ensure_ascii=False)
 
-		# Assign the cluster using the Clustering system
-		new_case = {
-			'num_people': specific_problem.num_people,
-			'favorite_author': specific_problem.favorite_author,
-			'favorite_period': specific_problem.favorite_period,
-			'favorite_theme': specific_problem.favorite_theme,
-			'guided_visit': 1 if specific_problem.guided_visit else 0,
-			'minors': 1 if specific_problem.minors else 0,
-			'num_experts': specific_problem.num_experts,
-			'past_museum_visits': specific_problem.past_museum_visits
-		}
-		cluster = clustering.classify_new_case(new_case)
-
 		# Insert AbstractProblem into the cases table
 		cursor.execute("""
 			INSERT INTO train_cases
-			(specific_problem_id, group_id, group_size, group_type, art_knowledge, preferred_periods, preferred_author, preferred_themes, time_coefficient, ordered_artworks, ordered_artworks_matches, visited_artworks_count, group_description, rating, cluster)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			(group_id, group_size, num_people, num_experts, minors, past_museum_visits, preferred_main_theme, guided_visit, preferred_year, group_type, art_knowledge, preferred_periods_ids, preferred_author_name, preferred_themes, reduced_mobility, time_coefficient, time_limit, group_description, ordered_artworks, ordered_artworks_matches, visited_artworks_count, rating, textual_feedback, only_elevator, time_coefficient_correction, artwork_to_remove, guided_visit_feedback, usage_count, redundancy, utility, cluster)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		""", (
-			specific_problem_id,
 			abstract_problem.group_id,
 			abstract_problem.group_size,
+			specific_problem.num_people,
+			specific_problem.num_experts,
+			specific_problem.minors,
+			specific_problem.past_museum_visits,
+			specific_problem.favorite_theme,
+			specific_problem.guided_visit,
+			specific_problem.favorite_period,
 			abstract_problem.group_type,
 			abstract_problem.art_knowledge,
 			preferred_periods_json,
 			preferred_author_json,
 			preferred_themes_json,
 			abstract_problem.time_coefficient,
+			time_limit,
+			specific_problem.group_description, 
 			json.dumps(ordered_artworks, ensure_ascii=False), 
 			json.dumps(ordered_artworks_matches, ensure_ascii=False),
-			visited_count,
-			abstract_problem.group_description,
-			user_feedback,  
+			visited_artworks_count,
+			rating,
+			user_feedback,
+			textual_feedback,
+			0,
+			"Equal",
+			"None",
+			0,
+			0,
+			0,
+			0,
 			cluster
 		))
 		self.conn.commit()
@@ -622,7 +620,7 @@ class CBR:
 	def forget_cases(self, threshold=0.2):
 		"""Removes cases with low utility from the database."""
 		with self.conn:
-			self.conn.execute("DELETE FROM cases WHERE utility <= ?", (threshold,))
+			self.conn.execute("DELETE FROM train_cases WHERE utility <= ?", (threshold,))
 
 	def recommend_items(self, ap: AbstractProblem, top_k: int = 3) -> Tuple[List[int], List[float]]:
 		"""
