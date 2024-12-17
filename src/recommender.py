@@ -3,6 +3,7 @@ from cf import CF
 import sqlite3
 import json
 import os
+import numpy as np
 
 from entities import AbstractProblem, SpecificProblem
 from authors import authors
@@ -181,8 +182,8 @@ class Recommender:
 
 		return abstract_problem
 	
-	def store_case(self) -> None:
-		self.cf.store_group_ratings(group_id=, ordered_items=, ordered_items_matches=, visited_items_count=, global_rating=)
+	# def store_case(self) -> None:
+	# 	self.cf.store_group_ratings(group_id=, ordered_items=, ordered_items_matches=, visited_items_count=, global_rating=)
 
 	def recommend(self, target_group_id: int, clean_response: list = [], ap: AbstractProblem = None, eval_mode: bool = False, cluster_id: int = 0) -> dict[str, tuple[list[int], list[float]]]:
 		"""
@@ -206,6 +207,7 @@ class Recommender:
 		ap.cluster = cluster_id
 		cf_result, cbr_result = [], []
 		cf_probs, cbr_probs = [], []
+		combined_result, combined_probs = [], []
 
 		# Calculate the routes
 		if self.beta > 0:
@@ -230,8 +232,7 @@ class Recommender:
 			combined_result = cf_result
 		else:
 			combined_result = list(sorted(averaged_probs_dict.keys(), key=lambda x: averaged_probs_dict[x]))
-
-		combined_probs = [averaged_probs_dict[item_id] for item_id in combined_result]
+			combined_probs = [averaged_probs_dict[item_id] for item_id in combined_result]
 
 		recommendations = {
 			"cf": (cf_result, cf_probs),
@@ -292,14 +293,28 @@ class Recommender:
 		if save:
 			# Check if the file exists. If it does, change the name
 			parameters_str = f"{self.cf_alpha=}, {self.cf_gamma=}, {self.cf_decay_factor=}, {self.cf_method=}, {self.beta=}, {self.cbr_alpha=}, {self.cbr_beta=}, {self.cbr_gamma=}, {self.cbr_top_k=}"
-			scores['parameters'] = parameters_str
 			results_file_name = os.path.join('scores', results_file_name)
+			
+			# Convert np arrays to lists
+			for key, value in scores.items():
+				avg, _ = value
+				scores[key] = float(avg)
+
+			scores['parameters'] = parameters_str
+
 			if os.path.exists(results_file_name):
 				results_file_name = results_file_name.replace('.json', '_new.json')
+
+			if not results_file_name.endswith('.json'):
+				results_file_name += '.json'
 
 			# Save the results to a file
 			with open(results_file_name, 'w') as f:
 				json.dump(scores, f)
 
 		return scores
+	
+if __name__ == '__main__':
+	r = Recommender(cf_decay_factor=1, cf_alpha=1, cf_gamma=1, beta=0)
+	r.evaluate(results_file_name='results', save=True)
 	
