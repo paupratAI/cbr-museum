@@ -173,7 +173,7 @@ class Recommender:
 
 		abstract_problem = AbstractProblem(
 			specific_problem=specific_problem,
-			available_authors=list(authors.values()),
+			available_authors=list(authors.values())[:50],
 			available_themes=theme_instances,
 			available_periods=periods
 		)

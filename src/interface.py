@@ -39,6 +39,9 @@ class Llama:
                          
                 Pablo Picasso, China, Georgia O'Keeffe, Claude Monet, Giovanni Battista, James McNeill, Japan, Edgar Degas, Édouard Manet, Paul Cezanne, Marc Chagall, Roy Lichtenstein, Henri Matisse, Jasper Johns, Frank Lloyd, Diego Rivera, Artist unknown, Pierre-Auguste Renoir, Henri de, Francisco José, Arshile Gorky, Paul Gauguin, India Tamil, Winslow Homer, Vincent van, Claude Lorrain, Andy Warhol, India Rajasthan,, Jean-Honoré Fragonard, George Inness, Korea, Willem de, Eugène Delacroix, Fernand Léger, After a, Ivan Albright, Spanish, Rembrandt van, Frederic Remington, Design attributed, Attributed to, Georges Braque, Vija Celmins, Bruce Nauman, Meissen Porcelain, Salvador Dalí, Edvard Munch, Emma Stebbins, Rudolph Schindler, Meindert Hobbema
 
+            9. Group Description: (user might say "We are a group of friends" -> interpret as a string, e.g. "group of friends"). You do not need to process this answer, just keep it as a string and add it to the final output.
+                         
+            
             Your task:
             - Parse each answer to extract a clean, normalized value.
             - Handle approximate or vague answers by making a reasonable assumption (e.g., "a few" -> 3).
@@ -46,7 +49,7 @@ class Llama:
             - Return the final result as a simple JSON list corresponding to the answers in order.
             - Do not explain your reasoning or provide extra commentary in the final output. Only output the cleaned list of values.
 
-            Your final answer should strictly be the cleaned values in a JSON list, nothing else.
+            Your final answer should strictly be the cleaned values in a JSON list, nothing else. From response 1 to 9, the output should be in the following format: [1, "yes", "yes", 1, 2, 1500, "Mystical", "Salvador Dalí", "group of friends"] for example.
         """)
 
         messages = [{'role': 'system', 'content': system_prompt}]

@@ -108,6 +108,24 @@ body {
     margin: 0 10px;
 }
 
+.save-button {
+    background-color: #8B0000; /* Dark red */
+    color: #FFF;
+    padding: 15px 30px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 1em;
+    border: none;
+    cursor: pointer;
+    margin: 0 10px;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.save-button:hover {
+    background-color: #700000; /* Slightly darker hover state for red */
+    transform: translateY(-2px);
+}
+
 .finish-button {
     background-color: #002147; /* Oxford Blue */
     color: #FFF;

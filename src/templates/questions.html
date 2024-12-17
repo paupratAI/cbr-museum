@@ -120,7 +120,7 @@
         </div>
     </div>
 
-    <!-- Question 8 (Finish) -->
+    <!-- Question 8 -->
     <div class="screen" id="screen-question-8">
         <div class="form-container">
             <h1 class="title">Question 8</h1>
@@ -130,18 +130,36 @@
                     <input type="text" class="input-field question-input" placeholder="e.g., Pablo Picasso">
                 </div>
                 <div class="buttons-row">
-                    <button type="button" class="finish-button" id="finish-questions">Finish</button>
+                    <button type="button" class="next-button" data-next="#screen-question-9">Next</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Question 9 (New) -->
+    <div class="screen" id="screen-question-9">
+        <div class="form-container">
+            <h1 class="title">Question 9</h1>
+            <p class="instructions">Describe yourself</p>
+            <form class="user-form">
+                <div class="input-row">
+                    <input type="text" class="input-field question-input" placeholder="Brief description...">
+                </div>
+                <div class="buttons-row">
+                    <!-- Modified the button text and color as requested -->
+                    <button type="button" class="save-button" id="save-configuration">Save configuration</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- Loading popup -->
+<!-- Loading popup (regular) -->
 <div class="loading-popup" id="loading-popup">
     <div class="loading-content">
         <div class="spinner"></div>
-        <p>Processing...</p>
+        <!-- We'll dynamically change this text depending on final step or not -->
+        <p id="loading-text">Processing...</p>
     </div>
 </div>
 
@@ -150,8 +168,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const screenContainer = document.querySelector('.screen-container');
     const screens = document.querySelectorAll('.screen');
     const nextButtons = document.querySelectorAll('.next-button');
-    const finishButton = document.getElementById('finish-questions');
+    const saveButton = document.getElementById('save-configuration');
     const loadingPopup = document.getElementById('loading-popup');
+    const loadingText = document.getElementById('loading-text');
 
     let currentScreenIndex = 0;
     let answers = [];
@@ -161,20 +180,30 @@ document.addEventListener('DOMContentLoaded', () => {
         screenContainer.style.transform = `translateY(${offset}vh)`;
     }
 
-    function showLoading() {
+    // For normal steps: popup shows "Processing..." for 0.5s
+    function showLoadingNormal(callback) {
+        loadingText.textContent = "Processing...";
         loadingPopup.classList.add('show');
-    }
-
-    function hideLoading(callback) {
-        // Fade out after a few seconds
         setTimeout(() => {
             loadingPopup.classList.remove('show');
-            // Wait for CSS transition to end before callback
             loadingPopup.addEventListener('transitionend', function handler() {
                 loadingPopup.removeEventListener('transitionend', handler);
                 if (callback) callback();
             });
-        }, 1000); // e.g. 2 seconds before hiding
+        }, 500); // 0.5 seconds
+    }
+
+    // For final step: popup shows "Saving your data..." for 3s
+    function showLoadingFinal(callback) {
+        loadingText.textContent = "Saving your data ...";
+        loadingPopup.classList.add('show');
+        setTimeout(() => {
+            loadingPopup.classList.remove('show');
+            loadingPopup.addEventListener('transitionend', function handler() {
+                loadingPopup.removeEventListener('transitionend', handler);
+                if (callback) callback();
+            });
+        }, 3000); // 3 seconds
     }
 
     nextButtons.forEach(button => {
@@ -184,10 +213,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const answer = inputField.value.trim();
             answers.push(answer);
 
-            // Show loading popup
-            showLoading();
-            // After some time hide loading and move to next screen
-            hideLoading(() => {
+            // Show loading popup for normal step
+            showLoadingNormal(() => {
                 const targetId = button.getAttribute('data-next');
                 const targetScreen = document.querySelector(targetId);
                 const targetIndex = Array.from(screens).indexOf(targetScreen);
@@ -199,15 +226,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-        finishButton.addEventListener('click', () => {
+    saveButton.addEventListener('click', () => {
         const currentScreen = screens[currentScreenIndex];
         const inputField = currentScreen.querySelector('.question-input');
         const answer = inputField.value.trim();
         answers.push(answer);
 
-        showLoading();
-        // After some time hide loading and then send answers
-        hideLoading(() => {
+        // Show the final loading popup "Saving your data..." for 3 seconds
+        showLoadingFinal(() => {
+            // After saving data, send answers to server
             fetch("{{ url_for('process_answers') }}", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -216,7 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'ok') {
-                    // Instead of alerting, redirect to final questions
                     window.location.href = "{{ url_for('final_questions') }}";
                 } else {
                     alert('Error processing answers.');
