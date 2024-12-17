@@ -145,22 +145,14 @@ class Recommender:
 
 		print("All rows added to the CF system.")
 
-	def convert_to_problems(clean_response: list) -> AbstractProblem:
+	def convert_to_problems(self, clean_response: list = None) -> AbstractProblem:
 		"""
-			Converts a `clean_response` data list into a SpecificProblem object and then into an AbstractProblem.
-
-			Args:
-				clean_response (list): List with the necessary data to build a SpecificProblem.
-				authors (list): List of available authors.
-				themes (dict): Dictionary of available themes.
-				periods (list): List of available periods.
-
-			Returns:
-				AbstractProblem: The abstract problem created from clean_response.
+		Converts a `clean_response` data list into a SpecificProblem object and then into an AbstractProblem.
 		"""
+		print(clean_response)
 		specific_problem = SpecificProblem(
-			group_id=clean_response[0],
-			num_people=clean_response[1],
+			group_id=clean_response[1],
+			num_people=clean_response[3],
 			favorite_author=clean_response[2],
 			favorite_period=clean_response[3],
 			favorite_theme=clean_response[4],
@@ -199,8 +191,8 @@ class Recommender:
 			dict(str, list): A dictionary with the CBR, CF and Hybrid recommendations.
 		"""
 		# Obtain abstract problem from clean_response
-		# if not ap:
-			# ap = self.convert_to_problems(clean_response)
+		if not ap:
+			ap = self.convert_to_problems(clean_response)
 
 		cf_result, cbr_result = [], []
 
@@ -254,11 +246,11 @@ class Recommender:
 		predictions = []
 
 		for i, row in enumerate(test_rows):
-			case_id, group_id, group_size, num_people, num_experts, minors, past_museum_visits, preferred_main_theme, guided_visit, preferred_year, group_type, art_knowledge, preferred_periods_ids, preferred_author_name, preferred_themes, reduced_mobility, time_coefficient, time_limit, group_description, ordered_artworks, ordered_artworks_matches, visited_artworks_count, rating, textual_feedback, only_elevator, time_coefficient_correction, artwork_to_remove, guided_visit_feedback = row
+			_, group_id, _, num_people, num_experts, minors, past_museum_visits, preferred_main_theme, guided_visit, preferred_year, _, _, _, preferred_author_name, _, _, _, _, group_description, _, _, _, _, _, _, _, _, _, _, _, _, _ = row
 
 			print(f"Generating test prediction {(i+1)}/{len(test_rows)}", end='\r')
 
-			predictions.append(self.recommend(target_group_id=group_id, clean_response=row, eval_mode=True)["hybrid"])
+			predictions.append(self.recommend(target_group_id=group_id, clean_response=list(row), eval_mode=True)["hybrid"])
 
 		# Evaluate the predictions
 		scores = self.dbph.evaluate_predictions(predictions=predictions)
@@ -271,3 +263,10 @@ class Recommender:
 				pkl.dump(scores, f)
 
 		return scores
+	
+def main():
+	r = Recommender(cf_decay_factor=1, cf_alpha=1, cf_gamma=1, beta=0)
+	r.evaluate(save=False)
+
+if __name__ == '__main__':
+	main()
