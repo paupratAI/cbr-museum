@@ -290,7 +290,7 @@ class Recommender:
 			predictions.append(self.recommend(target_group_id=group_id, clean_response=clean_response, eval_mode=True, cluster_id = cluster_id)["hybrid"][0])
 
 		# Evaluate the predictions
-		scores = self.dbph.evaluate_predictions(predictions=predictions)
+		scores = self.dbph.evaluate_predictions(predictions=predictions, improvement_error_funcs=['lin-lin'])
 		
 		#final_time = time.time() - start_time
 		#print("-" * 50)
@@ -306,8 +306,8 @@ class Recommender:
 			
 			# Convert np arrays to lists
 			for key, value in scores.items():
-				avg, _ = value
-				scores[key] = float(avg)
+				avg, ind = value
+				scores[key] = (float(avg), ind.tolist())
 
 			scores['parameters'] = parameters_str
 
@@ -324,6 +324,6 @@ class Recommender:
 		return scores
 	
 if __name__ == '__main__':
-	r = Recommender(cf_decay_factor=1, cf_alpha=1, cf_gamma=1, beta=0)
-	r.evaluate(results_file_name='results', save=True)
+	r = Recommender(cf_decay_factor=1, cf_alpha=0.25, cf_gamma=1, beta=1)
+	r.evaluate(results_file_name='cf-alpha025-ind', save=True, reload_cf=False)
 	
