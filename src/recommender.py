@@ -77,7 +77,7 @@ class Recommender:
 			ratings_range=ratings_range
 		)
 		
-		self.dbph = DBPartitionsHandler(db_path=self.db_path, train_split=0.9875, main_table="cases", ratings_range=[0, 5], seed=42, overwrite=True)
+		self.dbph = DBPartitionsHandler(db_path=self.db_path, train_split=0.9875, main_table="cases", ratings_range=[0, 5], seed=42, overwrite=False)
 	
 	def clustering(self):
 
