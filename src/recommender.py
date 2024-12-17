@@ -2,6 +2,7 @@ from cbr import CBR
 from cf import CF
 import sqlite3
 import json
+import os
 
 from entities import AbstractProblem, SpecificProblem
 from authors import authors
@@ -58,6 +59,14 @@ class Recommender:
 		if clustering:
 			self.clustering_system = self.clustering()
 
+		self.cf_alpha = cf_alpha
+		self.cf_gamma = cf_gamma
+		self.cf_decay_factor = cf_decay_factor
+		self.cf_method = cf_method
+		self.cbr_alpha = cbr_alpha
+		self.cbr_beta = cbr_beta
+		self.cbr_gamma = cbr_gamma
+		self.cbr_top_k = cbr_top_k
 		self.main_table = main_table
 		self.db_path = db_path
 		self.beta = beta
@@ -173,9 +182,9 @@ class Recommender:
 		return abstract_problem
 	
 	def store_case(self) -> None:
-		pass
+		self.cf.store_group_ratings(group_id=, ordered_items=, ordered_items_matches=, visited_items_count=, global_rating=)
 
-	def recommend(self, target_group_id: int, clean_response: list = [], ap: AbstractProblem = None, eval_mode: bool = False, cluster_id: int = 0) -> dict[str, list]:
+	def recommend(self, target_group_id: int, clean_response: list = [], ap: AbstractProblem = None, eval_mode: bool = False, cluster_id: int = 0) -> dict[str, tuple[list[int], list[float]]]:
 		"""
 		Recommends items using the CF and CBR systems.
 
@@ -188,7 +197,7 @@ class Recommender:
 			eval_mode (bool): Whether to use the evaluation mode or not. Eval mode does not add the resulting cases to CBR nor CF.
 
 		Returns:
-			dict(str, list): A dictionary with the CBR, CF and Hybrid recommendations.
+			dict(str, tuple): A dictionary with the CBR, CF and Hybrid recommendations and their probabilities.
 		"""
 		# Obtain abstract problem from clean_response
 		if not ap:
@@ -196,6 +205,7 @@ class Recommender:
 
 		ap.cluster = cluster_id
 		cf_result, cbr_result = [], []
+		cf_probs, cbr_probs = [], []
 
 		# Calculate the routes
 		if self.beta > 0:
@@ -221,18 +231,17 @@ class Recommender:
 		else:
 			combined_result = list(sorted(averaged_probs_dict.keys(), key=lambda x: averaged_probs_dict[x]))
 
-		recommendations = {
-			"cf": cf_result,
-			"cbr": cbr_result,
-			"hybrid": combined_result
-		}
+		combined_probs = [averaged_probs_dict[item_id] for item_id in combined_result]
 
-		# if not eval_mode:
-		# 	self.store_case()
+		recommendations = {
+			"cf": (cf_result, cf_probs),
+			"cbr": (cbr_result, cbr_probs),
+			"hybrid": (combined_result, combined_probs)
+		}
 
 		return recommendations
 
-	def evaluate(self, reload_cf: bool = False, save: bool = False):
+	def evaluate(self, results_file_name: str, reload_cf: bool = False, save: bool = False):
 		"""
 		Evaluates the Recommender Hybrid predictions in the test set.
 		"""
@@ -272,7 +281,7 @@ class Recommender:
 			
 			cluster_id = self.clustering_system.classify_new_case(new_case)
 
-			predictions.append(self.recommend(target_group_id=group_id, clean_response=clean_response, eval_mode=True, cluster_id = cluster_id)["hybrid"])
+			predictions.append(self.recommend(target_group_id=group_id, clean_response=clean_response, eval_mode=True, cluster_id = cluster_id)["hybrid"][0])
 
 		# Evaluate the predictions
 		scores = self.dbph.evaluate_predictions(predictions=predictions)
@@ -281,9 +290,13 @@ class Recommender:
 			print(f"{key}: {float(value[0])}")
 
 		if save:
-			return scores
-			with open(f"scores/scores_cf_alpha{self.cf.default_alpha}_cfgamma{self.cf.default_gamma}_cfdecay{self.cf.default_decay_factor}_cfmethod{self.cf.default_method}.pkl", "wb") as f:
-				pkl.dump(scores, f)
+			# Check if the file exists. If it does, change the name
+			parameters_str = f"{self.cf_alpha=}, {self.cf_gamma=}, {self.cf_decay_factor=}, {self.cf_method=}, {self.beta=}, {self.cbr_alpha=}, {self.cbr_beta=}, {self.cbr_gamma=}, {self.cbr_top_k=}"
+			scores['parameters'] = parameters_str
+			if os.path.exists(results_file_name):
+				results_file_name = results_file_name.replace('.json', '_new.json')
+			with open(results_file_name, 'w') as f:
+				json.dump(scores, f)
 
 		return scores
 	
