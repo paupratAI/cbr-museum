@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List, Dict
 from collections import deque
+from ontology.art import artworks
 import random
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -18,20 +19,6 @@ class Room:
     room_name: str
     adjacent_rooms: List['Room'] = field(default_factory=list)
     artworks_id_in_room: List[int] = field(default_factory=list)
-
-# Sample artworks dictionary (Artwork ID mapped to Artwork Name)
-artworks: Dict[int, str] = {
-    5357: "Starry Night",
-    18709: "Mona Lisa",
-    28067: "The Scream",
-    39456: "The Persistence of Memory",
-    48290: "Girl with a Pearl Earring",
-    57321: "The Night Watch",
-    63485: "Guernica",
-    71234: "The Kiss",
-    82345: "The Birth of Venus",
-    93456: "American Gothic"
-}
 
 # --- Museum Creation ---
 
@@ -121,6 +108,9 @@ def find_route(artworks_to_visit, only_elevators: bool = False):
                 new_node = Node(room=adjacent_room, rooms_path=current_node.rooms_path + [adjacent_room])
                 queue.append(new_node)
 
+    if plot:
+            plot_route(route)
+
     return []
 
 def plot_route(route: List[int]):
@@ -158,18 +148,14 @@ def plot_route(route: List[int]):
     # Define edge colors based on connection types
     edge_colors = []
     for edge in G.edges():
-        room1 = rooms[str(edge[0])] if str(edge[0]) in rooms else rooms[str(edge[0])]
-        room2 = rooms[str(edge[1])] if str(edge[1]) in rooms else rooms[str(edge[1])]
-        if room1.is_elevator and room2.is_elevator:
-            edge_colors.append('blue')
-        elif room1.is_stairs and room2.is_stairs:
-            edge_colors.append('orange')
-        elif (room1.is_elevator and not room2.is_elevator) or (room2.is_elevator and not room1.is_elevator):
-            edge_colors.append('purple')
-        elif (room1.is_stairs and not room2.is_stairs) or (room2.is_stairs and not room1.is_stairs):
-            edge_colors.append('brown')
+        room1 = rooms[str(edge[0])]
+        room2 = rooms[str(edge[1])]
+        if room1.is_elevator or room2.is_elevator:
+            edge_colors.append('blue')       # Elevator Connection
+        elif room1.is_stairs or room2.is_stairs:
+            edge_colors.append('orange')     # Stairs Connection
         else:
-            edge_colors.append('black')
+            edge_colors.append('black')      # Normal Connection
 
     pos = nx.spring_layout(G, seed=42)  # Positions for all nodes
 
@@ -188,7 +174,7 @@ def plot_route(route: List[int]):
     # Highlight the route
     if route:
         route_edges = list(zip(route, route[1:]))
-        nx.draw_networkx_edges(G, pos, edgelist=route_edges, edge_color='red', width=4)
+        nx.draw_networkx_edges(G, pos, edgelist=route_edges, edge_color='magenta', width=4)  # Changed to magenta
 
         # Highlight the nodes in the route
         nx.draw_networkx_nodes(G, pos, nodelist=route, node_color='yellow', node_size=1000, alpha=0.7)
@@ -204,7 +190,9 @@ def plot_route(route: List[int]):
         Line2D([0], [0], color='black', lw=2, label='Normal Connection'),
         Line2D([0], [0], color='blue', lw=2, label='Elevator Connection'),
         Line2D([0], [0], color='orange', lw=2, label='Stairs Connection'),
-        Line2D([0], [0], color='red', lw=4, label='Route Path'),
+        Line2D([0], [0], color='purple', lw=2, label='Mixed Elevator Connection'),   # Added
+        Line2D([0], [0], color='brown', lw=2, label='Mixed Stairs Connection'),     # Added
+        Line2D([0], [0], color='magenta', lw=4, label='Route Path'),               # Changed
         Line2D([0], [0], marker='o', color='w', label='Route Node', markerfacecolor='yellow', markersize=15)
     ]
 
@@ -216,14 +204,18 @@ def plot_route(route: List[int]):
     plt.tight_layout(rect=[0, 0, 0.85, 1])
     plt.show()
 
+
+
 # --- Test ---
-if __name__ == "__main__":
-    artworks_to_visit = [5357, 18709, 28067]
-    route = find_route(artworks_to_visit, only_elevators=True)
+def run_and_plot(artworks_to_visit, only_elevators=False):
+    route = find_route(artworks_to_visit=artworks_to_visit, only_elevators=only_elevators)
     print("Route Path:")
     for room_id in route:
         room_instance = next(room for room in rooms.values() if room.room_id == room_id)
         print(f"Room {room_instance.room_id} ({room_instance.room_name}) --> {room_instance.artworks_id_in_room}")
 
-    # Plot the route
     plot_route(route)
+
+if __name__ == "__main__":
+    artworks_to_visit = list(artworks.keys())[:3]
+    run_and_plot(artworks_to_visit, only_elevators=False)
