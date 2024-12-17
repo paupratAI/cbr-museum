@@ -60,11 +60,11 @@ class Clustering:
         return best_k
 
     def fetch_data_from_cases(self):
-        """Fetch data from the cases table for clustering."""
+        """Fetch data from the train_cases table for clustering."""
         query = """
         SELECT case_id, num_people, preferred_author_name, preferred_year, 
                preferred_main_theme, guided_visit, minors, num_experts, past_museum_visits
-        FROM cases
+        FROM train_cases
         ORDER BY case_id
         """
         df = pd.read_sql_query(query, self.conn)
@@ -109,23 +109,23 @@ class Clustering:
         return self.cluster_labels
 
     def ensure_cluster_column_in_cases(self):
-        """Ensure the 'cluster' column exists in the cases table."""
+        """Ensure the 'cluster' column exists in the train_cases table."""
         cursor = self.conn.execute("PRAGMA table_info(cases)")
         columns = [col[1] for col in cursor.fetchall()]
         if 'cluster' not in columns:
             with self.conn:
-                self.conn.execute("ALTER TABLE cases ADD COLUMN cluster INTEGER DEFAULT -1")
-            print("Added 'cluster' column to cases table.")
+                self.conn.execute("ALTER TABLE train_cases ADD COLUMN cluster INTEGER DEFAULT -1")
+            print("Added 'cluster' column to train_cases table.")
 
     def save_clusters_to_cases(self):
-        """Save cluster assignments to the cases table."""
+        """Save cluster assignments to the train_cases table."""
         if self.cluster_labels is None:
             raise ValueError("No clustering results to save.")
         self.ensure_cluster_column_in_cases()
         with self.conn:
             for id_val, label in zip(self.ids, self.cluster_labels):
-                self.conn.execute("UPDATE cases SET cluster = ? WHERE case_id = ?", (int(label), id_val))
-        print("Clusters saved to cases table.")
+                self.conn.execute("UPDATE train_cases SET cluster = ? WHERE case_id = ?", (int(label), id_val))
+        print("Clusters saved to train_cases table.")
 
     def save_model(self):
         """Save the model and preprocessing objects."""
@@ -159,7 +159,7 @@ class Clustering:
         cluster_percentages = (cluster_counts / total) * 100
         print("\nCluster Statistics:")
         for cluster_id in cluster_counts.index:
-            print(f"Cluster {cluster_id}: {cluster_counts[cluster_id]} cases ({cluster_percentages[cluster_id]:.2f}%)")
+            print(f"Cluster {cluster_id}: {cluster_counts[cluster_id]} train_cases ({cluster_percentages[cluster_id]:.2f}%)")
 
     def print_centroids_readable(self):
         """
@@ -225,18 +225,18 @@ class Clustering:
     
     def get_cases_in_cluster(self, cluster_id):
         """
-        Retrieve and display all cases belonging to a specific cluster.
+        Retrieve and display all train_cases belonging to a specific cluster.
 
         Parameters:
-            cluster_id (int): The ID of the cluster whose cases are to be retrieved.
+            cluster_id (int): The ID of the cluster whose train_cases are to be retrieved.
 
         Returns:
-            pd.DataFrame: A DataFrame containing detailed information of all cases in the specified cluster.
+            pd.DataFrame: A DataFrame containing detailed information of all train_cases in the specified cluster.
         """
         if self.conn is None:
             raise ValueError("Database connection is not established.")
         
-        # Define the query to fetch cases from the specified cluster
+        # Define the query to fetch train_cases from the specified cluster
         query = """
         SELECT 
             case_id, 
@@ -248,7 +248,7 @@ class Clustering:
             minors, 
             num_experts, 
             past_museum_visits
-        FROM cases
+        FROM train_cases
         WHERE cluster = ?
         ORDER BY case_id
         """
@@ -257,7 +257,7 @@ class Clustering:
         df = pd.read_sql_query(query, self.conn, params=(cluster_id,))
         
         if df.empty:
-            print(f"No cases found in cluster {cluster_id}.")
+            print(f"No train_cases found in cluster {cluster_id}.")
             return df
         
         # Display the DataFrame
@@ -272,8 +272,8 @@ class Clustering:
         self.conn.close()
         print("Database connection closed.")
 
-# Usage Example
-"""if __name__ == "__main__":
+"""# Usage Example
+if __name__ == "__main__":
     # Initialize the clustering system
     clustering_system = Clustering(db_path='./data/database.db', model_path='./models/kmeans_model.joblib')
 
@@ -304,7 +304,7 @@ class Clustering:
     }
 
     # Initialize a new clustering system instance for classification
-    classification_system = Clustering(db_path='./data/database_2000.db', model_path='./models/kmeans_model.joblib')
+    classification_system = Clustering(db_path='./data/database.db', model_path='./models/kmeans_model.joblib')
 
     try:
         classification_system.load_model()

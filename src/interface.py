@@ -104,7 +104,7 @@ class Interface:
 
     def get_id(self):
         cursor = self.db.cursor()
-        cursor.execute("SELECT group_id FROM cases ORDER BY group_id DESC LIMIT 1")
+        cursor.execute("SELECT group_id FROM train_cases ORDER BY group_id DESC LIMIT 1")
         group_id = cursor.fetchone()
         self.id = 1 if group_id is None else group_id[0] + 1
         return self.id

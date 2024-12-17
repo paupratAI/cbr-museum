@@ -4,6 +4,7 @@ import sqlite3
 import json
 import os
 import numpy as np
+import time
 
 from entities import AbstractProblem, SpecificProblem
 from authors import authors
@@ -261,6 +262,7 @@ class Recommender:
 
 		self.clustering_system.load_model()
 
+		#start_time = time.time()
 		for i, row in enumerate(test_rows):
 			if (i + 1) % 50 == 0:
 				self.clustering_system = self.clustering()			
@@ -289,6 +291,10 @@ class Recommender:
 
 		# Evaluate the predictions
 		scores = self.dbph.evaluate_predictions(predictions=predictions)
+		
+		#final_time = time.time() - start_time
+		#print("-" * 50)
+		#print(f"\nTime taken: {final_time} seconds.\n")
 
 		for key, value in scores.items():
 			print(f"{key}: {float(value[0])}")
