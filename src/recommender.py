@@ -151,15 +151,15 @@ class Recommender:
 		"""
 		print(clean_response)
 		specific_problem = SpecificProblem(
-			group_id=clean_response[1],
-			num_people=clean_response[3],
+			group_id=int(clean_response[0]),
+			num_people=int(clean_response[1]),
 			favorite_author=clean_response[2],
-			favorite_period=clean_response[3],
+			favorite_period=int(clean_response[3]),
 			favorite_theme=clean_response[4],
-			guided_visit=clean_response[5],
-			minors=clean_response[6],
-			num_experts=clean_response[7],
-			past_museum_visits=clean_response[8],
+			guided_visit=bool(int(clean_response[5])),
+			minors=bool(int(clean_response[6])),
+			num_experts=int(clean_response[7]),
+			past_museum_visits=int(clean_response[8]),
 			group_description=clean_response[9]
 		)
 
@@ -246,11 +246,13 @@ class Recommender:
 		predictions = []
 
 		for i, row in enumerate(test_rows):
-			_, group_id, _, num_people, num_experts, minors, past_museum_visits, preferred_main_theme, guided_visit, preferred_year, _, _, _, preferred_author_name, _, _, _, _, group_description, _, _, _, _, _, _, _, _, _, _, _, _, _ = row
-
 			print(f"Generating test prediction {(i+1)}/{len(test_rows)}", end='\r')
 
-			predictions.append(self.recommend(target_group_id=group_id, clean_response=list(row), eval_mode=True)["hybrid"])
+			_, group_id, _, num_people, num_experts, minors, past_museum_visits, preferred_main_theme, guided_visit, preferred_year, _, _, _, preferred_author_name, _, _, _, _, group_description, _, _, _, _, _, _, _, _, _, _, _, _, _ = row
+
+			clean_response = [group_id, num_people, preferred_author_name, preferred_year, preferred_main_theme, guided_visit, minors, num_experts, past_museum_visits, group_description]
+
+			predictions.append(self.recommend(target_group_id=group_id, clean_response=clean_response, eval_mode=True)["hybrid"])
 
 		# Evaluate the predictions
 		scores = self.dbph.evaluate_predictions(predictions=predictions)
