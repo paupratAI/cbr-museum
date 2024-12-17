@@ -5,6 +5,7 @@ import json
 from ontology.art import artworks
 from entities import AbstractSolution
 import copy
+from museum import run_and_plot
 
 app = Flask(__name__)
 
@@ -157,7 +158,9 @@ def route_page():
     for recommendation in recommendations.values():
         cut_route(time, recommendation)
     
-    # Now we convert ids into names
+
+    iface.route_to_plot = copy.deepcopy(recommendations)
+
     for recommendation in recommendations.values():
         for i, id_artwork in enumerate(recommendation[0]):
             artwork = artworks[id_artwork]
@@ -174,6 +177,7 @@ def select_route():
     data = request.get_json()
     route_type = data.get('route')
     iface.route_type = route_type
+    run_and_plot(iface.route_to_plot[iface.route_type][0], bool(int(iface.fp[2])) )
     # Aquí podrías guardar la selección en la DB si quieres
     # Por ahora solo devolvemos ok
     return jsonify(status='ok')
@@ -225,7 +229,8 @@ def goodbye():
                                  rating=iface.user_rating,
                                  textual_feedback=iface.user_feedback,
                                  cluster=cluster_id,
-                                 time_limit=iface.time)
+                                 time_limit=iface.time,
+                                 utility=True)
     return render_template('goodbye.html')
 
 
