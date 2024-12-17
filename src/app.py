@@ -159,6 +159,22 @@ def route_page():
 
     return render_template('route.html', recommendations=recommendations)
 
+@app.route('/select_route', methods=['POST'])
+def select_route():
+    data = request.get_json()
+    route_type = data.get('route')
+    # Aquí podrías guardar la selección en la DB si quieres
+    # Por ahora solo devolvemos ok
+    return jsonify(status='ok')
+
+@app.route('/feedback', methods=['GET'])
+def feedback():
+    return render_template('feedback.html')
+
+@app.route('/goodbye', methods=['GET'])
+def goodbye():
+    return render_template('goodbye.html')
+
 
 if __name__ == '__main__':
     app.run(port=5001, debug=False)

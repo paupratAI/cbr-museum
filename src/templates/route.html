@@ -5,10 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Pick a Route</title>
     <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Evita las barras de scroll */
+            height: 100%; /* Asegura que ocupen toda la altura */
+            box-sizing: border-box;
+        }
+
         .routes-container {
             display: flex;
             justify-content: space-around;
-            margin-top: 40px;
+            height: 85%;
+            align-items: center;
+            box-sizing: border-box;
+            gap: 40px;
+            padding: 0 20px;
         }
 
         .route-column {
@@ -17,12 +29,24 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 30px rgba(184,134,11,0.3);
-            overflow-y: scroll;
-            height: 400px; /* adjust as needed */
+            overflow-y: auto; /* Permite scroll si el contenido es demasiado largo */
+            height: 80%; /* Ocupa el 80% de la altura de la ventana */
+            transition: transform 0.2s ease;
+            cursor: pointer;
+            scrollbar-width: none; /* Firefox */
+        }
+
+        .route-column::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+        .route-column:hover {
+            transform: scale(1.05);
         }
 
         .route-column h2 {
             text-align: center;
+            margin-top: 0;
         }
 
         .route-item {
@@ -32,29 +56,98 @@
             border-radius: 5px;
             color: #B8860B;
         }
+
+        .enjoy-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .enjoy-popup.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .enjoy-content {
+            background-color: #222;
+            padding: 50px 80px;
+            border-radius: 20px;
+            text-align: center;
+            color: #B8860B;
+            font-size: 2em;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body style="background: #000; color: #B8860B; font-family: Helvetica, Arial, sans-serif;">
     <h1 style="text-align: center; margin-top: 40px;">Pick a Route</h1>
     <div class="routes-container">
-        <div class="route-column">
+        <div class="route-column" id="cf-column" data-route="cf">
             <h2>CF Route</h2>
-            {% for art_id in recommendations.cf[0] %}
-            <div class="route-item">Artwork Name: {{ art_id }}</div>
+            {% for art_name in recommendations.cf[0] %}
+            <div class="route-item">Artwork Name: {{ art_name }}</div>
             {% endfor %}
         </div>
-        <div class="route-column">
+        <div class="route-column" id="cbr-column" data-route="cbr">
             <h2>CBR Route</h2>
-            {% for art_id in recommendations.cbr[0] %}
-            <div class="route-item">Artwork Name: {{ art_id }}</div>
+            {% for art_name in recommendations.cbr[0] %}
+            <div class="route-item">Artwork Name: {{ art_name }}</div>
             {% endfor %}
         </div>
-        <div class="route-column">
+        <div class="route-column" id="hybrid-column" data-route="hybrid">
             <h2>Hybrid Route</h2>
-            {% for art_id in recommendations.hybrid[0] %}
-            <div class="route-item">Artwork Name: {{ art_id }}</div>
+            {% for art_name in recommendations.hybrid[0] %}
+            <div class="route-item">Artwork Name: {{ art_name }}</div>
             {% endfor %}
         </div>
     </div>
+
+    <div class="enjoy-popup" id="enjoy-popup">
+        <div class="enjoy-content">
+            Enjoy your visit!!
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const columns = document.querySelectorAll('.route-column');
+        const enjoyPopup = document.getElementById('enjoy-popup');
+
+        columns.forEach(col => {
+            col.addEventListener('click', () => {
+                const routeType = col.getAttribute('data-route');
+                // Send POST request to backend with routeType
+                fetch("{{ url_for('select_route') }}", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({route: routeType})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'ok') {
+                        // Show Enjoy popup
+                        enjoyPopup.classList.add('show');
+                        setTimeout(() => {
+                            enjoyPopup.classList.remove('show');
+                            // Redirect to feedback.html
+                            window.location.href = "{{ url_for('feedback') }}";
+                        }, 5000); // 5 seconds
+                    } else {
+                        alert('Error selecting route.');
+                    }
+                });
+            });
+        });
+    });
+    </script>
 </body>
 </html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Feedback</title>
+    <style>
+        body {
+            background: #000;
+            color: #B8860B;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center; 
+            margin-top:40px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #111;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(184,134,11,0.3);
+        }
+
+        .instructions {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+
+        .feedback-textarea {
+            width: 100%;
+            height: 200px;
+            background: #000;
+            color: #B8860B;
+            border: 2px solid #B8860B;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 1em;
+            box-sizing: border-box;
+            resize: vertical;
+            margin-bottom: 30px;
+        }
+
+        .rating-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .rating-container p {
+            margin: 0 0 10px;
+        }
+
+        .stars {
+            display: inline-block;
+            font-size: 2em;
+            position: relative;
+        }
+
+        /* Using unicode ★ and ☆ for rating; half-stars can be simulated with background gradient masks */
+        /* We'll use a clever trick: We'll have an overlay for half stars. */
+        .star {
+            cursor: pointer;
+            color: #B8860B;
+            text-shadow: 1px 1px 3px #000;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        /* We'll store rating in a hidden input and highlight stars accordingly */
+        
+        .submit-button {
+            display: block;
+            background-color: #B8860B;
+            color: #000;
+            font-weight: bold;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            margin: 40px auto 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+        }
+
+        .submit-button:hover {
+            background-color: #A6760A;
+        }
+
+        .thank-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .thank-popup.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .thank-content {
+            background-color: #222;
+            padding: 50px 80px;
+            border-radius: 20px;
+            text-align: center;
+            color: #B8860B;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>We care about your opinion</h1>
+    <div class="container">
+        <div class="instructions">What did you think about the visit?</div>
+        <textarea class="feedback-textarea" placeholder="Write your comments here..."></textarea>
+
+        <div class="rating-container">
+            <p>Please rate your visit</p>
+            <!-- We'll create 10 clickable halves for 5 stars (half-star increments) -->
+            <div class="stars" id="stars">
+                <!-- 10 spans: each pair represents a star -->
+                <!-- We'll mark data-value as 0.5 increments -->
+                <span class="star" data-value="0.5">★</span>
+                <span class="star" data-value="1.0">★</span>
+                <span class="star" data-value="1.5">★</span>
+                <span class="star" data-value="2.0">★</span>
+                <span class="star" data-value="2.5">★</span>
+                <span class="star" data-value="3.0">★</span>
+                <span class="star" data-value="3.5">★</span>
+                <span class="star" data-value="4.0">★</span>
+                <span class="star" data-value="4.5">★</span>
+                <span class="star" data-value="5.0">★</span>
+            </div>
+        </div>
+
+        <button class="submit-button" id="submit-review">Send your review</button>
+    </div>
+
+    <div class="thank-popup" id="thank-popup">
+        <div class="thank-content">
+            We really appreciate your feedback!
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const stars = document.getElementById('stars');
+            const starElems = stars.querySelectorAll('.star');
+            let selectedValue = 0; // store rating value
+
+            starElems.forEach(star => {
+                star.addEventListener('click', () => {
+                    selectedValue = parseFloat(star.getAttribute('data-value'));
+                    highlightStars(selectedValue);
+                });
+            });
+
+            function highlightStars(value) {
+                starElems.forEach(star => {
+                    let starVal = parseFloat(star.getAttribute('data-value'));
+                    if (starVal <= value) {
+                        star.style.color = '#FFD700'; // highlight
+                    } else {
+                        star.style.color = '#B8860B'; // normal
+                    }
+                });
+            }
+
+            const submitBtn = document.getElementById('submit-review');
+            const thankPopup = document.getElementById('thank-popup');
+
+            submitBtn.addEventListener('click', () => {
+                // Send feedback and rating to server (not implemented)
+                // Just show popup for now
+                thankPopup.classList.add('show');
+                setTimeout(() => {
+                    thankPopup.classList.remove('show');
+                    // Animate transition to goodbye page
+                    // We'll just redirect after fadeout:
+                    // Let's wait another 0.5 seconds for the fadeout
+                    setTimeout(() => {
+                        window.location.href = "{{ url_for('goodbye') }}";
+                    }, 500);
+                }, 2000); // show for 2 seconds
+            });
+        });
+    </script>
+</body>
+</html>
