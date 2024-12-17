@@ -85,7 +85,9 @@ class DBPartitionsHandler:
 		"""
 
 		self.cursor.execute(f"SELECT rating FROM test_{self.main_table}")
-		return self.cursor.fetchall()
+		test_ratings = self.cursor.fetchall()
+		test_ratings = [float(rating[0]) for rating in test_ratings]
+		return test_ratings
 	
 	def get_test_rows(self):
 		"""
@@ -103,8 +105,6 @@ class DBPartitionsHandler:
 		query = f"SELECT group_size, group_type, group_description, art_knowledge, preferred_periods_ids, preferred_author_name, preferred_themes, time_coefficient FROM test_{self.main_table}"
 		self.cursor.execute(query)
 		test_rows = self.cursor.fetchall()
-
-		assert len(test_rows) == len(predictions), "The number of predictions should match the number of test rows."
 
 		predictions_ratings = []
 
@@ -148,7 +148,7 @@ class DBPartitionsHandler:
 	def evaluate_predictions(self, 
 			predictions: list[list[int]], 
 			improvement_error_funcs: list[str] = ['exp-exp', 'exp-lin', 'exp-log', 'lin-exp', 'lin-lin', 'lin-log', 'log-exp', 'log-lin', 'log-log']
-			) -> dict[str, tuple[float, np.ndarray]]:
+			) -> dict[str, tuple[float, list]]:
 		"""
 		Evaluates the predictions in the test set using the improvement and error functions provided.
 
@@ -159,12 +159,12 @@ class DBPartitionsHandler:
 
 		Returns:
 			dict[tuple, tuple[float, list[float]]]: A dictionary containing the improvement metrics for each function pair. 
-				The keys are the names of the function pairs, and the values are tuples containing the average metric and the individual metrics.
+				The keys are the names of the function pairs, and the values are tuples containing the average metric and the individual metrics for each test row.
 				Higher values are better.
 		"""
 		# Get the ratings of the test set
-		predictions_ratings = np.array(self.get_predictions_ratings(predictions))
-		test_ratings = np.array(self.get_test_ratings())
+		predictions_ratings = self.get_predictions_ratings(predictions)
+		test_ratings = self.get_test_ratings()
 
 		scores = {}
 		for func_pair in improvement_error_funcs:
@@ -177,10 +177,13 @@ class DBPartitionsHandler:
 
 			scores[func_pair] = (average_metric, individual_metrics)
 
+		scores['test_ratings'] = test_ratings
+		scores['predictions_ratings'] = predictions_ratings
+
 		return scores
 
 	@staticmethod
-	def calculate_metric(y_test, y_pred, improvement_func='log', error_func='lin') -> tuple[float, np.ndarray]:
+	def calculate_metric(y_test, y_pred, improvement_func='log', error_func='lin') -> tuple[float, list[float]]:
 		"""
 		Calculates a flexible metric based on improvements and errors, with customizable functions.
 		
@@ -193,29 +196,24 @@ class DBPartitionsHandler:
 		Returns:
 			tuple[float, np.ndarray]: The average metric and the individual metrics.
 		"""
-		# Diferencias entre predicciones y valores reales
-		diffs = y_pred - y_test
+		diffs = [p - t for p, t in zip(y_pred, y_test)]
 
-		absolute_errors = np.where(diffs < 0, -diffs, 0)
-		absolute_improvements = np.where(diffs > 0, diffs, 0)
+
+		from math import log, exp
+
+		if improvement_func == 'lin':
+			diffs = diffs
+		elif improvement_func == 'log':
+			diffs = [log(abs(diff) + 1) for diff in diffs if diff > 0]
+		elif improvement_func == 'exp':
+			diffs = [exp(abs(diff)) - 1 for diff in diffs if diff > 0]
+
+		if error_func == 'lin':
+			diffs = diffs
+		elif error_func == 'log':
+			diffs = [-log(abs(diff) + 1) for diff in diffs if diff < 0]
+		elif error_func == 'exp':
+			diffs = [-exp(abs(diff)) - 1 for diff in diffs if diff < 0]
 		
-		# Improvement function
-		def apply_func(absolute_improvements, func: str):
-			if func == 'log':
-				return np.log1p(absolute_improvements)  # log(1 + x)
-			elif func == 'lin':
-				return absolute_improvements  # Lineal
-			elif func == 'exp':
-				return np.expm1(absolute_improvements)  # exp(x) - 1
-			else:
-				raise ValueError(f"Improvement function '{improvement_func}' not recognized.")
-		
-		# Apply the functions
-		improvements = apply_func(absolute_improvements, func=improvement_func)
-		errors = apply_func(absolute_errors, func=error_func)
-
-		# Calculate the metric
-		metrics = improvements - errors
-
-		return np.mean(metrics), metrics
+		return sum(diffs) / len(diffs), diffs
 
