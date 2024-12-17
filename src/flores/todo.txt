@@ -1,8 +1,0 @@
-FLORES:
-- list of visited matchings
-- numerical feedback
-- extra columns
-
-GENERAL:
-- better random preferences function (more logical)
-- random time visit (logical)
