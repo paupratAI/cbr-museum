@@ -566,15 +566,6 @@ class CBR:
 		"""
 		cursor = self.conn.cursor()
 
-		# Prepare JSON-serialized fields for AbstractProblem
-		preferred_periods_json = json.dumps(
-			[asdict(p) for p in abstract_problem.preferred_periods],
-			ensure_ascii=False
-		)
-		preferred_author_json = json.dumps(
-			asdict(abstract_problem.preferred_author),
-			ensure_ascii=False
-		) if abstract_problem.preferred_author else None
 		preferred_themes_json = json.dumps(abstract_problem.preferred_themes, ensure_ascii=False)
 
 		case_id = cursor.execute("SELECT MAX(case_id) FROM train_cases").fetchone()[0]
@@ -597,10 +588,10 @@ class CBR:
 			specific_problem.favorite_period,
 			abstract_problem.group_type,
 			abstract_problem.art_knowledge,
-			[p["period_id"] for p in preferred_periods_json],
-			preferred_author_json["author_name"],
+			[p.period_id for p in abstract_problem.preferred_periods],
+			abstract_problem.preferred_author.author_name,
 			preferred_themes_json,
-			0, # reduced_mobility
+			0, 
 			abstract_problem.time_coefficient,
 			time_limit,
 			specific_problem.group_description, 
