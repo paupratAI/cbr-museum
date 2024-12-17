@@ -331,7 +331,14 @@ class CBR:
 			if non_redundancy_factor < 0:
 				non_redundancy_factor = 0
 
-			utility = (0.5 * normalized_feedback) + (0.3 * normalized_usage) + (0.2 * non_redundancy_factor)
+			if max_usage == 0:
+				# Exclude usage_count from utility calculation
+				utility = (0.7 * normalized_feedback) + (0.3 * non_redundancy_factor)
+			else:
+				# Include normalized_usage when max_usage is greater than 0
+				normalized_usage = usage_count / max_usage
+				utility = (0.5 * normalized_feedback) + (0.3 * normalized_usage) + (0.2 * non_redundancy_factor)
+        
 			utility = round(utility, 2)
 			self.conn.execute("UPDATE train_cases SET utility = ? WHERE case_id = ?", (utility, case_id))
 
