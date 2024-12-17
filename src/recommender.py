@@ -249,8 +249,9 @@ class Recommender:
 		self.clustering_system.load_model()
 
 		for i, row in enumerate(test_rows):
-			if (i + 1) % 50 == 0 or i == 0:
-				self.clustering_system = self.clustering()				
+			if (i + 1) % 50 == 0:
+				self.clustering_system = self.clustering()			
+				self.clustering_system.load_model()	
 
 			print(f"Generating test prediction {(i+1)}/{len(test_rows)}", end='\r')
 
