@@ -196,24 +196,49 @@ class DBPartitionsHandler:
 		Returns:
 			tuple[float, np.ndarray]: The average metric and the individual metrics.
 		"""
-		diffs = [p - t for p, t in zip(y_pred, y_test)]
+		assert len(y_test) == len(y_pred), "The lengths of y_test and y_pred should be the same."
 
+		diffs = [p - t for p, t in zip(y_pred, y_test)]
 
 		from math import log, exp
 
 		if improvement_func == 'lin':
-			diffs = diffs
+			new_diffs = diffs
 		elif improvement_func == 'log':
-			diffs = [log(abs(diff) + 1) for diff in diffs if diff > 0]
+			new_diffs = []
+			for diff in diffs:
+				if diff > 0:
+					new_diffs.append(log(abs(diff) + 1))
+				else:
+					new_diffs.append(diff)
 		elif improvement_func == 'exp':
-			diffs = [exp(abs(diff)) - 1 for diff in diffs if diff > 0]
+			new_diffs = []
+			for diff in diffs:
+				if diff > 0:
+					new_diffs.append(exp(abs(diff)) - 1)
+				else:
+					new_diffs.append(diff)
+
+		diffs = new_diffs
 
 		if error_func == 'lin':
-			diffs = diffs
+			new_diffs = diffs
 		elif error_func == 'log':
-			diffs = [-log(abs(diff) + 1) for diff in diffs if diff < 0]
+			new_diffs = []
+			for diff in diffs:
+				if diff < 0:
+					new_diffs.append(-log(abs(diff) + 1))
+				else:
+					new_diffs.append(diff)
 		elif error_func == 'exp':
-			diffs = [-exp(abs(diff)) - 1 for diff in diffs if diff < 0]
-		
-		return sum(diffs) / len(diffs), diffs
+			new_diffs = []
+			for diff in diffs:
+				if diff < 0:
+					new_diffs.append(-exp(abs(diff)) + 1)
+				else:
+					new_diffs.append(diff)
+
+		diffs = new_diffs
+
+		return sum(diffs) / len(diffs) , diffs
 

@@ -298,7 +298,7 @@ class Recommender:
 			execution_times.append(iter_time)
 
 		# Evaluate the predictions
-		scores = self.dbph.evaluate_predictions(predictions=predictions)
+		scores = self.dbph.evaluate_predictions(predictions=predictions, improvement_error_funcs=['lin-lin'])
 	
 		if plot_time:
 			final_time = time.time() - start_time
@@ -340,6 +340,6 @@ class Recommender:
 		return scores
 	
 if __name__ == '__main__':
-	r = Recommender(cf_decay_factor=1, cf_alpha=0.25, cf_gamma=1, beta=1)
-	r.evaluate(results_file_name='cf-alpha025-ind', save=True, reload_cf=False)
+	r = Recommender(cf_decay_factor=1, cf_alpha=0, cf_gamma=1, beta=0)
+	r.evaluate(results_file_name='cf-alpha0', save=True, reload_cf=False)
 	
