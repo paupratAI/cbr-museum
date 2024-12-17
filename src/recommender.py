@@ -180,10 +180,12 @@ class Recommender:
 			available_periods=periods
 		)
 
-		return abstract_problem
+		return specific_problem, abstract_problem
 	
-	# def store_case(self) -> None:
-	# 	self.cf.store_group_ratings(group_id=, ordered_items=, ordered_items_matches=, visited_items_count=, global_rating=)
+	def store_case(self, clean_response,  visited_artworks_count, ordered_artworks, ordered_artworks_matches, rating, textual_feedback, cluster) -> None:
+		sp, ap = self.convert_to_problems(clean_response)
+		self.cf.store_group_ratings(group_id=ap.group_id, ordered_items=ordered_artworks, ordered_items_matches=ordered_artworks_matches, visited_items_count=visited_artworks_count, global_rating=rating)
+		self.cbr.retain(specific_problem=ap, abstract_problem=ap, user_feedback=rating, visited_artworks_count=visited_artworks_count, ordered_artworks=ordered_artworks, ordered_artworks_matches=ordered_artworks_matches, rating=rating, textual_feedback=textual_feedback, cluster=cluster)
 
 	def recommend(self, target_group_id: int, clean_response: list = [], ap: AbstractProblem = None, eval_mode: bool = False, cluster_id: int = 0) -> dict[str, tuple[list[int], list[float]]]:
 		"""
@@ -202,7 +204,7 @@ class Recommender:
 		"""
 		# Obtain abstract problem from clean_response
 		if not ap:
-			ap = self.convert_to_problems(clean_response)
+			sp, ap = self.convert_to_problems(clean_response)
 
 		ap.cluster = cluster_id
 		cf_result, cbr_result = [], []

@@ -34,7 +34,7 @@ class Clustering:
         for k in range(min_clusters, max_clusters + 1):
             kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
             labels = kmeans.fit_predict(X_scaled)
-            score = silhouette_score(X_scaled, labels)
+            score = silhouette_score(X_scaled, labels, random_state=42)
             print(f'Number of clusters: {k}, Silhouette Score: {score:.4f}')
 
             # Check if all clusters have at least minimum_examples_per_cluster examples
