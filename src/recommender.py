@@ -29,7 +29,7 @@ class Recommender:
 		cbr_gamma: float = 0.1,
 		cbr_top_k: int = 3,
 		ratings_range: list = [0, 5],
-		clustering: bool = False
+		clustering: bool = True
 		):
 		"""
 		Initializes the Recommender system.

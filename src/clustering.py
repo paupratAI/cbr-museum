@@ -7,7 +7,7 @@ import joblib
 import os
 
 class Clustering:
-    def __init__(self, db_path='./data/database_2000.db', model_path='./models/kmeans_model.joblib'):
+    def __init__(self, db_path='./data/database.db', model_path='./models/kmeans_model.joblib'):
         self.db_path = db_path
         self.model_path = model_path
         self.conn = sqlite3.connect(self.db_path)
@@ -275,7 +275,7 @@ class Clustering:
 # Usage Example
 """if __name__ == "__main__":
     # Initialize the clustering system
-    clustering_system = Clustering(db_path='./data/database_2000.db', model_path='./models/kmeans_model.joblib')
+    clustering_system = Clustering(db_path='./data/database.db', model_path='./models/kmeans_model.joblib')
 
     try:
         # Fetch data and perform clustering
