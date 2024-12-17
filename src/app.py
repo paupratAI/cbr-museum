@@ -152,7 +152,7 @@ def route_page():
     recommendations_c = copy.deepcopy(recommendations)
     iface.route_c = recommendations_c
 
-    time = (iface.fp[0] * iface.fp[1])*60
+    time = (iface.fp[0] * 1)*60
     iface.time = time
     
     for recommendation in recommendations.values():
@@ -177,7 +177,7 @@ def select_route():
     data = request.get_json()
     route_type = data.get('route')
     iface.route_type = route_type
-    run_and_plot(iface.route_to_plot[iface.route_type][0], bool(int(iface.fp[2])) )
+    run_and_plot(iface.route_to_plot[iface.route_type][0], bool(int(iface.fp[1])) )
     # Aquí podrías guardar la selección en la DB si quieres
     # Por ahora solo devolvemos ok
     return jsonify(status='ok')
@@ -229,8 +229,7 @@ def goodbye():
                                  rating=iface.user_rating,
                                  textual_feedback=iface.user_feedback,
                                  cluster=cluster_id,
-                                 time_limit=iface.time,
-                                 utility=True)
+                                 time_limit=iface.time,)
     return render_template('goodbye.html')
 
 
