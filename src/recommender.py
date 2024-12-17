@@ -311,11 +311,11 @@ class Recommender:
 
 			scores['parameters'] = parameters_str
 
-			if os.path.exists(results_file_name):
-				results_file_name = results_file_name.replace('.json', '_new.json')
-
 			if not results_file_name.endswith('.json'):
 				results_file_name += '.json'
+
+			if os.path.exists(results_file_name):
+				results_file_name = results_file_name.replace('.json', '_new.json')
 
 			# Save the results to a file
 			with open(results_file_name, 'w') as f:
