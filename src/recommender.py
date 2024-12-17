@@ -182,8 +182,9 @@ class Recommender:
 
 		return abstract_problem
 	
-	# def store_case(self) -> None:
-	# 	self.cf.store_group_ratings(group_id=, ordered_items=, ordered_items_matches=, visited_items_count=, global_rating=)
+	def store_case(self) -> None:
+		self.cf.store_group_ratings(group_id=, ordered_items=, ordered_items_matches=, visited_items_count=, global_rating=)
+		self.cbr.retain(specific_problem=, abstract_problem=, user_feedback=, visited_artworks_count=, ordered_artworks=, ordered_artworks_matches=, rating=, textual_feedback=, cluster=)
 
 	def recommend(self, target_group_id: int, clean_response: list = [], ap: AbstractProblem = None, eval_mode: bool = False, cluster_id: int = 0) -> dict[str, tuple[list[int], list[float]]]:
 		"""
