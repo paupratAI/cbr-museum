@@ -77,7 +77,7 @@ class Recommender:
 			ratings_range=ratings_range
 		)
 		
-		self.dbph = DBPartitionsHandler(db_path=self.db_path, train_split=0.975, main_table="cases", ratings_range=[0, 5], seed=42, overwrite=False)
+		self.dbph = DBPartitionsHandler(db_path=self.db_path, train_split=0.9875, main_table="cases", ratings_range=[0, 5], seed=42, overwrite=True)
 	
 	def clustering(self):
 
@@ -199,8 +199,8 @@ class Recommender:
 			dict(str, list): A dictionary with the CBR, CF and Hybrid recommendations.
 		"""
 		# Obtain abstract problem from clean_response
-		if not ap:
-			ap = self.convert_to_problems(clean_response)
+		# if not ap:
+			# ap = self.convert_to_problems(clean_response)
 
 		cf_result, cbr_result = [], []
 
@@ -254,7 +254,7 @@ class Recommender:
 		predictions = []
 
 		for i, row in enumerate(test_rows):
-			group_id = row[1]
+			case_id, group_id, group_size, num_people, num_experts, minors, past_museum_visits, preferred_main_theme, guided_visit, preferred_year, group_type, art_knowledge, preferred_periods_ids, preferred_author_name, preferred_themes, reduced_mobility, time_coefficient, time_limit, group_description, ordered_artworks, ordered_artworks_matches, visited_artworks_count, rating, textual_feedback, only_elevator, time_coefficient_correction, artwork_to_remove, guided_visit_feedback = row
 
 			print(f"Generating test prediction {(i+1)}/{len(test_rows)}", end='\r')
 
