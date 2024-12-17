@@ -41,7 +41,7 @@ class CF:
         assert 0 <= default_decay_factor <= 1, "Decay factor must be between 0 and 1"
 
         self.db_path = db_path
-        self.conn = sqlite3.connect(db_path)
+        self.conn = sqlite3.connect(db_path, check_same_thread=False)
         self.create_tables()
 
         self.default_alpha = default_alpha

@@ -16,7 +16,7 @@ from typing import List, Tuple
 
 class CBR:
 	def __init__(self, db_path='./data/database.db', alpha=0.6, beta=0.3, gamma=0.1, top_k=3):
-		self.conn = sqlite3.connect(db_path)
+		self.conn = sqlite3.connect(db_path, check_same_thread=False)
 		self.conn.row_factory = sqlite3.Row 
 		self.ensure_columns()
 		self.create_indices()

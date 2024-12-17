@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Pick a Route</title>
+    <style>
+        .routes-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 40px;
+        }
+
+        .route-column {
+            width: 30%;
+            background-color: #111;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(184,134,11,0.3);
+            overflow-y: scroll;
+            height: 400px; /* adjust as needed */
+        }
+
+        .route-column h2 {
+            text-align: center;
+        }
+
+        .route-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #222;
+            border-radius: 5px;
+            color: #B8860B;
+        }
+    </style>
+</head>
+<body style="background: #000; color: #B8860B; font-family: Helvetica, Arial, sans-serif;">
+    <h1 style="text-align: center; margin-top: 40px;">Pick a Route</h1>
+    <div class="routes-container">
+        <div class="route-column">
+            <h2>CF Route</h2>
+            {% for art_id in recommendations.cf[0] %}
+            <div class="route-item">Artwork Name: {{ art_id }}</div>
+            {% endfor %}
+        </div>
+        <div class="route-column">
+            <h2>CBR Route</h2>
+            {% for art_id in recommendations.cbr[0] %}
+            <div class="route-item">Artwork Name: {{ art_id }}</div>
+            {% endfor %}
+        </div>
+        <div class="route-column">
+            <h2>Hybrid Route</h2>
+            {% for art_id in recommendations.hybrid[0] %}
+            <div class="route-item">Artwork Name: {{ art_id }}</div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

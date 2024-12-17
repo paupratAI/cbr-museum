@@ -152,8 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'ok') {
-                            alert('Data saved successfully!');
-                            // Here you can redirect or do something else
+                            window.location.href = "/route";
                         } else {
                             alert('Error saving data.');
                         }

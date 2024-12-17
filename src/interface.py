@@ -50,7 +50,7 @@ class Llama:
                 - Return the final result as a simple JSON list corresponding to the answers in order.
                 - Do not explain your reasoning or provide extra commentary in the final output. Only output the cleaned list of values.
 
-                Your final answer should strictly be the cleaned values in a JSON list, nothing else. From response 1 to 9, the output should be in the following format: [1, "yes", "yes", 1, 2, 1500, "Mystical", "Salvador Dalí", "group of friends"] for example.
+                Your final answer should strictly be the cleaned values in a JSON list, nothing else. From response 1 to 9, the output should be in the following format: [1, 0, 1, 1, 2, 1500, "Mystical", "Salvador Dalí", "group of friends"] for example.
             """)
         else:
             system_prompt = (""" You are a museum route planning assistant that processes a user's responses to a series of three questions. The user’s answers may be imprecise or informal. Your job is to produce a clean, standardized list of values derived from their answers. The final output should be a structured list containing one cleaned value per question, in order.
@@ -76,7 +76,7 @@ class Llama:
 
                 "I guess maybe three days"
                 "just a couple of hours"
-                "I think we have someone who can't walk well" Your output could be: [3, 2, true]
+                "I think we have someone who can't walk well" Your output could be: [3, 2, 0]
                 No additional text outside the JSON list should be returned. """)
 
 
