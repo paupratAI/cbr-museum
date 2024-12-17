@@ -21,8 +21,8 @@ class Llama:
 
                 You have received the following 8 answers (in this specific order):
                 1. How many people will join the visit? (user might say "There are four of us" -> interpret as an integer, e.g. 4)
-                2. Are there children under 12? (user may say "no kids", "yes, a toddler" -> output "yes" or "no")
-                3. Would you like a guided visit? (interpret variations like "I think so" as "yes")
+                2. Are there children under 12? (user may say "no kids", "yes, a toddler" -> output "yes" or "no"). You should write your answer in binary, so 0 for "no" and 1 for "yes".
+                3. Would you like a guided visit? (interpret variations like "I think so" as "yes"). You should write your answer in binary, so 0 for "no" and 1 for "yes".
                 4. How many experts are in the group? (if user says "just me is an expert" -> interpret as an integer, e.g. 1)
                 5. How many museums have you visited before? (convert responses like "I've seen a couple" to an integer approximation, e.g. 2)
                 6. Enter the year of your favorite art period (1000 to 1900): (if user says "around fifteen hundred" -> interpret as 1500)
@@ -63,7 +63,7 @@ class Llama:
                 The user may say "a few hours" or "about three hours" -> interpret as an integer (e.g., 3).
                 Is there someone with reduced mobility? (yes/no):
                 The user may say "No, I think we are all good" -> output "no".
-                If the user says something like "My grandma has trouble walking" -> interpret as "yes".
+                If the user says something like "My grandma has trouble walking" -> interpret as "yes". You should write your answer in binary, so 0 for "no" and 1 for "yes".
                 Your task:
 
                 Parse each answer to extract a clean, normalized value.
