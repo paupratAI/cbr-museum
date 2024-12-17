@@ -1,7 +1,6 @@
 from entities import Artwork, Author, Period, Style
 from authors import authors
 from ontology.periods import periods_dict
-from museum import rooms
 
 artworks = {
     5357: Artwork(5357, 'The Red Armchair', None, authors['Pablo Picasso'], [periods_dict[16], periods_dict[18]], 'Joy', 12838, True, 58, 6, [Style(style_name='Cubism')]),
@@ -54,7 +53,7 @@ artworks = {
     111380: Artwork(111380, 'Seated Bodhisattva', None, authors['Japan'], [periods_dict[11]], 'Buddhism', 2623, True, 38, 4, [Style(style_name='Japanese (culture or style)'), Style(style_name='nara')]),      
     111436: Artwork(111436, 'The Basket of Apples', None, authors['Paul Cezanne'], [periods_dict[13], periods_dict[15]], 'Flora', 5200, True, 107, 5, [Style(style_name='Post-Impressionism'), Style(style_name='19th century')]),
     122054: Artwork(122054, 'Alka Seltzer', None, authors['Roy Lichtenstein'], [periods_dict[20]], 'Nostalgia', 4256, True, 57, 5, [Style(style_name='Pop Art')]),
-    }   
+    }
 
 """
 {5357: Artwork(5357, 'The Red Armchair', None, Author(author_id=0, author_name='Pablo Picasso', main_periods=[Period(period_id=17, year_beginning=1907, year_end=1930, themes=['Christianity', 'Mysticism', 'Greek Mythology', 'Fauna'], period_name='Cubism'), Period(period_id=18, year_beginning=1920, year_end=1950, themes=['Magic', 'Mysticism', 'Occult', 'Alchemy'], period_name='Surrealism')], similar_authors=['Georges Braque', 'Juan Gris']), Period(period_id=16, year_beginning=1905, year_end=1933, themes=['Mysticism', 'Sadness', 'Joy', 'Astrology'], period_name='Expressionism'), 'Joy', 12838, True, 58, 6, []), 
