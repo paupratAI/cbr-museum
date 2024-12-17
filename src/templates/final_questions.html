@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const finishButton = document.getElementById('final-finish');
     const loadingPopup = document.getElementById('loading-popup');
     const spinnerText = loadingPopup.querySelector('p');
+    const spinner = loadingPopup.querySelector('.spinner');
 
     let currentScreenIndex = 0;
     let finalAnswers = [];
@@ -104,8 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const answer = inputField.value.trim();
             finalAnswers.push(answer);
 
+            // Show a short popup for processing (0.5s)
+            spinnerText.textContent = "Processing...";
             showLoading();
-            // Normal steps: processing popup for about 0.5s, we can just keep 1s for consistency
             hideLoading(() => {
                 const targetId = button.getAttribute('data-next');
                 const targetScreen = document.querySelector(targetId);
@@ -114,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentScreenIndex = targetIndex;
                     slideToScreen(currentScreenIndex);
                 }
-            }, 500); // 0.5 secs delay for regular steps
+            }, 500);
         });
     });
 
@@ -124,27 +126,41 @@ document.addEventListener('DOMContentLoaded', () => {
         const answer = inputField.value.trim();
         finalAnswers.push(answer);
 
+        // 1) Show first popup: "Retrieving ..." for 2 seconds
+        spinner.style.display = 'block';
+        spinnerText.textContent = "Retrieving ...";
         showLoading();
-        spinnerText.textContent = "Saving your data ...";
-
-        // Keep popup visible for 3 seconds
         hideLoading(() => {
-            // After hiding the popup, send finalAnswers to server
-            fetch("{{ url_for('process_final_answers') }}", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({final_answers: finalAnswers})
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'ok') {
-                    alert('Data saved successfully!');
-                    // Here you can redirect or do something else
-                } else {
-                    alert('Error saving data.');
-                }
-            });
-        }, 3000); // 3 secs for saving popup
+            // 2) After first popup disappears, show second: "Reusing ..." for 2 seconds
+            spinnerText.textContent = "Reusing ...";
+            showLoading();
+            hideLoading(() => {
+                // 3) After second popup disappears, show third popup with tick for 2 seconds
+                spinner.style.display = 'none';
+                spinnerText.textContent = "✓ All worked well";
+                showLoading();
+                hideLoading(() => {
+                    // After final popup disappears, do fetch
+                    // Restore spinner for future use if needed
+                    spinner.style.display = 'block';
+                    spinnerText.textContent = "Processing...";
+                    fetch("{{ url_for('process_final_answers') }}", {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({final_answers: finalAnswers})
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'ok') {
+                            alert('Data saved successfully!');
+                            // Here you can redirect or do something else
+                        } else {
+                            alert('Error saving data.');
+                        }
+                    });
+                }, 2000); // 2 secs for tick popup
+            }, 2000); // 2 secs for "Reusing ..."
+        }, 2000); // 2 secs for "Retrieving ..."
     });
 });
 </script>
