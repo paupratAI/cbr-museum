@@ -56,7 +56,7 @@ class Recommender:
 		assert 0 <= beta <= 1, "Beta should be between 0 and 1."
 		
 		if clustering:
-			self.clustering()
+			self.clustering_system = self.clustering()
 
 		self.main_table = main_table
 		self.db_path = db_path
@@ -98,6 +98,7 @@ class Recommender:
 		finally:
 			print("Closing connection to the database.")
 			clustering_system.close_connection()
+		return clustering_system
 
 
 	def retrieve_data(self, clean_response):
@@ -174,7 +175,7 @@ class Recommender:
 	def store_case(self) -> None:
 		pass
 
-	def recommend(self, target_group_id: int, clean_response: list = [], ap: AbstractProblem = None, eval_mode: bool = False) -> dict[str, list]:
+	def recommend(self, target_group_id: int, clean_response: list = [], ap: AbstractProblem = None, eval_mode: bool = False, cluster_id: int = 0) -> dict[str, list]:
 		"""
 		Recommends items using the CF and CBR systems.
 
@@ -193,6 +194,7 @@ class Recommender:
 		if not ap:
 			ap = self.convert_to_problems(clean_response)
 
+		ap.cluster = cluster_id
 		cf_result, cbr_result = [], []
 
 		# Calculate the routes
@@ -244,6 +246,8 @@ class Recommender:
 		test_rows = self.dbph.get_test_rows()
 		predictions = []
 
+		self.clustering_system.load_model()
+
 		for i, row in enumerate(test_rows):
 			print(f"Generating test prediction {(i+1)}/{len(test_rows)}", end='\r')
 
@@ -251,7 +255,20 @@ class Recommender:
 
 			clean_response = [group_id, num_people, preferred_author_name, preferred_year, preferred_main_theme, guided_visit, minors, num_experts, past_museum_visits, group_description]
 
-			predictions.append(self.recommend(target_group_id=group_id, clean_response=clean_response, eval_mode=True)["hybrid"])
+			new_case = {
+				'num_people': int(num_people),
+				'preferred_author_name': preferred_author_name,
+				'preferred_year': int(preferred_year),
+				'preferred_main_theme': preferred_main_theme,
+				'guided_visit': int(guided_visit),
+				'minors': int(minors),
+				'num_experts': int(num_experts),
+				'past_museum_visits': int(past_museum_visits)
+				}
+			
+			cluster_id = self.clustering_system.classify_new_case(new_case)
+
+			predictions.append(self.recommend(target_group_id=group_id, clean_response=clean_response, eval_mode=True, cluster_id = cluster_id)["hybrid"])
 
 		# Evaluate the predictions
 		scores = self.dbph.evaluate_predictions(predictions=predictions)
