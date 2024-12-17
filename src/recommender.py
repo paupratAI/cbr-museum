@@ -5,6 +5,7 @@ import json
 import os
 import numpy as np
 import time
+import matplotlib.pyplot as plt
 
 from entities import AbstractProblem, SpecificProblem
 from authors import authors
@@ -246,7 +247,7 @@ class Recommender:
 
 		return recommendations
 
-	def evaluate(self, results_file_name: str, reload_cf: bool = False, save: bool = False):
+	def evaluate(self, results_file_name: str, reload_cf: bool = False, save: bool = False, plot_time = False):
 		"""
 		Evaluates the Recommender Hybrid predictions in the test set.
 		"""
@@ -262,11 +263,15 @@ class Recommender:
 
 		self.clustering_system.load_model()
 
-		#start_time = time.time()
+		execution_times = [] 
+
+		start_time = time.time()
 		for i, row in enumerate(test_rows):
+			iter_start_time = time.time()  
+
 			if (i + 1) % 50 == 0:
 				self.clustering_system = self.clustering()			
-				self.clustering_system.load_model()	
+				self.clustering_system.load_model() 
 
 			print(f"Generating test prediction {(i+1)}/{len(test_rows)}", end='\r')
 
@@ -283,18 +288,37 @@ class Recommender:
 				'minors': int(minors),
 				'num_experts': int(num_experts),
 				'past_museum_visits': int(past_museum_visits)
-				}
-			
+			}
+
 			cluster_id = self.clustering_system.classify_new_case(new_case)
 
-			predictions.append(self.recommend(target_group_id=group_id, clean_response=clean_response, eval_mode=True, cluster_id = cluster_id)["hybrid"][0])
+			predictions.append(self.recommend(target_group_id=group_id, clean_response=clean_response, eval_mode=True, cluster_id=cluster_id)["hybrid"][0])
+
+			iter_time = time.time() - iter_start_time
+			execution_times.append(iter_time)
 
 		# Evaluate the predictions
-		scores = self.dbph.evaluate_predictions(predictions=predictions, improvement_error_funcs=['lin-lin'])
-		
-		#final_time = time.time() - start_time
-		#print("-" * 50)
-		#print(f"\nTime taken: {final_time} seconds.\n")
+		scores = self.dbph.evaluate_predictions(predictions=predictions)
+	
+		if plot_time:
+			final_time = time.time() - start_time
+			print("-" * 50)
+			print(f"\nTime taken: {final_time} seconds.\n")
+
+			plots_dir = "plots"
+			if not os.path.exists(plots_dir):
+				os.makedirs(plots_dir)
+
+			plt.figure(figsize=(10, 6))
+			plt.plot(range(1, len(execution_times) + 1), execution_times, marker='o', linestyle='-')
+			plt.xlabel("Iteration")
+			plt.ylabel("Execution Time (seconds)")
+			plt.title("Execution Time per Iteration")
+			plt.grid(True)
+
+			plot_path = os.path.join(plots_dir, "exec_time_plot_no_gd.png")
+			plt.savefig(plot_path)
+			plt.close()
 
 		for key, value in scores.items():
 			print(f"{key}: {float(value[0])}")

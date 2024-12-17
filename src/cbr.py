@@ -635,32 +635,3 @@ class CBR:
 	
 def row_to_dict(row):
 	return {k: row[k] for k in row.keys()}
-
-"""if __name__ == '__main__':
-	conn = sqlite3.connect('./data/database.db')
-	cursor = conn.cursor()
-	
-	cursor.execute("PRAGMA table_info(train_cases)")
-	columns = [column[1] for column in cursor.fetchall()]
-	
-	if 'cluster' not in columns:
-		cursor.execute("ALTER TABLE train_cases ADD COLUMN cluster INTEGER DEFAULT 1")
-		cursor.execute("UPDATE train_cases SET cluster = 1")
-	
-	conn.commit()
-	conn.close()
-	
-	cbr = CBR()
-	sp = SpecificProblem(group_id=1, num_people=2, favorite_author='Pablo Picasso', favorite_period=1900, favorite_theme='historical', guided_visit=True, minors=False, num_experts=1, past_museum_visits=3, group_description='A group of friends visiting the museum.')
-	ap = AbstractProblem(sp, periods, list(authors.values()), theme_instances)
-	ap.cluster = 1
-	
-	cases = cbr.retrieve(ap)
-	for case, similarity in cases:
-		case_dict = row_to_dict(case)
-		print(f"Case: {case_dict['case_id']}, Similarity: {similarity}")
-	print(ap.preferred_themes)
-	
-	route = cbr.reuse(ap, top_k=3)
-	print(route), print(len(route))
-	"""
