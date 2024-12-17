@@ -27,13 +27,15 @@ class Llama:
                 5. How many museums have you visited before? (convert responses like "I've seen a couple" to an integer approximation, e.g. 2)
                 6. Enter the year of your favorite art period (1000 to 1900): (if user says "around fifteen hundred" -> interpret as 1500)
                 7. Which theme do you prefer? Possible themes and their labels are:
-                - Emotional: Sadness, Joy, Nostalgia, Hope, Love, Despair
-                - Historical: Battles and Wars, Conquests, Revolutions, Antiquity, Monarchies, Colonizations
-                - Religious: Christianity, Islam, Greek Mythology, Roman Mythology, Egyptian Religion, Buddhism
-                - Natural: Landscapes, Fauna, Flora, Maritime Scenes, Meteorological Phenomena, Mountains and Valleys
-                - Mystical: Magic, Occult, Astrology, Alchemy, Mysticism, Ancient Rituals
+                - emotional: Sadness, Joy, Nostalgia, Hope, Love, Despair
+                - historical: Battles and Wars, Conquests, Revolutions, Antiquity, Monarchies, Colonizations
+                - religious: Christianity, Islam, Greek Mythology, Roman Mythology, Egyptian Religion, Buddhism
+                - natural: Landscapes, Fauna, Flora, Maritime Scenes, Meteorological Phenomena, Mountains and Valleys
+                - mystical: Magic, Occult, Astrology, Alchemy, Mysticism, Ancient Rituals
 
                 If the user’s chosen theme isn't explicitly listed, pick the closest one based on semantic similarity. For example, if they say "spooky ancient rituals," that fits "Mystical" or "Ancient Rituals" directly under Mystical.
+                As you can see in the list above, each theme has a corresponding label (e.g., "Emotional" is 0, "Historical" is 1, etc.). You should output the corresponding name of the theme as a string in lowercase  (e.g., "emotional"). 
+                Each theme has its own set of subcategories, but you don't need to consider them in this task but probably the user will mention one of the subcategories, and you'll have to map it to the main category. Remember, in lowercasse. Your output should coincide with one of the themes above perfectly
 
                 8. What's your favorite author? 
                 If the user chooses an author not in the dataset, pick the closest match from a known set of authors
@@ -50,7 +52,7 @@ class Llama:
                 - Return the final result as a simple JSON list corresponding to the answers in order.
                 - Do not explain your reasoning or provide extra commentary in the final output. Only output the cleaned list of values.
 
-                Your final answer should strictly be the cleaned values in a JSON list, nothing else. From response 1 to 9, the output should be in the following format: [1, 0, 1, 1, 2, 1500, "Mystical", "Salvador Dalí", "group of friends"] for example.
+                Your final answer should strictly be the cleaned values in a JSON list, nothing else. From response 1 to 9, the output should be in the following format: [1, 0, 1, 1, 2, 1500, "emotional", "Salvador Dalí", "group of friends"] for example.
             """)
         else:
             system_prompt = (""" You are a museum route planning assistant that processes a user's responses to a series of three questions. The user’s answers may be imprecise or informal. Your job is to produce a clean, standardized list of values derived from their answers. The final output should be a structured list containing one cleaned value per question, in order.
@@ -97,7 +99,7 @@ class Llama:
 class Interface:
     def __init__(self):
         self.llama = Llama()
-        self.recommender = Recommender(db_path="data/database.db", clustering=False)
+        self.recommender = Recommender(db_path="data/database.db", clustering=True)
         self.db = sqlite3.connect("data/database.db", check_same_thread=False)
 
     def get_id(self):

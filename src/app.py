@@ -3,6 +3,8 @@ from interface import Llama, Interface
 import ast
 import json
 from ontology.art import artworks
+from entities import AbstractSolution
+import copy
 
 app = Flask(__name__)
 
@@ -132,6 +134,7 @@ def route_page():
     """
     #Now we'll have to coincide the desire clean response with the iface.ap
     clean_response = [iface.ap[0], iface.ap[1], iface.ap[8], iface.ap[6], iface.ap[7], iface.ap[3], iface.ap[2], iface.ap[4], iface.ap[5], iface.ap[9]]
+    iface.clean_response = clean_response
 
     # Suppose that you also need to incorporate the final questions (days, hours, mobility) into the route planning
     # You can append or integrate them into clean_response if needed, depending on your logic:
@@ -142,8 +145,14 @@ def route_page():
 
     # Now call recommend:
     recommendations = iface.recommender.recommend(target_group_id=iface.id, clean_response=clean_response)
+    print(len(recommendations['cf'][0]))
+
+    # We do a copy of recommendations to avoid modifying the original
+    recommendations_c = copy.deepcopy(recommendations)
+    iface.route_c = recommendations_c
 
     time = (iface.fp[0] * iface.fp[1])*60
+    iface.time = time
     
     for recommendation in recommendations.values():
         cut_route(time, recommendation)
@@ -153,6 +162,7 @@ def route_page():
         for i, id_artwork in enumerate(recommendation[0]):
             artwork = artworks[id_artwork]
             recommendation[0][i] = artwork.artwork_name
+    iface.route = recommendations
 
     # recommendations is a dict with keys "cf", "cbr", "hybrid"
     # Each is a list of artwork IDs
@@ -163,6 +173,7 @@ def route_page():
 def select_route():
     data = request.get_json()
     route_type = data.get('route')
+    iface.route_type = route_type
     # Aquí podrías guardar la selección en la DB si quieres
     # Por ahora solo devolvemos ok
     return jsonify(status='ok')
@@ -171,8 +182,50 @@ def select_route():
 def feedback():
     return render_template('feedback.html')
 
+@app.route('/process_feedback', methods=['POST'])
+def process_feedback():
+    user_feedback = request.form.get('user_feedback', '')
+    user_rating = request.form.get('user_rating', '0')
+
+    iface.user_feedback = user_feedback
+    iface.user_rating = float(user_rating)
+
+    return jsonify(status='ok')
+
 @app.route('/goodbye', methods=['GET'])
 def goodbye():
+    _, ap = iface.recommender.convert_to_problems(iface.clean_response)
+    abs_sol = AbstractSolution(related_to_AbstractProblem=ap)
+    artworks_list = [artworks[artwork_id] for artwork_id in artworks]
+    abs_sol.compute_matches(artworks=artworks_list)
+    sorted_matches = sorted(abs_sol.matches, key=lambda m: m.match_type, reverse=True)
+    # We redifine the variable from a list of matches to a list of match types
+    sorted_matches = [m.match_type for m in sorted_matches]
+
+    new_case = {
+    'num_people': int(iface.clean_response[1]),
+    'preferred_author_name': iface.clean_response[2],
+    'preferred_year': int(iface.clean_response[3]),
+    'preferred_main_theme': iface.clean_response[4],
+    'guided_visit': int(iface.clean_response[5]),
+    'minors': int(iface.clean_response[6]),
+    'num_experts': int(iface.clean_response[7]),
+    'past_museum_visits': int(iface.clean_response[8])
+    }
+    cluster_id = iface.recommender.clustering_system.classify_new_case(new_case)
+
+    print(len(sorted_matches))
+    print(len(iface.route_c[iface.route_type][0]))
+
+    count = len(iface.route_c[iface.route_type])
+    iface.recommender.store_case(clean_response=iface.clean_response, 
+                                 visited_artworks_count=count,
+                                 ordered_artworks=iface.route_c[iface.route_type][0],
+                                 ordered_artworks_matches=sorted_matches,
+                                 rating=iface.user_rating,
+                                 textual_feedback=iface.user_feedback,
+                                 cluster=cluster_id,
+                                 time_limit=iface.time)
     return render_template('goodbye.html')
 
 

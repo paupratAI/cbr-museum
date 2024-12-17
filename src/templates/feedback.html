@@ -60,8 +60,6 @@
             position: relative;
         }
 
-        /* Using unicode ★ and ☆ for rating; half-stars can be simulated with background gradient masks */
-        /* We'll use a clever trick: We'll have an overlay for half stars. */
         .star {
             cursor: pointer;
             color: #B8860B;
@@ -74,8 +72,6 @@
             transform: scale(1.2);
         }
 
-        /* We'll store rating in a hidden input and highlight stars accordingly */
-        
         .submit-button {
             display: block;
             background-color: #B8860B;
@@ -123,40 +119,42 @@
             font-size: 2em;
             font-weight: bold;
         }
-
     </style>
 </head>
 <body>
     <h1>We care about your opinion</h1>
     <div class="container">
         <div class="instructions">What did you think about the visit?</div>
-        <textarea class="feedback-textarea" placeholder="Write your comments here..."></textarea>
+        <form id="feedback-form" method="POST" action="{{ url_for('process_feedback') }}">
+            <textarea class="feedback-textarea" placeholder="Write your comments here..." name="user_feedback"></textarea>
 
-        <div class="rating-container">
-            <p>Please rate your visit</p>
-            <!-- We'll create 10 clickable halves for 5 stars (half-star increments) -->
-            <div class="stars" id="stars">
-                <!-- 10 spans: each pair represents a star -->
-                <!-- We'll mark data-value as 0.5 increments -->
-                <span class="star" data-value="0.5">★</span>
-                <span class="star" data-value="1.0">★</span>
-                <span class="star" data-value="1.5">★</span>
-                <span class="star" data-value="2.0">★</span>
-                <span class="star" data-value="2.5">★</span>
-                <span class="star" data-value="3.0">★</span>
-                <span class="star" data-value="3.5">★</span>
-                <span class="star" data-value="4.0">★</span>
-                <span class="star" data-value="4.5">★</span>
-                <span class="star" data-value="5.0">★</span>
+            <div class="rating-container">
+                <p>Please rate your visit</p>
+                <!-- 10 spans for half-star increments -->
+                <div class="stars" id="stars">
+                    <span class="star" data-value="0.5">★</span>
+                    <span class="star" data-value="1.0">★</span>
+                    <span class="star" data-value="1.5">★</span>
+                    <span class="star" data-value="2.0">★</span>
+                    <span class="star" data-value="2.5">★</span>
+                    <span class="star" data-value="3.0">★</span>
+                    <span class="star" data-value="3.5">★</span>
+                    <span class="star" data-value="4.0">★</span>
+                    <span class="star" data-value="4.5">★</span>
+                    <span class="star" data-value="5.0">★</span>
+                </div>
             </div>
-        </div>
 
-        <button class="submit-button" id="submit-review">Send your review</button>
+            <!-- Hidden input to store rating -->
+            <input type="hidden" name="user_rating" id="user_rating" value="0">
+
+            <button type="submit" class="submit-button" id="submit-review">Send your review</button>
+        </form>
     </div>
 
     <div class="thank-popup" id="thank-popup">
         <div class="thank-content">
-            We really appreciate your feedback!
+            Thank you for your feedback!
         </div>
     </div>
 
@@ -165,11 +163,13 @@
             const stars = document.getElementById('stars');
             const starElems = stars.querySelectorAll('.star');
             let selectedValue = 0; // store rating value
+            const userRatingInput = document.getElementById('user_rating');
 
             starElems.forEach(star => {
                 star.addEventListener('click', () => {
                     selectedValue = parseFloat(star.getAttribute('data-value'));
                     highlightStars(selectedValue);
+                    userRatingInput.value = selectedValue; // store in hidden input
                 });
             });
 
@@ -184,22 +184,32 @@
                 });
             }
 
-            const submitBtn = document.getElementById('submit-review');
+            const form = document.getElementById('feedback-form');
             const thankPopup = document.getElementById('thank-popup');
 
-            submitBtn.addEventListener('click', () => {
-                // Send feedback and rating to server (not implemented)
-                // Just show popup for now
-                thankPopup.classList.add('show');
-                setTimeout(() => {
-                    thankPopup.classList.remove('show');
-                    // Animate transition to goodbye page
-                    // We'll just redirect after fadeout:
-                    // Let's wait another 0.5 seconds for the fadeout
-                    setTimeout(() => {
-                        window.location.href = "{{ url_for('goodbye') }}";
-                    }, 500);
-                }, 2000); // show for 2 seconds
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // Send the form via AJAX to process_feedback endpoint
+                const formData = new FormData(form);
+
+                fetch("{{ url_for('process_feedback') }}", {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'ok') {
+                        // Show popup
+                        thankPopup.classList.add('show');
+                        setTimeout(() => {
+                            thankPopup.classList.remove('show');
+                            // Redirect to goodbye.html
+                            window.location.href = "{{ url_for('goodbye') }}";
+                        }, 2000); 
+                    } else {
+                        alert('Error saving feedback.');
+                    }
+                });
             });
         });
     </script>

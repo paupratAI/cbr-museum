@@ -577,12 +577,15 @@ class CBR:
 		) if abstract_problem.preferred_author else None
 		preferred_themes_json = json.dumps(abstract_problem.preferred_themes, ensure_ascii=False)
 
+		case_id = cursor.execute("SELECT MAX(case_id) FROM train_cases").fetchone()[0]
+
 		# Insert AbstractProblem into the cases table
 		cursor.execute("""
 			INSERT INTO train_cases
-			(group_id, group_size, num_people, num_experts, minors, past_museum_visits, preferred_main_theme, guided_visit, preferred_year, group_type, art_knowledge, preferred_periods_ids, preferred_author_name, preferred_themes, reduced_mobility, time_coefficient, time_limit, group_description, ordered_artworks, ordered_artworks_matches, visited_artworks_count, rating, textual_feedback, only_elevator, time_coefficient_correction, artwork_to_remove, guided_visit_feedback, usage_count, redundancy, utility, cluster)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			(case_id, group_id, group_size, num_people, num_experts, minors, past_museum_visits, preferred_main_theme, guided_visit, preferred_year, group_type, art_knowledge, preferred_periods_ids, preferred_author_name, preferred_themes, reduced_mobility, time_coefficient, time_limit, group_description, ordered_artworks, ordered_artworks_matches, visited_artworks_count, rating, textual_feedback, only_elevator, time_coefficient_correction, artwork_to_remove, guided_visit_feedback, usage_count, redundancy, utility, cluster)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 		""", (
+			case_id + 1,
 			abstract_problem.group_id,
 			abstract_problem.group_size,
 			specific_problem.num_people,
