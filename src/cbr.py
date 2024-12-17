@@ -376,7 +376,7 @@ class CBR:
 			feedback = row['rating']
 			distance = similarity * feedback
 
-			cases_with_similarity.append((row, similarity))
+			cases_with_similarity.append((row, distance))
 
 		# Sort by distance and return top_k
 		ranked_cases = sorted(cases_with_similarity, key=lambda x: x[1], reverse=True)
