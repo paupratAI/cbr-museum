@@ -28,12 +28,12 @@ def start():
             if entered_id:
                 # Check if entered_id exists
                 cursor = iface.db.cursor()
-                cursor.execute("SELECT group_id FROM cases WHERE group_id = ?", (entered_id,))
+                cursor.execute("SELECT group_id FROM train_cases WHERE group_id = ?", (entered_id,))
                 row = cursor.fetchone()
 
                 if row:
                     cursor.execute("""SELECT num_people, minors, guided_visit, num_experts, past_museum_visits, preferred_year, preferred_main_theme, preferred_author_name, group_description
-                                      FROM cases WHERE group_id = ?""", (entered_id,))
+                                      FROM train_cases WHERE group_id = ?""", (entered_id,))
                     data_row = cursor.fetchone()
                     # Not new, go to final_questions
                     iface.id = int(entered_id)
