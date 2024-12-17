@@ -293,8 +293,11 @@ class Recommender:
 			# Check if the file exists. If it does, change the name
 			parameters_str = f"{self.cf_alpha=}, {self.cf_gamma=}, {self.cf_decay_factor=}, {self.cf_method=}, {self.beta=}, {self.cbr_alpha=}, {self.cbr_beta=}, {self.cbr_gamma=}, {self.cbr_top_k=}"
 			scores['parameters'] = parameters_str
+			results_file_name = os.path.join('scores', results_file_name)
 			if os.path.exists(results_file_name):
 				results_file_name = results_file_name.replace('.json', '_new.json')
+
+			# Save the results to a file
 			with open(results_file_name, 'w') as f:
 				json.dump(scores, f)
 
