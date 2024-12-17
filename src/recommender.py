@@ -71,7 +71,7 @@ class Recommender:
 		self.main_table = main_table
 		self.db_path = db_path
 		self.beta = beta
-		self.conn = sqlite3.connect(db_path)
+		self.conn = sqlite3.connect(db_path, check_same_thread=False)
 		self.cursor = self.conn.cursor()
 
 		self.ratings_range = ratings_range
