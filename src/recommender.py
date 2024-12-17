@@ -149,7 +149,6 @@ class Recommender:
 		"""
 		Converts a `clean_response` data list into a SpecificProblem object and then into an AbstractProblem.
 		"""
-		print(clean_response)
 		specific_problem = SpecificProblem(
 			group_id=int(clean_response[0]),
 			num_people=int(clean_response[1]),
@@ -257,7 +256,8 @@ class Recommender:
 		# Evaluate the predictions
 		scores = self.dbph.evaluate_predictions(predictions=predictions)
 
-		print(scores)
+		for key, value in scores.items():
+			print(f"{key}: {float(value[0])}")
 
 		if save:
 			return scores
@@ -267,7 +267,7 @@ class Recommender:
 		return scores
 	
 def main():
-	r = Recommender(cf_decay_factor=1, cf_alpha=1, cf_gamma=1, beta=0)
+	r = Recommender(cf_decay_factor=1, cf_alpha=1, cf_gamma=1, beta=1)
 	r.evaluate(save=False)
 
 if __name__ == '__main__':

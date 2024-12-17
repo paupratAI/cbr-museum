@@ -375,7 +375,9 @@ class CF:
 
             sorted_avg_ratings = sorted(avg_ratings.keys(), key=lambda x: avg_ratings[x], reverse=True)
 
-            return sorted_avg_ratings
+            sorted_probs = [avg_ratings[item] for item in sorted_avg_ratings]
+
+            return sorted_avg_ratings, sorted_probs
 
         # Retrieve all items and the target group's ratings
         all_items = self.get_all_items()
