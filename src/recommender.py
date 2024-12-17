@@ -292,10 +292,16 @@ class Recommender:
 
 			cluster_id = self.clustering_system.classify_new_case(new_case)
 
+<<<<<<< HEAD
 			predictions.append(self.recommend(target_group_id=group_id, clean_response=clean_response, eval_mode=True, cluster_id=cluster_id)["hybrid"][0])
 
 			iter_time = time.time() - iter_start_time
 			execution_times.append(iter_time)
+=======
+			recommendation = self.recommend(target_group_id=group_id, clean_response=clean_response, eval_mode=True, cluster_id = cluster_id)["hybrid"][0]
+
+			predictions.append(recommendation)
+>>>>>>> 32e36057742ab24291089c4f93bad861f817c2e5
 
 		# Evaluate the predictions
 		scores = self.dbph.evaluate_predictions(predictions=predictions)
@@ -321,7 +327,8 @@ class Recommender:
 			plt.close()
 
 		for key, value in scores.items():
-			print(f"{key}: {float(value[0])}")
+			v1, v2 = value
+			print(f"{key}: {float(v1)}, {v2}")
 
 		if save:
 			# Check if the file exists. If it does, change the name
@@ -331,7 +338,7 @@ class Recommender:
 			# Convert np arrays to lists
 			for key, value in scores.items():
 				avg, ind = value
-				scores[key] = (float(avg), ind.tolist())
+				scores[key] = (float(avg), list(ind))
 
 			scores['parameters'] = parameters_str
 

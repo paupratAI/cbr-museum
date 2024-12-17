@@ -37,7 +37,7 @@ class CF:
         """
         assert default_method in self.VALID_METHODS, f"Invalid method; use one of {self.VALID_METHODS}"
         assert 0 <= default_alpha <= 1, "Alpha must be between 0 and 1"
-        assert 0 <= default_gamma <= 1, "Gamma must be between 0 and 1"
+        assert 0 <= default_gamma, "Gamma must be a non-negative value"
         assert 0 <= default_decay_factor <= 1, "Decay factor must be between 0 and 1"
 
         self.db_path = db_path
@@ -98,7 +98,7 @@ class CF:
         """
         assert len(ordered_items) == len(ordered_items_matches), "Length of ordered_items and ordered_items_matches must match"
         assert visited_items_count <= len(ordered_items), "Visited items count must be less than or equal to the total number of items"
-        assert (gamma is None) or (0 <= gamma <= 1), "Gamma must be between 0 and 1"
+        assert (gamma is None) or (0 <= gamma), "Gamma must be a non-negative value"
         assert (decay_factor is None) or (0 <= decay_factor <= 1), "Decay factor must be between 0 and 1"
         
         min_rating, max_rating = self.ratings_range
