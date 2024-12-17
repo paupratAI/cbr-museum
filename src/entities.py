@@ -19,6 +19,7 @@ class Room:
     is_elevator: bool
     room_name: Optional[str] = None
     adjacent_rooms: List['Room'] = field(default_factory=list)
+    artworks_id_in_room: List[int] = field(default_factory=list)
 
     def __post_init__(self):
         assert not (self.is_entry and self.is_stairs), "The entry cannot be stairs."
