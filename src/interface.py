@@ -2,12 +2,19 @@ import ollama
 import sqlite3
 from typing import List
 from recommender import Recommender
+from dotenv import load_dotenv
+import openai
+import os
 
 class Llama:
     def __init__(self, model_name='llama3.2'):
         self.model_name = model_name
+        self.chat = 'openai'
 
     def run_llm(self, answers: List[str]):
+        load_dotenv()
+        api_key = os.getenv("OPENAI_API_KEY")
+        client = openai.Client(api_key=api_key)
         system_prompt = ("""
             You are a museum route planning assistant that processes a user's responses to a series of questions. The user’s answers may be imprecise or informal. Your job is to produce a clean, standardized list of values derived from their answers. The final output should be a structured list containing one cleaned value per question, in order.
 
@@ -45,6 +52,14 @@ class Llama:
         messages = [{'role': 'system', 'content': system_prompt}]
         messages.extend({'role': 'user', 'content': answer} for answer in answers)
 
+        if self.chat == 'openai':
+            response = client.chat.completions.create(
+                model='gpt-4o-mini',
+                messages=messages,
+            )
+
+            return response.choices[0].message.content
+
         response = ollama.chat(model=self.model_name, messages=messages)
         return response['message']['content']
 
@@ -56,7 +71,7 @@ class Interface:
 
     def get_id(self):
         cursor = self.db.cursor()
-        cursor.execute("SELECT group_id FROM abstract_problems ORDER BY group_id DESC LIMIT 1")
+        cursor.execute("SELECT group_id FROM cases ORDER BY group_id DESC LIMIT 1")
         group_id = cursor.fetchone()
         self.id = 1 if group_id is None else group_id[0] + 1
         return self.id

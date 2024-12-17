@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from interface import Llama, Interface 
+import ast
 
 app = Flask(__name__)
 
@@ -32,8 +33,10 @@ def start():
 def process_answers():
     answers = request.json.get('answers', [])
     result = llama_model.run_llm(answers)
-    result.insert(0, iface.id)
-    return jsonify(status='ok', result=result)
+    results = ast.literal_eval(result)
+    results.insert(0, iface.id)
+    iface.ap = results
+    return jsonify(status='ok', result=results)
 
 @app.route('/final_questions', methods=['GET'])
 def final_questions():
