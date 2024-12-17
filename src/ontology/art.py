@@ -1,6 +1,7 @@
 from entities import Artwork, Author, Period, Style
 from authors import authors
 from ontology.periods import periods_dict
+from museum import rooms
 
 artworks = {
     5357: Artwork(5357, 'The Red Armchair', None, authors['Pablo Picasso'], [periods_dict[16], periods_dict[18]], 'Joy', 12838, True, 58, 6, [Style(style_name='Cubism')]),
