@@ -8,3 +8,6 @@
 8. Entendre feedback alhora de crear rutes
 9. Generar rutes aplicant Hill Climbing?
 10. Evaluar i fer experiments
+
+
+Informe: justificar que amb el test no es guarden casos, pero amb la web si
