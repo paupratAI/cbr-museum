@@ -50,7 +50,8 @@
                     <input type="text" class="input-field question-input" placeholder="yes/no">
                 </div>
                 <div class="buttons-row">
-                    <button type="button" class="finish-button" id="final-finish">Finish</button>
+                    <!-- Changed text to "Recommend" -->
+                    <button type="button" class="finish-button" id="final-finish" style="background-color: #002147;">Recommend</button>
                 </div>
             </form>
         </div>
@@ -72,12 +73,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextButtons = document.querySelectorAll('.next-button');
     const finishButton = document.getElementById('final-finish');
     const loadingPopup = document.getElementById('loading-popup');
+    const spinnerText = loadingPopup.querySelector('p');
 
     let currentScreenIndex = 0;
     let finalAnswers = [];
 
     function slideToScreen(index) {
-        const offset = index * -100; 
+        const offset = index * -100;
         screenContainer.style.transform = `translateY(${offset}vh)`;
     }
 
@@ -85,14 +87,14 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingPopup.classList.add('show');
     }
 
-    function hideLoading(callback) {
+    function hideLoading(callback, delay=1000) {
         setTimeout(() => {
             loadingPopup.classList.remove('show');
             loadingPopup.addEventListener('transitionend', function handler() {
                 loadingPopup.removeEventListener('transitionend', handler);
                 if (callback) callback();
             });
-        }, 1000);
+        }, delay);
     }
 
     nextButtons.forEach(button => {
@@ -103,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
             finalAnswers.push(answer);
 
             showLoading();
+            // Normal steps: processing popup for about 0.5s, we can just keep 1s for consistency
             hideLoading(() => {
                 const targetId = button.getAttribute('data-next');
                 const targetScreen = document.querySelector(targetId);
@@ -111,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentScreenIndex = targetIndex;
                     slideToScreen(currentScreenIndex);
                 }
-            });
+            }, 500); // 0.5 secs delay for regular steps
         });
     });
 
@@ -122,12 +125,26 @@ document.addEventListener('DOMContentLoaded', () => {
         finalAnswers.push(answer);
 
         showLoading();
-        // After this, you could send finalAnswers to the server
-        // For now, just simulate completion
+        spinnerText.textContent = "Saving your data ...";
+
+        // Keep popup visible for 3 seconds
         hideLoading(() => {
-            alert("All final questions answered: " + JSON.stringify(finalAnswers));
-            // Here you could do a fetch POST to a new endpoint, or redirect somewhere else
-        });
+            // After hiding the popup, send finalAnswers to server
+            fetch("{{ url_for('process_final_answers') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({final_answers: finalAnswers})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    alert('Data saved successfully!');
+                    // Here you can redirect or do something else
+                } else {
+                    alert('Error saving data.');
+                }
+            });
+        }, 3000); // 3 secs for saving popup
     });
 });
 </script>
