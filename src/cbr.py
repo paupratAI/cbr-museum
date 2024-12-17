@@ -73,16 +73,6 @@ class CBR:
 		if problem_group_description:
 			weights = {
 				"group_size": 0.05,
-				"group_type": 0.1,
-				"art_knowledge": 0.2,
-				"preferred_periods": 0.2,
-				"preferred_author": 0.2,
-				"preferred_themes": 0.2,
-				"time_coefficient": 0.05
-			}
-		else:
-			weights = {
-				"group_size": 0.05,
 				"group_type": 0.05,
 				"art_knowledge": 0.1,
 				"preferred_periods": 0.2,
@@ -90,6 +80,16 @@ class CBR:
 				"preferred_themes": 0.2,
 				"time_coefficient": 0.05,
 				"group_description": 0.15
+			}
+		else:
+			weights = {
+				"group_size": 0.05,
+				"group_type": 0.1,
+				"art_knowledge": 0.2,
+				"preferred_periods": 0.2,
+				"preferred_author": 0.2,
+				"preferred_themes": 0.2,
+				"time_coefficient": 0.05
 			}
 
 		similarity = 0.0
