@@ -588,7 +588,7 @@ class CBR:
 			specific_problem.favorite_period,
 			abstract_problem.group_type,
 			abstract_problem.art_knowledge,
-			[p.period_id for p in abstract_problem.preferred_periods],
+			json.dumps([p.period_id for p in abstract_problem.preferred_periods]),
 			abstract_problem.preferred_author.author_name,
 			preferred_themes_json,
 			0, 
